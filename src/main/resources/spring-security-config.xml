@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--suppress ALL -->
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+             xmlns:beans="http://www.springframework.org/schema/beans"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+        http://www.springframework.org/schema/security
+        http://www.springframework.org/schema/security/spring-security-3.2.xsd">
+
+    <global-method-security pre-post-annotations="enabled" />
+    <http use-expressions="true" auto-config="false" create-session="stateless" entry-point-ref="customAuthenticationEntryPoint">
+        <custom-filter ref="authenticationTokenProcessingFilter" before="PRE_AUTH_FILTER" />
+    </http>
+
+    <beans:bean id="customAuthenticationEntryPoint" class="com.brewery.services.auth.token.JwtCustomAuthenticationEntryPoint" />
+
+    <beans:bean  id="authenticationTokenProcessingFilter" class="com.brewery.services.auth.token.JwtAuthenticationTokenProcessingFilter">
+        <beans:property name="authenticationManager" ref="authenticationManager" />
+        <beans:property name="authenticationSuccessHandler" ref="securityLoginSuccessHandler"/>
+    </beans:bean>
+
+    <authentication-manager alias="authenticationManager">
+        <authentication-provider ref="jwtAuthenticationProvider"/>
+    </authentication-manager>
+
+</beans:beans>
