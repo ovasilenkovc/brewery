@@ -7,8 +7,7 @@ import com.brewery.services.auth.token.jwt.JwtTokenService;
 import com.brewery.services.auth.user.CustomUserDetailService;
 import com.brewery.utils.ConstantParams;
 import com.brewery.utils.ResponseMaker;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,7 +35,7 @@ public class AdminAuthController {
     @Autowired
     private CustomUserDetailService userDetailService;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AdminAuthController.class);
+    private static final Logger LOGGER = Logger.getLogger(AdminAuthController.class);
 
     @ResponseBody
     @RequestMapping(value = "/login", method = RequestMethod.POST)

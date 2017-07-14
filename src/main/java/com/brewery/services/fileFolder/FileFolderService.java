@@ -39,11 +39,15 @@ public class FileFolderService {
      *  @return String returns absolute path for saved file.
      */
     public String saveFile(MultipartFile file, String path) throws IOException {
-        String storagePath = ConstantParams.TEMP_FOLDER_PATH + path;
+        String storagePath = ConstantParams.TEMP_FOLDER_PATH + ConstantParams.ROOT_PROJECT_DIR + path;
         String fileName = file.getOriginalFilename();
 
-        if (!new File(ConstantParams.TEMP_FOLDER_PATH + "/" + path).exists())
-            createFolders(path, ConstantParams.TEMP_FOLDER_PATH);
+        if(!new File(ConstantParams.TEMP_FOLDER_PATH + ConstantParams.ROOT_PROJECT_DIR).exists()){
+            createFolders(ConstantParams.ROOT_PROJECT_DIR, ConstantParams.TEMP_FOLDER_PATH);
+        }
+
+        if (!new File(storagePath).exists())
+            createFolders(path, ConstantParams.TEMP_FOLDER_PATH + ConstantParams.ROOT_PROJECT_DIR);
 
         try {
             byte[] bytes = file.getBytes();

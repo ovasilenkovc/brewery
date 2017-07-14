@@ -14,7 +14,7 @@ public interface ContentDao {
 
     Content getOne(Long id);
 
-    List<Content> getAll();
+    List getAll();
 
     boolean remove(Content content);
 

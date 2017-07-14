@@ -6,10 +6,11 @@ import com.brewery.content.article.Article;
 import com.brewery.content.article.Translations;
 import com.brewery.content.contentDao.ContentDaoFactory;
 import com.brewery.content.image.Image;
+import com.brewery.content.product.Description;
+import com.brewery.content.product.Product;
 import com.brewery.services.fileFolder.FileFolderService;
 import com.brewery.utils.ConstantParams;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,7 +41,7 @@ public class ContentServiceImpl implements ContentService {
     @Autowired
     private FileFolderService fileFolderService;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ContentServiceImpl.class);
+    private static final Logger LOGGER = Logger.getLogger(ContentServiceImpl.class);
 
     /**
      * Transactional method for data base saving of Content items.
@@ -53,7 +54,7 @@ public class ContentServiceImpl implements ContentService {
      */
     @Transactional
     public Long save(Content content, String context) {
-        LOGGER.error("content saving");
+        LOGGER.info("content saving");
         return daoFactory.getContentDao(context).save(content);
     }
 
@@ -66,7 +67,7 @@ public class ContentServiceImpl implements ContentService {
      * @return List of Content instances.
      */
     public List<Content> getAll(String context) {
-        LOGGER.error("getting all content instances");
+        LOGGER.info("getting all content instances");
         return daoFactory.getContentDao(context).getAll();
     }
 
@@ -81,7 +82,7 @@ public class ContentServiceImpl implements ContentService {
      * @return Content instance.
      */
     public Content getOne(Long id, String context) {
-        LOGGER.error("getting one content instance");
+        LOGGER.info("getting one content instance");
         return daoFactory.getContentDao(context).getOne(id);
     }
 
@@ -105,6 +106,18 @@ public class ContentServiceImpl implements ContentService {
             File file = (File) content;
             fileFolderService.removeFile(file.getName(), file.getPath());
         }
+    }
+
+    /**
+     * Transactional method for removing item from the data base.
+     * Chooses where from it should be removed uses current context parameter.
+     *
+     * @param content removing item.
+     * @param context current context.
+     */
+    @Transactional
+    public void remove(Content content, String context) {
+        daoFactory.getContentDao(context).remove(content);
     }
 
     /**
@@ -165,6 +178,37 @@ public class ContentServiceImpl implements ContentService {
     }
 
     /**
+     * A transactional method for adding/update Translations for needed Article.
+     * Uses an article id parameter for getting an Article
+     * for which the translation should be saved.
+     *
+     * @param productId product id.
+     * @param description Product Description instance.
+     * @param context current context.
+     */
+    @Transactional()
+    public void saveUpdateDescription(Long productId, Description description, String context) {
+        Product product = (Product) daoFactory.getContentDao(context).getOne(productId);
+
+        if (product == null) {
+            String message = "Product with specified id: " + productId + " was not found!";
+            LOGGER.error(message);
+            throw new NullPointerException(message);
+        }
+
+        Description prodDesc = getDescriptionByType(product, description.getType());
+        if (prodDesc != null) {
+            prodDesc.setTitle(description.getTitle());
+            prodDesc.setDescription(description.getDescription());
+            prodDesc.setComposition(description.getComposition());
+            product.getDescriptions().add(prodDesc);
+        } else {
+            product.getDescriptions().add(description);
+        }
+        daoFactory.getContentDao(context).update(product);
+    }
+
+    /**
      * A transactional method for saving files into DB and Store.
      * At first it saves new item information into the data base, if all operations was succeed
      * it would save file into physical store using specified path.
@@ -179,7 +223,7 @@ public class ContentServiceImpl implements ContentService {
     public Map<Long, String> saveFiles(MultipartFile[] files, String context, String path) throws IOException {
         Map<Long, String> result = new HashMap<>();
         LOGGER.info("Files saving started");
-        String storagePath = ConstantParams.ROOT_PROJECT_DIR + "/" + path;
+        String storagePath = "/" + path;
 
         for (MultipartFile file : files) {
             if (!file.isEmpty() && fileFolderService.checkIsValidDataType(file.getContentType(), context)) {
@@ -196,10 +240,23 @@ public class ContentServiceImpl implements ContentService {
         return result;
     }
 
+    /**
+     * A transactional method for saving file into DB and Store.
+     * At first it saves new item information into the data base, if all operations was succeed
+     * it would save file into physical store using specified path.
+     *
+     * @param content File Content representation.
+     * @param context current context.
+     * @param file    Physical File for saving.
+     * @param storagePath path for storage where file should be saved.
+     * @param result result map that will be filled.
+     *
+     * @return Map with information about saved files.
+     */
     @Transactional
     public void saveFile(Content content, String context, MultipartFile file, String storagePath, Map<Long, String> result) throws Exception {
-        Long fileId = daoFactory.getContentDao(context).save(content);
         String savingResult = fileFolderService.saveFile(file, storagePath);
+        Long fileId = daoFactory.getContentDao(context).save(content);
         if (savingResult != null) {
             result.put(fileId, savingResult);
         }
@@ -232,7 +289,35 @@ public class ContentServiceImpl implements ContentService {
     }
 
     /**
-     * A private method for getting Article translations.
+     * The method for removing Content metadata (ie: Article_Translations, Product_Description).
+     * For current specified localization.
+     *
+     * @param id Content id for which we want to remove;
+     * @param localizeType Metadata localization;
+     * @param context current context.
+     */
+    @Transactional
+    public void removeContentMetadata(Long id, String localizeType, String context){
+        Content content = daoFactory.getContentDao(context).getOne(id);
+
+        if(content == null){
+            throw new NullPointerException("Content with specified id doesn't exist!");
+        }
+        removeMetadata(content, localizeType, context);
+    }
+
+    private void removeMetadata(Content content, String local, String context){
+        if(ConstantParams.ARTICLE_CONTEXT.equals(context)){
+            Translations translation = getTranslationByType((Article) content, local);
+            daoFactory.getContentDao(ConstantParams.TRANSLATION_CONTEXT).remove(translation);
+        }else if(ConstantParams.PRODUCT_CONTEXT.equals(context)){
+            Description description = getDescriptionByType((Product) content, local);
+            daoFactory.getContentDao(ConstantParams.PRODUCT_DESCRIPTION).remove(description);
+        }
+    }
+
+    /**
+     * The private method for getting Article translations.
      * Uses translation type i.e "ENG", "RUS", "UA" modifications for them.
      *
      * @param article Article for which you want to obtain translation.
@@ -249,10 +334,28 @@ public class ContentServiceImpl implements ContentService {
     }
 
     /**
+     * The private method for getting Product descriptions.
+     * Uses translation type i.e "ENG", "RUS", "UA" modifications for them.
+     *
+     * @param product Product for which you want to obtain translation.
+     * @param type    translation language type.
+     * @return Translation with specified type.
+     */
+    private Description getDescriptionByType(Product product, String type){
+        Set<Description> descriptions = product.getDescriptions();
+        for (Description description : descriptions) {
+            String translationType = description.getType();
+            if (translationType.equals(type)) return description;
+        }
+        return null;
+    }
+
+    /**
      * The private method for making a new one Content instance by the current context.
+     *
      * @param fileName name field parameter.
-     * @param path path field value
-     * @param context current context
+     * @param path     path field value
+     * @param context  current context
      * @return new Content instance.
      */
     private Content getFileContentInstance(String fileName, String path, String context) {
