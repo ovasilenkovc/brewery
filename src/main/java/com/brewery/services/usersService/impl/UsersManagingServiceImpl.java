@@ -4,8 +4,7 @@ import com.brewery.admin.dao.AdminUserDAO;
 import com.brewery.admin.model.AdminUser;
 import com.brewery.admin.model.Roles;
 import com.brewery.services.usersService.UsersManagingService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +14,7 @@ import java.util.List;
 public class UsersManagingServiceImpl implements UsersManagingService {
 
     private final AdminUserDAO userDAO;
-    private static final Logger LOGGER = LoggerFactory.getLogger(UsersManagingServiceImpl.class);
+    private static final Logger LOGGER = Logger.getLogger(UsersManagingServiceImpl.class);
 
     @Autowired
     public UsersManagingServiceImpl(AdminUserDAO userDAO) {

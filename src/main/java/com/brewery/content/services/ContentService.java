@@ -18,6 +18,8 @@ public interface ContentService {
 
     void remove(Long id, String context) throws IOException;
 
+    void remove(Content content, String context);
+
     void update(Content content, String context);
 
 }

@@ -1,11 +1,8 @@
 package com.brewery.content.contentDao;
 
-import com.brewery.content.contentDao.impl.ArticleContentDaoImpl;
-import com.brewery.content.contentDao.impl.ImageContentDaoImpl;
-import com.brewery.content.contentDao.impl.TranslationContentImpl;
+import com.brewery.content.contentDao.impl.*;
 import com.brewery.utils.ConstantParams;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -27,17 +24,30 @@ public class ContentDaoFactory {
     private ArticleContentDaoImpl articleDao;
 
     @Autowired
+    private ProductContentDaoImpl productDao;
+
+    @Autowired
+    private ProductTypeDaoImpl productTypeDao;
+
+    @Autowired
     private TranslationContentImpl translationContent;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ContentDaoFactory.class);
+    @Autowired
+    private DescriptionContentDaoImpl descriptionContentDao;
+
+
+    private static final Logger LOGGER = Logger.getLogger(ContentDaoFactory.class);
 
     private Map<String, ContentDao> CONTENT_DAO_IMPLEMENTATIONS = new HashMap<>();
 
     @PostConstruct
     public void init(){
         CONTENT_DAO_IMPLEMENTATIONS.put(ConstantParams.IMAGE_CONTEXT, imageDao);
+        CONTENT_DAO_IMPLEMENTATIONS.put(ConstantParams.PRODUCT_CONTEXT, productDao);
         CONTENT_DAO_IMPLEMENTATIONS.put(ConstantParams.ARTICLE_CONTEXT, articleDao);
+        CONTENT_DAO_IMPLEMENTATIONS.put(ConstantParams.PRODUCT_TYPE_CONTEXT, productTypeDao);
         CONTENT_DAO_IMPLEMENTATIONS.put(ConstantParams.TRANSLATION_CONTEXT, translationContent);
+        CONTENT_DAO_IMPLEMENTATIONS.put(ConstantParams.PRODUCT_DESCRIPTION, descriptionContentDao);
     }
 
     public ContentDao getContentDao(String context){

@@ -9,8 +9,7 @@ import com.brewery.services.usersService.UsersManagingService;
 import com.brewery.utils.ConstantParams;
 import com.brewery.utils.ParamUtils;
 import com.brewery.utils.ResponseMaker;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +27,7 @@ public class AdminActionsController {
     @Autowired
     private UsersManagingService usersManagingService;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AdminActionsController.class);
+    private static final Logger LOGGER = Logger.getLogger(AdminActionsController.class);
 
     @ResponseBody
     @PreAuthorize("hasRole('ROLE_SUPER_ADMIN')")

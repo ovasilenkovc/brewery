@@ -1,8 +1,7 @@
 package com.brewery.utils;
 
+import org.apache.log4j.Logger;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +16,7 @@ import java.util.Map;
  */
 public class ResponseMaker {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ResponseMaker.class);
+    private static final Logger LOGGER = Logger.getLogger(ResponseMaker.class);
 
     /**
      * Method for making JSON response object from an obtained Object.
@@ -45,13 +44,13 @@ public class ResponseMaker {
      * @param contentType value for the Content-Type header.
      * @param status Http status.
      */
-    public static ResponseEntity<String> makeResponse(String message, String contentType, HttpStatus status) {
+    public static ResponseEntity<String> makeResponse(String message, String contentType, HttpStatus status, String messageType) {
         ObjectMapper mapper = new ObjectMapper();
         HttpHeaders headers = new HttpHeaders();
         Map<String, String> args = new HashMap<>();
 
         try {
-            args.put(ConstantParams.INFO_MESSAGE, message);
+            args.put(messageType, message);
             headers.add(ConstantParams.CONTENT_TYPE_HEADER, contentType);
             return new ResponseEntity<>(mapper.writeValueAsString(args), headers, status);
         } catch (IOException e) {

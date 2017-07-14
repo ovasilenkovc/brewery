@@ -6,8 +6,7 @@ import com.brewery.admin.dao.AdminUserDAO;
 import com.brewery.admin.model.AdminUser;
 import com.brewery.admin.model.Roles;
 import com.brewery.services.auth.user.CustomUserDetailService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -21,7 +20,7 @@ public class CustomUserDetailServiceImpl implements CustomUserDetailService {
     @Autowired
     private AdminUserDAO userDAO;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(CustomUserDetailService.class);
+    private static final Logger LOGGER = Logger.getLogger(CustomUserDetailService.class);
 
     @Override
     public User getUserDetailsByUserName(String username) {

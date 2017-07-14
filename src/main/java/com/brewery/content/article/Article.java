@@ -5,6 +5,7 @@ import com.brewery.content.Content;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -31,7 +32,7 @@ public class Article implements Content {
             name = "translations_article",
             joinColumns = @JoinColumn(name = "article_id"),
             inverseJoinColumns = @JoinColumn(name = "translation_id"))
-    private Set<Translations> translations;
+    private Set<Translations> translations = new HashSet<>();
 
     public Article() {
     }
