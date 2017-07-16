@@ -14,7 +14,7 @@ const cssLoader = isDebug ? 'style-loader!css-loader' :
 
 const config = {
     entry: [
-        "font-awesome-webpack!./src/theme/fonts.config.js",
+        // "font-awesome-webpack!./src/theme/fonts.config.js",
         "./src/client.js"
     ],
 
