@@ -1,14 +1,15 @@
-import React, { PureComponent } from 'react';
-import { withRouter } from 'react-router-dom';
+import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { Header } from '../../components/index';
+require('../../theme/fonts.scss');
 
-class App extends PureComponent {
+class App extends Component {
 
 
   render() {
     return (
       <div>
-        App
+        <Header />
       </div>
     );
   }
@@ -22,4 +23,4 @@ const mapStateToProps = state => ({});
 
 const mapDispatchToProps = dispatch => ({});
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(App));
+export default connect(mapStateToProps, mapDispatchToProps)(App);

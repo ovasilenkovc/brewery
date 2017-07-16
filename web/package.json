@@ -2,13 +2,14 @@
   "name": "brewery-web",
   "version": "0.0.0",
   "description": "web part",
+  "main": "./src/client.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build:dist": "webpack --config webpack.config.js --progress --profile --display-reasons --colors --display-error-details --display-cached",
+    "dist": "set NODE_ENV=production && webpack --config webpack.config.js --progress --profile --display-reasons --colors --display-error-details --display-cached",
     "build": "webpack --display-error-details --progress",
     "watch": "webpack --display-error-details --watch --env.dev",
     "start": "webpack-dev-server",
-    "lint": "./node_modules/.bin/eslint -c .eslintrc src"
+    "lint": "./node_modules/.bin/eslint app -c .eslintrc src"
   },
   "keywords": [
     "brewery"
@@ -24,6 +25,8 @@
     "deep-freeze": "^0.0.1",
     "es6-promise": "^4.0.5",
     "font-awesome": "^4.7.0",
+    "font-awesome-webpack": "^0.0.5-beta.2",
+    "font-loader": "^0.1.2",
     "history": "^4.6.2",
     "humps": "^2.0.0",
     "ignore-styles": "^5.0.1",

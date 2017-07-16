@@ -19,7 +19,8 @@
       140
     ],
     "object-shorthand": "off",
-    "class-methods-use-this": [0]
+    "class-methods-use-this": [0],
+    "linebreak-style": 0
   },
   "settings": {
     "import/parser": "babel-eslint",

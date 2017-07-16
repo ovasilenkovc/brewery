@@ -8,111 +8,113 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const isDebug = !(argv.p || false);
 
 const saasLoader = isDebug ? 'style-loader!css-loader!sass-loader' :
-  ExtractTextPlugin.extract({ fallback: 'style-loader', use: 'css-loader!sass-loader' });
+    ExtractTextPlugin.extract({fallback: 'style-loader', use: 'css-loader!sass-loader'});
 const cssLoader = isDebug ? 'style-loader!css-loader' :
-  ExtractTextPlugin.extract({ fallback: 'style-loader', use: 'css-loader' });
+    ExtractTextPlugin.extract({fallback: 'style-loader', use: 'css-loader'});
 
 const config = {
-  entry: {
-    app: './src/client.js'
-  },
-  output: {
-    path: path.join(__dirname, './dist'),
-    filename: '[name].[hash].js'
-  },
+    entry: [
+        "font-awesome-webpack!./src/theme/fonts.config.js",
+        "./src/client.js"
+    ],
 
-  module: {
-    loaders: [
-      {
-        test: /\.(scss)$/,
-        loader: saasLoader
-      }, {
-        test: /\.css$/,
-        loader: cssLoader
-      }, {
-        test: /\.(js|jsx)$/,
-        exclude: /node_modules/,
-        use: [
-          {
-            loader: 'babel-loader',
-            options: {
-              presets: [
-                ['es2015', { modules: false }],
-                'stage-0',
-                'react'
-              ],
-              plugins: [
-                'transform-decorators-legacy',
-                'react-hot-loader/babel',
-              ]
-            }
-          },
-        ],
-      },
-      {
-        test: /\.json$/,
-        loader: 'json-loader'
-      },
-      {
-        test: /\.woff($|\?)|\.woff2($|\?)|\.ttf($|\?)|\.eot($|\?)|\.svg($|\?)/,
-        loader: 'url-loader'
-      },
-      {
-        test: /\.(jpe?g|png|gif|svg)$/i,
-        use: [
-          'url-loader?limit=10000',
-          {
-            loader: 'img-loader',
-            options: {
-              enabled: 'developer'
-            }
-          }
-        ]
-      }
-    ]
-  },
-
-  resolve: {
-    extensions: ['.js'],
-    alias: {
-      cfg: path.resolve(__dirname, './config.json')
+    output: {
+        path: path.join(__dirname, './dist'),
+        filename: '[name].[hash].js'
     },
-  },
 
-  plugins: [
-    new webpack.optimize.ModuleConcatenationPlugin(),
+    module: {
+        loaders: [
+            {
+                test: /\.(scss)$/,
+                loader: saasLoader
+            }, {
+                test: /\.css$/,
+                loader: cssLoader
+            }, {
+                test: /\.(js|jsx)$/,
+                exclude: /node_modules/,
+                use: [
+                    {
+                        loader: 'babel-loader',
+                        options: {
+                            presets: [
+                                ['es2015', {modules: false}],
+                                'stage-0',
+                                'react'
+                            ],
+                            plugins: [
+                                'transform-decorators-legacy',
+                                'react-hot-loader/babel',
+                            ]
+                        }
+                    },
+                ],
+            },
+            {
+                test: /\.json$/,
+                loader: 'json-loader'
+            },
+            {
+                test: /\.woff($|\?)|\.woff2($|\?)|\.ttf($|\?)|\.eot($|\?)|\.svg($|\?)/,
+                loader: 'url-loader'
+            },
+            {
+                test: /\.(jpe?g|png|gif|svg)$/i,
+                use: [
+                    'url-loader?limit=10000',
+                    {
+                        loader: 'img-loader',
+                        options: {
+                            enabled: 'developer'
+                        }
+                    }
+                ]
+            }
+        ]
+    },
 
-    // OccurenceOrderPlugin: Assign the module and chunk ids by occurrence count. : https://webpack.github.io/docs/list-of-plugins.html#occurenceorderplugin
-    new webpack.optimize.OccurrenceOrderPlugin(),
+    resolve: {
+        extensions: ['.js'],
+        alias: {
+            cfg: path.resolve(__dirname, './config.json')
+        },
+    },
 
-    new ExtractTextPlugin('[name].[hash].css'),
+    plugins: [
+        new webpack.optimize.ModuleConcatenationPlugin(),
 
-    new HtmlWebpackPlugin({
-      filename: 'index.html',
-      template: './src/index.html',
-      inject: 'body',
-      // chunksSortMode: 'dependency',
-      minify: false
-    }),
+        // OccurenceOrderPlugin: Assign the module and chunk ids by occurrence count. : https://webpack.github.io/docs/list-of-plugins.html#occurenceorderplugin
+        new webpack.optimize.OccurrenceOrderPlugin(),
 
-    new webpack.DefinePlugin({
-      __DEBUG__: isDebug,
-      'process.env': {
-        NODE_ENV: process.env.NODE_ENV ? JSON.stringify(process.env.NODE_ENV) : JSON.stringify('development')
-      }
-    }),
+        new ExtractTextPlugin('[name].[hash].css'),
 
-    new webpack.optimize.CommonsChunkPlugin({
-      name: 'vendor',
-      filename: 'vendor.[hash].js',
-      minChunks(module) {
-        const context = module.context;
-        return context && context.indexOf('node_modules') >= 0;
-      },
-    }),
-  ],
+        new HtmlWebpackPlugin({
+            filename: 'index.html',
+            template: './src/index.html',
+            inject: 'body',
+            // chunksSortMode: 'dependency',
+            minify: false
+        }),
 
-  devtool: isDebug ? 'eval' : false,
+        new webpack.DefinePlugin({
+            __DEBUG__: isDebug,
+            'process.env': {
+                NODE_ENV: process.env.NODE_ENV ? JSON.stringify(process.env.NODE_ENV) : JSON.stringify('development')
+            }
+        }),
+
+        new webpack.optimize.CommonsChunkPlugin({
+            name: 'vendor',
+            filename: 'vendor.[hash].js',
+            minChunks(module) {
+                const context = module.context;
+                return context && context.indexOf('node_modules') >= 0;
+            },
+        }),
+    ],
+
+    devtool: isDebug ? 'eval' : false,
 };
 
 module.exports = config;
