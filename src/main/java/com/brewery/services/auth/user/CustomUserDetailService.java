@@ -7,7 +7,7 @@ import java.sql.SQLException;
 
 public interface CustomUserDetailService {
 
-    public User getUserDetailsByUserName(String username) throws SQLException;
+    public User getUserDetailsByUserName(String username) throws Exception;
 
     public void invalidateToken(String token) throws SQLException;
 

@@ -6,6 +6,7 @@ import com.brewery.content.product.Product;
 import com.brewery.content.product.ProductType;
 import com.brewery.content.services.ContentServiceImpl;
 import com.brewery.utils.ConstantParams;
+import com.brewery.utils.ParamUtils;
 import com.brewery.utils.ResponseMaker;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -34,8 +36,14 @@ public class ProductController {
     @ResponseBody
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_SUPER_ADMIN')")
     @RequestMapping(value = "/admin/content/product", method = RequestMethod.POST)
-    public ResponseEntity<String> saveProduct(@RequestBody Product product){
+    public ResponseEntity<String> saveProduct(@RequestBody @Valid Product product){
         LOGGER.info("Product saving process execution");
+        Map<String, List<String>> error = contentService.checkLocalization(product);
+        if(!error.isEmpty()){
+            LOGGER.error("Content saving failed!");
+            return ResponseMaker.makeResponse(error, ConstantParams.JSON_HEADER_TYPE, HttpStatus.BAD_REQUEST);
+        }
+
         Map<String, Long> response = new HashMap<>();
         response.put("id", contentService.save(product, ConstantParams.PRODUCT_CONTEXT));
         return ResponseMaker.makeResponse(response, ConstantParams.JSON_HEADER_TYPE, HttpStatus.OK);
@@ -60,7 +68,7 @@ public class ProductController {
     @ResponseBody
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_SUPER_ADMIN')")
     @RequestMapping(value = "/admin/content/product/{productId}", method = RequestMethod.PUT)
-    public ResponseEntity<String> updateProduct(@PathVariable Long productId, @RequestBody Product product){
+    public ResponseEntity<String> updateProduct(@PathVariable Long productId, @RequestBody @Valid Product product){
         LOGGER.info("Product updating process execution");
         product.setProductId(productId);
         contentService.update(product, ConstantParams.PRODUCT_CONTEXT);
@@ -81,7 +89,7 @@ public class ProductController {
     @ResponseBody
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_SUPER_ADMIN')")
     @RequestMapping(value = "/admin/content/product/type", method = RequestMethod.POST)
-    public ResponseEntity<String> saveProductType(@RequestBody ProductType type){
+    public ResponseEntity<String> saveProductType(@RequestBody @Valid ProductType type){
         LOGGER.info("Product type saving process execution");
         Map<String, Long> response = new HashMap<>();
         response.put("id", contentService.save(type, ConstantParams.PRODUCT_TYPE_CONTEXT));
@@ -100,7 +108,7 @@ public class ProductController {
     @ResponseBody
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_SUPER_ADMIN')")
     @RequestMapping(value = "/admin/content/product/type", method = RequestMethod.DELETE)
-    public ResponseEntity<String> removeType(@RequestBody ProductType type){
+    public ResponseEntity<String> removeType(@RequestBody @Valid ProductType type){
         LOGGER.info("Removing instances of ProductType");
         contentService.remove(type, ConstantParams.PRODUCT_TYPE_CONTEXT);
         return ResponseMaker.makeResponse("Product type has been removed successfully",
@@ -110,8 +118,14 @@ public class ProductController {
     @ResponseBody
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_SUPER_ADMIN')")
     @RequestMapping(value = "/admin/content/product/{productId}/description", method = RequestMethod.POST)
-    public ResponseEntity<String> addUpdateDescription(@PathVariable Long productId, @RequestBody Description description){
+    public ResponseEntity<String> addUpdateDescription(@PathVariable Long productId, @RequestBody @Valid Description description){
         LOGGER.info("Adding product description process execution");
+
+        if(!ParamUtils.isLocalizationValid(description.getType())){
+            LOGGER.error("Content saving failed!");
+            return ResponseMaker.makeResponse("Description is invalid", ConstantParams.JSON_HEADER_TYPE, HttpStatus.OK);
+        }
+
         contentService.saveUpdateDescription(productId, description, ConstantParams.PRODUCT_CONTEXT);
         String message = "Description saving/updating was succeeded!";
         return ResponseMaker.makeResponse(message, ConstantParams.JSON_HEADER_TYPE, HttpStatus.OK, ConstantParams.INFO_MESSAGE);

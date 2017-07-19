@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -39,15 +40,10 @@ public class AdminAuthController {
 
     @ResponseBody
     @RequestMapping(value = "/login", method = RequestMethod.POST)
-    public ResponseEntity<String> jsonLogin(@RequestBody JwtLoginTokenRequest credentials) throws IOException, SQLException {
+    public ResponseEntity<String> jsonLogin(@RequestBody @Valid JwtLoginTokenRequest credentials) throws Exception {
         LOGGER.info("User login method called");
         Map<String, String> response = new HashMap<>();
         User userDetails = userDetailService.getUserDetailsByUserName(credentials.getUsername());
-
-        if (userDetails == null) {
-            LOGGER.error("User not found");
-            return ResponseMaker.makeResponse("User not found", ConstantParams.JSON_HEADER_TYPE, HttpStatus.BAD_REQUEST);
-        }
 
         if (credentials.getPassword().equals(userDetails.getPassword())) {
             String token = tokenService.buildToken(userDetails);

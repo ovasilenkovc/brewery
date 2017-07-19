@@ -1,6 +1,8 @@
 package com.brewery.content.article;
 
 import com.brewery.content.Content;
+import net.sf.oval.constraint.Length;
+import net.sf.oval.constraint.NotEmpty;
 
 import javax.persistence.*;
 
@@ -16,10 +18,15 @@ public class Translations implements Content{
     @Column(name = "translation_id", unique = true, nullable = false)
     private Long translation_id;
 
+    @NotEmpty(message = "The title can not be blank")
+    @Length(min = 4, message = "the title should consist minimum from 4 chars")
     private String title;
 
+    @NotEmpty(message = "The translation text can not be blank")
+    @Length(min = 20, message = "the translation text should consist minimum from 20 chars")
     private String translation;
 
+    @NotEmpty(message = "Translation type is required parameter!")
     private String type;
 
     public Translations() {

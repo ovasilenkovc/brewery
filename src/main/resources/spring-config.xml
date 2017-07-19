@@ -41,6 +41,13 @@
 
     <context:annotation-config/>
 
+    <mvc:annotation-driven validator="validator"/>
+    <bean id="validator" class="net.sf.oval.integration.spring.SpringValidator" >
+        <property name="validator">
+            <bean class="net.sf.oval.Validator" />
+        </property>
+    </bean>
+
     <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
         <property name="prefix" value="/WEB-INF/pages/"/>
         <property name="suffix" value=".jsp"/>

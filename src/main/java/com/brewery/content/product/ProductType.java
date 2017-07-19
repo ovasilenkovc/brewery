@@ -1,6 +1,7 @@
 package com.brewery.content.product;
 
 import com.brewery.content.Content;
+import net.sf.oval.constraint.NotEmpty;
 import org.codehaus.jackson.annotate.JsonManagedReference;
 
 import javax.persistence.*;
@@ -11,9 +12,11 @@ import java.util.Set;
 public class ProductType implements Content {
 
     @Id
+    @NotEmpty(message = "Product type name can't be empty")
     @Column(name = "product_type_name", unique = true, nullable = false, length = 45)
     private String typeName;
 
+    @NotEmpty(message = "Product type iconPath can't be empty")
     @Column(name = "product_type_ico", nullable = false)
     private String iconPath;
 

@@ -1,13 +1,16 @@
 package com.brewery.utils;
 
 import com.brewery.admin.model.AdminUser;
+import com.brewery.admin.model.RoleTypes;
 import com.brewery.admin.model.Roles;
 import com.brewery.admin.model.reqwrappers.AdminUserWrapper;
+import com.brewery.content.LocalizationTypes;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.Serializable;
 import java.util.*;
 
 /**
@@ -87,6 +90,30 @@ public class ParamUtils {
             }
         }
         return errorMap;
+    }
+
+    public static Map<String, Serializable> isRolesValid(Set<Roles> roleNames) {
+        Map<String, Serializable> error = new HashMap<>();
+        List<String> errorList = new ArrayList<>();
+
+        String roles = Arrays.toString(RoleTypes.values());
+        for(Roles role: roleNames){
+            String roleName = role.getRole();
+            if(!roles.contains(roleName)){
+                errorList.add(roleName);
+            }
+        }
+
+        if(!errorList.isEmpty()){
+            error.put("message", "Specified roles are not valid!");
+            error.put("invalid roles", (Serializable) errorList);
+        }
+        return error;
+    }
+
+    public static boolean isLocalizationValid(String localization) {
+        String types = Arrays.toString(LocalizationTypes.values());
+        return types.contains(localization);
     }
 
     public static Map<String, String> makeErrorMap(List<FieldError> fieldErrors, List<ObjectError> objectErrors) {

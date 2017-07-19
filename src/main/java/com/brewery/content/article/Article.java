@@ -2,6 +2,8 @@ package com.brewery.content.article;
 
 
 import com.brewery.content.Content;
+import net.sf.oval.constraint.Length;
+import net.sf.oval.constraint.NotEmpty;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -20,6 +22,8 @@ public class Article implements Content {
     @Column(name = "article_id", unique = true, nullable = false)
     private Long article_id;
 
+    @NotEmpty(message = "The title can not be blank")
+    @Length(min = 4, message = "the title should consist minimum from 4 chars")
     @Column(name = "title", length = 45)
     private String title;
 

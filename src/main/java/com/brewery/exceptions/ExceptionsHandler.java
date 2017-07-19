@@ -52,77 +52,77 @@ public class ExceptionsHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(IOException.class)
     public ResponseEntity<String> exceptionHandler(IOException ex) {
-        LOGGER.error(ex.getMessage(), ex.getCause());
+        LOGGER.error(ex.getMessage(), ex);
         return ResponseMaker.makeResponse(makeErrorRespJson(ex), ConstantParams.JSON_HEADER_TYPE, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(HibernateException.class)
     public ResponseEntity<String> exceptionHandler(HibernateException ex) {
-        LOGGER.error(ex.getMessage(), ex.getCause());
+        LOGGER.error(ex.getMessage(), ex);
         return ResponseMaker.makeResponse(ex.getCause().getMessage(), ConstantParams.JSON_HEADER_TYPE,
                 HttpStatus.INTERNAL_SERVER_ERROR, ConstantParams.ERROR_MESSAGE);
     }
 
     @ExceptionHandler(PropertyValueException.class)
     public ResponseEntity<String> exceptionHandler(PropertyValueException ex) {
-        LOGGER.error(ex.getMessage(), ex.getCause());
+        LOGGER.error(ex.getMessage(), ex);
         return ResponseMaker.makeResponse(ex.getMessage(), ConstantParams.JSON_HEADER_TYPE,
                 HttpStatus.INTERNAL_SERVER_ERROR, ConstantParams.ERROR_MESSAGE);
     }
 
     @ExceptionHandler(SQLException.class)
     public ResponseEntity<String> exceptionHandler(SQLException ex) {
-        LOGGER.error(ex.getMessage(), ex.getCause());
+        LOGGER.error(ex.getMessage(), ex);
         return ResponseMaker.makeResponse(ex.getCause().getLocalizedMessage(),
                 ConstantParams.JSON_HEADER_TYPE, HttpStatus.INTERNAL_SERVER_ERROR, ConstantParams.ERROR_MESSAGE);
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<String> exceptionHandler(DataIntegrityViolationException ex) {
-        LOGGER.error(ex.getMessage(), ex.getCause());
+        LOGGER.error(ex.getMessage(), ex);
         return ResponseMaker.makeResponse(ex.getCause().getCause().getMessage(),
                 ConstantParams.JSON_HEADER_TYPE, HttpStatus.INTERNAL_SERVER_ERROR, ConstantParams.ERROR_MESSAGE);
     }
 
     @ExceptionHandler(NullPointerException.class)
     public ResponseEntity<String> exceptionHandler(NullPointerException e) {
-        LOGGER.error(e.getMessage(), e.getCause());
+        LOGGER.error(e.getMessage(), e);
         return ResponseMaker.makeResponse(makeErrorRespJson(e), ConstantParams.JSON_HEADER_TYPE, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<String> exceptionHandler(AccessDeniedException e) {
-        LOGGER.error(e.getMessage(), e.getCause());
+        LOGGER.error(e.getMessage(), e);
         return ResponseMaker.makeResponse(makeErrorRespJson(e), ConstantParams.JSON_HEADER_TYPE, HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler(IndexOutOfBoundsException.class)
     public ResponseEntity<String> exceptionHandler(IndexOutOfBoundsException ex) {
-        LOGGER.error(ex.getMessage(), ex.getCause());
+        LOGGER.error(ex.getMessage(), ex);
         return ResponseMaker.makeResponse(makeErrorRespJson(ex), ConstantParams.JSON_HEADER_TYPE, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> exceptionHandler(Exception ex) {
-        LOGGER.error(ex.getMessage(), ex.getCause());
+        LOGGER.error(ex.getMessage(), ex);
         return ResponseMaker.makeResponse(makeErrorRespJson(ex), ConstantParams.JSON_HEADER_TYPE, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(JsonProcessingException.class)
     public ResponseEntity<String> exceptionHandler(JsonMappingException ex) {
-        LOGGER.error(ex.getMessage(), ex.getCause());
+        LOGGER.error(ex.getMessage(), ex);
         return ResponseMaker.makeResponse(makeErrorRespJson(ex), ConstantParams.JSON_HEADER_TYPE, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler
     public ResponseEntity<String> exceptionHandler(IllegalArgumentException ex) {
-        LOGGER.error(ex.getMessage(), ex.getCause());
+        LOGGER.error(ex.getMessage(), ex);
         return ResponseMaker.makeResponse(makeErrorRespJson(ex), ConstantParams.JSON_HEADER_TYPE, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler
     public ResponseEntity<String> exceptionHandler(UserNotFoundException ex) {
-        LOGGER.error(ex.getMessage(), ex.getCause());
+        LOGGER.error(ex.getMessage(), ex);
         return ResponseMaker.makeResponse(makeErrorRespJson(ex), ConstantParams.JSON_HEADER_TYPE, HttpStatus.BAD_REQUEST);
     }
 

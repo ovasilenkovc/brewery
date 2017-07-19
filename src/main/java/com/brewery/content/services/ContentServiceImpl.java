@@ -10,17 +10,18 @@ import com.brewery.content.product.Description;
 import com.brewery.content.product.Product;
 import com.brewery.services.fileFolder.FileFolderService;
 import com.brewery.utils.ConstantParams;
+import com.brewery.utils.ParamUtils;
+import com.brewery.utils.ResponseMaker;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.io.Serializable;
+import java.util.*;
 
 /**
  * Service that provides to us managing all project's content data instances.
@@ -96,10 +97,6 @@ public class ContentServiceImpl implements ContentService {
     @Transactional
     public void remove(Long id, String context) throws IOException {
         Content content = daoFactory.getContentDao(context).getOne(id);
-        if (content == null) {
-            LOGGER.info("Item with specified id: " + id + " was not found!");
-            throw new NullPointerException("Item with specified id: " + id + " was not found!");
-        }
         if (daoFactory.getContentDao(context).remove(content)
                 && (ConstantParams.IMAGE_CONTEXT.equals(context) || ConstantParams.FILE_CONTEXT.equals(context))) {
 
@@ -140,12 +137,6 @@ public class ContentServiceImpl implements ContentService {
      */
     public Set<Translations> getTranslations(Long articleId) {
         Article article = (Article) daoFactory.getContentDao(ConstantParams.ARTICLE_CONTEXT).getOne(articleId);
-
-        if (article == null) {
-            String message = "Article with specified id: " + articleId + " was not found!";
-            LOGGER.error(message);
-            throw new NullPointerException(message);
-        }
         return article.getTranslations();
     }
 
@@ -159,12 +150,6 @@ public class ContentServiceImpl implements ContentService {
     @Transactional()
     public void addTranslation(Long articleId, Translations translation, String context) {
         Article article = (Article) daoFactory.getContentDao(context).getOne(articleId);
-
-        if (article == null) {
-            String message = "Article with specified id: " + articleId + " was not found!";
-            LOGGER.error(message);
-            throw new NullPointerException(message);
-        }
 
         Translations articleTranslation = getTranslationByType(article, translation.getType());
         if (articleTranslation != null) {
@@ -182,19 +167,13 @@ public class ContentServiceImpl implements ContentService {
      * Uses an article id parameter for getting an Article
      * for which the translation should be saved.
      *
-     * @param productId product id.
+     * @param productId   product id.
      * @param description Product Description instance.
-     * @param context current context.
+     * @param context     current context.
      */
     @Transactional()
     public void saveUpdateDescription(Long productId, Description description, String context) {
         Product product = (Product) daoFactory.getContentDao(context).getOne(productId);
-
-        if (product == null) {
-            String message = "Product with specified id: " + productId + " was not found!";
-            LOGGER.error(message);
-            throw new NullPointerException(message);
-        }
 
         Description prodDesc = getDescriptionByType(product, description.getType());
         if (prodDesc != null) {
@@ -245,12 +224,11 @@ public class ContentServiceImpl implements ContentService {
      * At first it saves new item information into the data base, if all operations was succeed
      * it would save file into physical store using specified path.
      *
-     * @param content File Content representation.
-     * @param context current context.
-     * @param file    Physical File for saving.
+     * @param content     File Content representation.
+     * @param context     current context.
+     * @param file        Physical File for saving.
      * @param storagePath path for storage where file should be saved.
-     * @param result result map that will be filled.
-     *
+     * @param result      result map that will be filled.
      * @return Map with information about saved files.
      */
     @Transactional
@@ -292,28 +270,67 @@ public class ContentServiceImpl implements ContentService {
      * The method for removing Content metadata (ie: Article_Translations, Product_Description).
      * For current specified localization.
      *
-     * @param id Content id for which we want to remove;
+     * @param id           Content id for which we want to remove;
      * @param localizeType Metadata localization;
-     * @param context current context.
+     * @param context      current context.
      */
     @Transactional
-    public void removeContentMetadata(Long id, String localizeType, String context){
+    public void removeContentMetadata(Long id, String localizeType, String context) {
         Content content = daoFactory.getContentDao(context).getOne(id);
-
-        if(content == null){
-            throw new NullPointerException("Content with specified id doesn't exist!");
-        }
         removeMetadata(content, localizeType, context);
     }
 
-    private void removeMetadata(Content content, String local, String context){
-        if(ConstantParams.ARTICLE_CONTEXT.equals(context)){
+    private void removeMetadata(Content content, String local, String context) {
+        if (ConstantParams.ARTICLE_CONTEXT.equals(context)) {
             Translations translation = getTranslationByType((Article) content, local);
             daoFactory.getContentDao(ConstantParams.TRANSLATION_CONTEXT).remove(translation);
-        }else if(ConstantParams.PRODUCT_CONTEXT.equals(context)){
+        } else if (ConstantParams.PRODUCT_CONTEXT.equals(context)) {
             Description description = getDescriptionByType((Product) content, local);
             daoFactory.getContentDao(ConstantParams.PRODUCT_DESCRIPTION).remove(description);
         }
+    }
+
+    public Map<String, List<String>> checkLocalization(Content content) {
+        Map<String, List<String>> response = new HashMap<>();
+        String message = "Content translations with next titles are not valid!";
+        if (content instanceof Product) {
+            List<String> invalidTranslations = checkDescriptionsLocalization((Product) content);
+            if (!invalidTranslations.isEmpty()) {
+                response.put(message, invalidTranslations);
+            }
+        } else if (content instanceof Article) {
+            List<String> invalidTranslations = checkTranslationsLocalization((Article) content);
+            if (!invalidTranslations.isEmpty()) {
+                response.put(message, invalidTranslations);
+            }
+        }
+        return response;
+    }
+
+    private List<String> checkDescriptionsLocalization(Product product) {
+        List<String> errors = new ArrayList<>();
+        Set<Description> descriptions = product.getDescriptions();
+        for (Description description : descriptions) {
+            String localizeType = description.getType();
+            if (!ParamUtils.isLocalizationValid(localizeType)) {
+                String error = "TITLE: " + description.getTitle() + "; TYPE: " + description.getType();
+                errors.add(error);
+            }
+        }
+        return errors;
+    }
+
+    private List<String> checkTranslationsLocalization(Article article) {
+        List<String> errors = new ArrayList<>();
+        Set<Translations> translations = article.getTranslations();
+        for (Translations translation : translations) {
+            String localizeType = translation.getType();
+            if (!ParamUtils.isLocalizationValid(localizeType)) {
+                String error = "TITLE: " + translation.getTitle() + "; TYPE: " + translation.getType();
+                errors.add(error);
+            }
+        }
+        return errors;
     }
 
     /**
@@ -341,7 +358,7 @@ public class ContentServiceImpl implements ContentService {
      * @param type    translation language type.
      * @return Translation with specified type.
      */
-    private Description getDescriptionByType(Product product, String type){
+    private Description getDescriptionByType(Product product, String type) {
         Set<Description> descriptions = product.getDescriptions();
         for (Description description : descriptions) {
             String translationType = description.getType();

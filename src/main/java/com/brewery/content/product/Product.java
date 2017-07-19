@@ -1,6 +1,8 @@
 package com.brewery.content.product;
 
 import com.brewery.content.Content;
+import net.sf.oval.constraint.Length;
+import net.sf.oval.constraint.NotEmpty;
 
 import javax.persistence.*;
 import java.util.HashSet;
@@ -15,6 +17,8 @@ public class Product implements Content {
     @Column(name = "product_id", unique = true, nullable = false)
     private Long productId;
 
+    @NotEmpty(message = "The Product name can not be blank")
+    @Length(min = 4, message = "The Product name should consist minimum from 4 chars")
     @Column(name = "product_name", nullable = false)
     private String name;
 
