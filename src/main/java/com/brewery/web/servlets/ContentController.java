@@ -1,10 +1,12 @@
 package com.brewery.web.servlets;
 
 import com.brewery.content.Content;
+import com.brewery.content.LocalizationTypes;
 import com.brewery.content.article.Article;
 import com.brewery.content.article.Translations;
 import com.brewery.content.services.ContentServiceImpl;
 import com.brewery.utils.ConstantParams;
+import com.brewery.utils.ParamUtils;
 import com.brewery.utils.ResponseMaker;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +18,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -34,8 +37,14 @@ public class ContentController {
     @ResponseBody
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_SUPER_ADMIN')")
     @RequestMapping(value = "/admin/content/article", method = RequestMethod.POST)
-    public ResponseEntity<String> addArticle(@RequestBody Article article) {
+    public ResponseEntity<String> addArticle(@RequestBody @Valid Article article) {
         LOGGER.info("Article saving process execution");
+        Map<String, List<String>> error = contentService.checkLocalization(article);
+        if(!error.isEmpty()){
+            LOGGER.error("Content saving failed!");
+            return ResponseMaker.makeResponse(error, ConstantParams.JSON_HEADER_TYPE, HttpStatus.BAD_REQUEST);
+        }
+
         Long newId = contentService.save(article, ConstantParams.ARTICLE_CONTEXT);
         Map<String, Long> response = new HashMap<>();
         response.put("id", newId);
@@ -72,7 +81,7 @@ public class ContentController {
     @ResponseBody
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_SUPER_ADMIN')")
     @RequestMapping(value = "/admin/content/article/{id}", method = RequestMethod.PUT)
-    public ResponseEntity<String> updateArticle(@PathVariable Long id, @RequestBody Article article) {
+    public ResponseEntity<String> updateArticle(@PathVariable Long id, @RequestBody @Valid Article article) {
         article.setArticle_id(id);
         LOGGER.info("Article updating process execution");
         contentService.update(article, ConstantParams.ARTICLE_CONTEXT);
@@ -83,8 +92,14 @@ public class ContentController {
     @ResponseBody
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_SUPER_ADMIN')")
     @RequestMapping(value = "/admin/content/article/{id}/translation", method = RequestMethod.POST)
-    public ResponseEntity<String> addTranslation(@PathVariable Long id, @RequestBody Translations translation) {
+    public ResponseEntity<String> addTranslation(@PathVariable Long id, @RequestBody @Valid Translations translation) {
         LOGGER.info("Article translation adding process execution");
+
+        if(!ParamUtils.isLocalizationValid(translation.getType())){
+            LOGGER.error("Content saving failed!");
+            return ResponseMaker.makeResponse("Translation is invalid", ConstantParams.JSON_HEADER_TYPE, HttpStatus.OK);
+        }
+
         contentService.addTranslation(id, translation, ConstantParams.ARTICLE_CONTEXT);
         String message = "Article has been updated successfully!";
         return ResponseMaker.makeResponse(message, ConstantParams.JSON_HEADER_TYPE, HttpStatus.OK);
@@ -96,6 +111,20 @@ public class ContentController {
         LOGGER.info("Getting a translation by specified article id :" + articleId);
         Set<Translations> translations = contentService.getTranslations(articleId);
         return ResponseMaker.makeResponse(translations, ConstantParams.JSON_HEADER_TYPE, HttpStatus.OK);
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/content/local/types", method = RequestMethod.GET)
+    public ResponseEntity<String> getAllAvailableRoles() {
+        String[] typesArr = Arrays.toString(LocalizationTypes.values()).replaceAll("^.|.$", "").split(",");
+        List<String> roles = new ArrayList<>();
+
+        for (String local: typesArr){
+            String trimmedLocalize = local.trim();
+            roles.add(trimmedLocalize);
+        }
+
+        return ResponseMaker.makeResponse(roles, ConstantParams.JSON_HEADER_TYPE, HttpStatus.OK);
     }
 
     @InitBinder

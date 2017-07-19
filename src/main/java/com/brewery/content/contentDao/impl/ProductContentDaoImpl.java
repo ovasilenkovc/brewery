@@ -32,6 +32,11 @@ public class ProductContentDaoImpl implements ContentDao {
     public Content getOne(Long id) {
         Session session = sessionFactory.openSession();
         Product product = (Product) session.get(Product.class, id);
+
+        if (product == null) {
+            throw new NullPointerException("Product with specified id " + id + "doesn't exist!");
+        }
+
         product.setProductType(initProductType(product));
         product.getDescriptions().size();
         session.flush();
@@ -47,7 +52,7 @@ public class ProductContentDaoImpl implements ContentDao {
         for (Content product : products) {
             Product processing = (Product) product;
             processing.setProductType(initProductType(processing));
-            ((Product)product).getDescriptions().size();
+            ((Product) product).getDescriptions().size();
         }
         session.flush();
         session.close();
@@ -60,7 +65,7 @@ public class ProductContentDaoImpl implements ContentDao {
         return true;
     }
 
-    private ProductType initProductType(Product product){
+    private ProductType initProductType(Product product) {
         String typeName = product.getProductType().getTypeName();
         String typePath = product.getProductType().getIconPath();
         return new ProductType(typeName, typePath);

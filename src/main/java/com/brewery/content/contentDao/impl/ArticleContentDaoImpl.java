@@ -34,6 +34,11 @@ public class ArticleContentDaoImpl implements ContentDao{
     public Article getOne(Long id) {
         Session session = sessionFactory.openSession();
         Article article = (Article) session.get(Article.class, id);
+
+        if(article == null){
+            throw new NullPointerException("Article with specified id: " + id + " was not found!");
+        }
+
         article.getTranslations().size();
         session.flush();
         session.close();

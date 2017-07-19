@@ -33,6 +33,11 @@ public class ProductTypeDaoImpl implements ContentDao {
     public Content getOne(Long id) {
         Session session = sessionFactory.openSession();
         ProductType type = (ProductType) session.get(ProductType.class, id);
+
+        if(type == null){
+            throw new NullPointerException("Product type wasn't found!");
+        }
+
         type.getProducts().size();
         session.flush();
         session.close();

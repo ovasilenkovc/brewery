@@ -5,6 +5,7 @@ import com.brewery.admin.auth.User;
 import com.brewery.admin.dao.AdminUserDAO;
 import com.brewery.admin.model.AdminUser;
 import com.brewery.admin.model.Roles;
+import com.brewery.exceptions.UserNotFoundException;
 import com.brewery.services.auth.user.CustomUserDetailService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,14 +24,21 @@ public class CustomUserDetailServiceImpl implements CustomUserDetailService {
     private static final Logger LOGGER = Logger.getLogger(CustomUserDetailService.class);
 
     @Override
-    public User getUserDetailsByUserName(String username) {
-        AdminUser adminUser = userDAO.getUserByUsername(username);
+    public User getUserDetailsByUserName(String username) throws Exception {
         LOGGER.info("The users obtaining started");
-        return new User(
-                adminUser.getUsername(),
-                adminUser.getPassword(),
-                adminUser.isEnabled(),
-                grantedAuthorities(adminUser.getRoles()));
+        User user = new User();
+        try {
+            AdminUser adminUser = userDAO.getUserByUsername(username);
+            user.setUsername(adminUser.getUsername());
+            user.setPassword(adminUser.getPassword());
+            user.setEnabled(adminUser.isEnabled());
+            user.setAuthorities(grantedAuthorities(adminUser.getRoles()));
+            return user;
+        }catch (NullPointerException ex){
+            throw new UserNotFoundException("The user was not found or not exist!");
+        }catch (Exception ex){
+            throw new Exception("Getting of user metadata was failed with next problem: " + ex.getMessage());
+        }
     }
 
     public void invalidateToken(String token) {

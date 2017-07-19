@@ -1,6 +1,7 @@
 package com.brewery.web.servlets;
 
 import com.brewery.admin.model.AdminUser;
+import com.brewery.admin.model.RoleTypes;
 import com.brewery.admin.model.Roles;
 import com.brewery.admin.model.reqwrappers.AdminUserWrapper;
 import com.brewery.admin.model.reqwrappers.RolesWrapper;
@@ -17,9 +18,10 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import javax.management.relation.InvalidRoleValueException;
+import javax.validation.Valid;
+import java.io.Serializable;
+import java.util.*;
 
 @Controller
 public class AdminActionsController {
@@ -51,10 +53,15 @@ public class AdminActionsController {
     @ResponseBody
     @PreAuthorize("hasRole('ROLE_SUPER_ADMIN')")
     @RequestMapping(value = "/admin/users", method = RequestMethod.POST)
-    public ResponseEntity<String> createUser(@RequestBody AdminUserWrapper adminUser) {
-        AdminUser user = ParamUtils.toAdminUser(adminUser);
-        usersManagingService.add(user);
+    public ResponseEntity<String> createUser(@RequestBody @Valid AdminUserWrapper adminUser) throws InvalidRoleValueException {
 
+        AdminUser user = ParamUtils.toAdminUser(adminUser);
+        Map<String, Serializable> errorMap = ParamUtils.isRolesValid(user.getRoles());
+
+        if (!errorMap.isEmpty()) {
+            return ResponseMaker.makeResponse(errorMap, ConstantParams.JSON_HEADER_TYPE, HttpStatus.BAD_REQUEST);
+        }
+        usersManagingService.add(user);
         String message = "User has been added successfully!";
         LOGGER.info(message);
         return ResponseMaker.makeResponse(message, ConstantParams.JSON_HEADER_TYPE, HttpStatus.OK);
@@ -63,14 +70,19 @@ public class AdminActionsController {
     @ResponseBody
     @PreAuthorize("hasRole('ROLE_SUPER_ADMIN')")
     @RequestMapping(value = "/admin/users/", method = RequestMethod.PUT)
-    public ResponseEntity<String> updateUserProfile(@RequestBody AdminUserWrapper adminUserWrapper) {
+    public ResponseEntity<String> updateUserProfile(@RequestBody @Valid AdminUserWrapper adminUserWrapper) {
 
         AdminUser user = new AdminUser(
                 adminUserWrapper.getUsername(),
                 adminUserWrapper.getPassword(),
                 adminUserWrapper.isEnabled());
-        usersManagingService.update(user);
 
+        Map<String, Serializable> errorMap = ParamUtils.isRolesValid(user.getRoles());
+        if (!errorMap.isEmpty()) {
+            return ResponseMaker.makeResponse(errorMap, ConstantParams.JSON_HEADER_TYPE, HttpStatus.BAD_REQUEST);
+        }
+
+        usersManagingService.update(user);
         String message = "User has been updated successfully!";
         LOGGER.info(message);
         return ResponseMaker.makeResponse(message, ConstantParams.JSON_HEADER_TYPE, HttpStatus.OK);
@@ -79,15 +91,14 @@ public class AdminActionsController {
     @ResponseBody
     @PreAuthorize("hasRole('ROLE_SUPER_ADMIN')")
     @RequestMapping(value = "/admin/users", method = RequestMethod.DELETE)
-    public ResponseEntity<String> removeUser(@RequestBody AdminUserWrapper adminUserWrapper) {
+    public ResponseEntity<String> removeUser(@RequestBody @Valid AdminUserWrapper adminUserWrapper) {
 
         AdminUser user = usersManagingService.obtainUser(adminUserWrapper.getUsername());
-        if(user == null){
+        if (user == null) {
             LOGGER.error("User with specified name: " + adminUserWrapper.getUsername() + "not found");
             throw new UserNotFoundException("User with specified name: " + adminUserWrapper.getUsername() + "not found");
         }
         usersManagingService.remove(user);
-
         String message = "New Role " + user.getUsername() + "has been removed successfully !";
         LOGGER.info(message);
         return ResponseMaker.makeResponse(message, ConstantParams.JSON_HEADER_TYPE, HttpStatus.OK);
@@ -96,16 +107,14 @@ public class AdminActionsController {
     @ResponseBody
     @PreAuthorize("hasRole('ROLE_SUPER_ADMIN')")
     @RequestMapping(value = "/admin/users/roles", method = RequestMethod.POST)
-    public ResponseEntity<String> addNewRole(@RequestBody RolesWrapper role) {
+    public ResponseEntity<String> addNewRole(@RequestBody @Valid RolesWrapper role) {
 
         AdminUser user = usersManagingService.obtainUser(role.getUsername());
         if (user == null) {
             LOGGER.error("User with specified name: " + role.getUsername() + "not found");
             throw new UserNotFoundException("User with specified name: " + role.getUsername() + "not found");
         }
-
         usersManagingService.addUserRole(new Roles(user, role.getRole()));
-
         String message = "New Role " + role.getRole() + "has been added successfully for " + role.getUsername() + "!";
         LOGGER.info(message);
         return ResponseMaker.makeResponse(message, ConstantParams.JSON_HEADER_TYPE, HttpStatus.OK);
@@ -114,7 +123,7 @@ public class AdminActionsController {
     @ResponseBody
     @PreAuthorize("hasRole('ROLE_SUPER_ADMIN')")
     @RequestMapping(value = "/admin/users/roles", method = RequestMethod.DELETE)
-    public ResponseEntity<String> removeRole(@RequestBody RolesWrapper role) {
+    public ResponseEntity<String> removeRole(@RequestBody @Valid RolesWrapper role) {
 
         AdminUser user = usersManagingService.obtainUser(role.getUsername());
 
@@ -123,10 +132,22 @@ public class AdminActionsController {
             throw new UserNotFoundException("User with specified name: " + role.getUsername() + "not found");
         }
         usersManagingService.removeUserRole(new Roles(user, role.getRole()));
-
         String message = "Role " + role.getRole() + "has been removed successfully for " + role.getUsername() + "!";
         LOGGER.info(message);
         return ResponseMaker.makeResponse(message, ConstantParams.JSON_HEADER_TYPE, HttpStatus.OK);
     }
 
+    @ResponseBody
+    @PreAuthorize("hasRole('ROLE_SUPER_ADMIN')")
+    @RequestMapping(value = "/admin/users/roles", method = RequestMethod.GET)
+    public ResponseEntity<String> getAllAvailableRoles() {
+        String[] rolesArr = Arrays.toString(RoleTypes.values()).replaceAll("^.|.$", "").split(",");
+        List<String> roles = new ArrayList<>();
+
+        for (String role: rolesArr){
+            String trimmedName = role.trim();
+            roles.add(trimmedName);
+        }
+        return ResponseMaker.makeResponse(roles, ConstantParams.JSON_HEADER_TYPE, HttpStatus.OK);
+    }
 }

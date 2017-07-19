@@ -1,6 +1,8 @@
 package com.brewery.content.product;
 
 import com.brewery.content.Content;
+import net.sf.oval.constraint.Length;
+import net.sf.oval.constraint.NotEmpty;
 
 import javax.persistence.*;
 
@@ -13,13 +15,20 @@ public class Description implements Content {
     @Column(name = "desc_id", unique = true, nullable = false)
     private Long descId;
 
+    @NotEmpty(message = "The title can not be blank")
+    @Length(min = 4, message = "the title should consist minimum from 4 chars")
     @Column(name = "title", length = 45)
     private String title;
 
+    @NotEmpty(message = "The product description text can not be blank")
+    @Length(min = 20, message = "The Product description text should consist minimum from 20 chars")
     private String description;
 
+    @NotEmpty(message = "The product composition text can not be blank")
+    @Length(min = 10, message = "The product composition text should consist minimum from 10 chars")
     private String composition;
 
+    @NotEmpty(message = "Translation type is required parameter!")
     @Column(name = "translation_type", nullable = false)
     private String type;
 
