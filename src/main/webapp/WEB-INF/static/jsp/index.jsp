@@ -131,6 +131,17 @@
                     </h2>
                 </div>
             </div>
+            <div class="toolbar">
+                <button type="button" class="btn btn-default btn-sm">
+                    <span class="glyphicon glyphicon-edit"></span> Edit
+                </button>
+                <button type="button" class="btn btn-default btn-sm">
+                    <span class="glyphicon glyphicon-plus"></span> Plus
+                </button>
+                <button type="button" class="btn btn-default btn-sm">
+                    <span class="glyphicon glyphicon-remove"></span> Remove
+                </button>
+            </div>
             <!--Beer variety-->
             <div class="selection-of-beer-wpar">
                 <div class="container-fluid">
@@ -258,6 +269,17 @@
             </div>
         </div>
         <div id="history" class="history_wrap">
+            <div class="toolbar">
+                <button type="button" class="btn btn-default btn-sm">
+                    <span class="glyphicon glyphicon-edit"></span> Edit
+                </button>
+                <button type="button" class="btn btn-default btn-sm">
+                    <span class="glyphicon glyphicon-plus"></span> Plus
+                </button>
+                <button type="button" class="btn btn-default btn-sm">
+                    <span class="glyphicon glyphicon-remove"></span> Remove
+                </button>
+            </div>
             <div class="container">
                 <div class="asortiment our_history">
                     <h2>
@@ -278,6 +300,17 @@
             </div>
         </div>
         <div id="contact-info-nav" class="contact-info-wrap">
+            <div class="toolbar">
+                <button type="button" class="btn btn-default btn-sm">
+                    <span class="glyphicon glyphicon-edit"></span> Edit
+                </button>
+                <button type="button" class="btn btn-default btn-sm">
+                    <span class="glyphicon glyphicon-plus"></span> Plus
+                </button>
+                <button type="button" class="btn btn-default btn-sm">
+                    <span class="glyphicon glyphicon-remove"></span> Remove
+                </button>
+            </div>
             <div class="container">
                 <div class="contact-info">
                     <h2>

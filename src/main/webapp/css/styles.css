@@ -880,3 +880,15 @@ input, button {
 
 /*popup style start*/
 
+/*toolbar start*/
+.toolbar {
+    display: flex;
+    justify-content: flex-end;
+    margin-right: 2%;
+}
+
+.toolbar button {
+    margin: 0 0.25% 0 0.25%;
+}
+
+/*toolbar end*/
