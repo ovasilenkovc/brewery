@@ -1,0 +1,71 @@
+body {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    background: rgba(250,235,209,1);/* Old Browsers */
+    background: -moz-linear-gradient(left, rgba(250,235,209,1) 0%, rgba(196,151,74,1) 23%, rgba(200,158,87,1) 52%, rgba(205,167,101,1) 85%, rgba(242,221,186,1) 100%); /* FF3.6+ */
+    background: -webkit-gradient(left top, right top, color-stop(0%, rgba(250,235,209,1)), color-stop(23%, rgba(196,151,74,1)), color-stop(52%, rgba(200,158,87,1)), color-stop(85%, rgba(205,167,101,1)), color-stop(100%, rgba(242,221,186,1)));/* Chrome, Safari4+ */
+    background: -webkit-linear-gradient(left, rgba(250,235,209,1) 0%, rgba(196,151,74,1) 23%, rgba(200,158,87,1) 52%, rgba(205,167,101,1) 85%, rgba(242,221,186,1) 100%); /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(left, rgba(250,235,209,1) 0%, rgba(196,151,74,1) 23%, rgba(200,158,87,1) 52%, rgba(205,167,101,1) 85%, rgba(242,221,186,1) 100%); /* Opera 11.10+ */
+    background: -ms-linear-gradient(left, rgba(250,235,209,1) 0%, rgba(196,151,74,1) 23%, rgba(200,158,87,1) 52%, rgba(205,167,101,1) 85%, rgba(242,221,186,1) 100%); /* IE 10+ */
+    background: linear-gradient(to right, rgba(250,235,209,1) 0%, rgba(196,151,74,1) 23%, rgba(200,158,87,1) 52%, rgba(205,167,101,1) 85%, rgba(242,221,186,1) 100%);/* W3C */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#faebd1', endColorstr='#f2ddba', GradientType=1 );/* IE6-9 */
+}
+
+.login-page {
+    padding: 2% 4% 3% 4%;
+    -webkit-box-shadow: -19px 21px 29px 3px rgba(0, 0, 0, 0.13);
+    -moz-box-shadow: -19px 21px 29px 3px rgba(0, 0, 0, 0.13);
+    box-shadow: -19px 21px 29px 3px rgba(0, 0, 0, 0.13);
+    border: 1px solid;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    margin: auto;
+    background: ghostwhite;
+    max-width: 20%;
+}
+
+.login-page .login-title {
+    padding-bottom: 0.5%;
+}
+
+.login-page .login-title h1 {
+    width: 100%;
+    text-align: center;
+    color: #4b5257;
+}
+
+.login-page .login-inputs {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
+.login-page .login-inputs label {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.login-page .login-button {
+    width: 100%;
+}
+
+.login-page .login-button button {
+    width: inherit;
+    text-align: center;
+}
+
+.login-page .login-error {
+    color: red;
+    display: none;
+    overflow-wrap: break-word;
+}
+
+.login-page .show {
+    margin-top: 10px;
+    display: block;
+    text-align: center;
+}
