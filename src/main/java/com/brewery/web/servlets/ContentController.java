@@ -84,7 +84,10 @@ public class ContentController {
     public ResponseEntity<String> updateArticle(@PathVariable Long id, @RequestBody @Valid Article article) {
         article.setArticle_id(id);
         LOGGER.info("Article updating process execution");
-        contentService.update(article, ConstantParams.ARTICLE_CONTEXT);
+        Article articleForUpdate = (Article) contentService.getOne(id, ConstantParams.ARTICLE_CONTEXT);
+        articleForUpdate.setTitle(article.getTitle());
+        articleForUpdate.setDate(article.getDate());
+        contentService.update(articleForUpdate, ConstantParams.ARTICLE_CONTEXT);
         String message = "Article has been updated successfully!";
         return ResponseMaker.makeResponse(message, ConstantParams.JSON_HEADER_TYPE, HttpStatus.NO_CONTENT);
     }

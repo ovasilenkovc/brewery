@@ -70,8 +70,10 @@ public class ProductController {
     @RequestMapping(value = "/admin/content/product/{productId}", method = RequestMethod.PUT)
     public ResponseEntity<String> updateProduct(@PathVariable Long productId, @RequestBody @Valid Product product){
         LOGGER.info("Product updating process execution");
-        product.setProductId(productId);
-        contentService.update(product, ConstantParams.PRODUCT_CONTEXT);
+        Product forUpdate = (Product) contentService.getOne(productId, ConstantParams.PRODUCT_CONTEXT);
+        forUpdate.setProductType(product.getProductType());
+        forUpdate.setName(product.getName());
+        contentService.update(forUpdate, ConstantParams.PRODUCT_CONTEXT);
         return ResponseMaker.makeResponse("Product has been updated successfully",
                 ConstantParams.JSON_HEADER_TYPE, HttpStatus.NO_CONTENT);
     }

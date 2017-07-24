@@ -8,7 +8,7 @@
     appearance: none;
 }
 body{
-    background: #4a4a4a;
+    /*background: #4a4a4a;*/
     margin: 0 auto;   /*отступы: 0 - сверху и снизу, auto - справа и слева*/
     font: 12px/1'OpenSans-Regular', arial, helvetica, sans-serif;   /*12px/1 - размер шрифта/ 1 - межстрочное расстояние*/
 }
@@ -650,21 +650,25 @@ input, button {
     font-size: 16px;
 }
 .asortiment-wrap{
-    height: 778px;
     width: 100%;
     background: #4a4a4a;
+    padding-bottom: 50px;
+}
+.assortment-par-wrapper{
+    padding: 100px 0;
+    overflow: hidden;
 }
 .asortiment{
     width: 100%;
     background: url("../img/asort-bg.png") center center no-repeat;
     height: 220px;
-    margin: 100px 0;
+    /*margin: 100px 0;*/
 }
 .asortiment h2{
-    font-size: 47.72pt;
+    font-size: 3vw;
     color: #b59164;
     text-align: center;
-    line-height: 3.3;
+    line-height: 3.55;
     text-transform: uppercase;
 }
 
@@ -673,8 +677,7 @@ input, button {
     overflow: hidden;
 }
 .selection-of-beer{
-    width: 98%;
-    margin: 0 1% 55px;
+    width: 100%;
 }
 .selection-of-beer:after{
     display: block;
@@ -682,9 +685,8 @@ input, button {
     content: '';
 }
 .position-of-beer {
-    padding: 26px 0;
+    padding: 50px 0;
     width: 25%;
-    float: left;
     cursor: pointer;
     display: inline-block;
     border: 2px solid transparent;
@@ -716,6 +718,9 @@ input, button {
 }
 .fade{
     opacity: 100;
+}
+.fade in{
+    background: #000000;
 }
 .slick-dots{
     position: absolute;
@@ -882,13 +887,14 @@ input, button {
 
 /*toolbar start*/
 .toolbar {
-    display: flex;
-    justify-content: flex-end;
-    margin-right: 2%;
+    position: absolute;
+    width: 10%;
+    right: 0;
+    z-index: 1;
 }
 
 .toolbar button {
-    margin: 0 0.25% 0 0.25%;
+    margin: 0 0.25%;
 }
 
 /*toolbar end*/

@@ -9,9 +9,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Document</title>
     <script type="text/javascript" src="${contextPath}/js/jquery-3.2.1.min.js"></script>
-    <script type="text/javascript" src="${contextPath}/js/slick.js"></script>
     <script type="text/javascript" src="${contextPath}/js/bootstrap.js"></script>
-    <script type="text/javascript" src="${contextPath}/js/headhesive.js" ></script>
+    <script type="text/javascript" src="${contextPath}/js/headhesive.js"></script>
+    <script type="text/javascript" src="${contextPath}/js/slick.js"></script>
     <script type="text/javascript" src="${contextPath}/js/main.js" ></script>
     <link rel="stylesheet" type="text/css" href="${contextPath}/css/bootstrap.css">
     <link rel="stylesheet" type="text/css" href="${contextPath}/css/bootstrap-reboot.css">
@@ -21,6 +21,7 @@
     <link rel="stylesheet" type="text/css" href="${contextPath}/css/styles.css">
 </head>
 <body>
+    <div id="localization" value="${pageContext.response.locale}" style="display: none"></div>
     <figure id="invis" hidden=>
         <header class="banner">
             <nav class="container">
@@ -123,12 +124,14 @@
                 </div>
             </div>
         </div>
-        <div id="asortiment-nav" class="asortiment-wrap"> <!-- асортимент пива -->
-            <div class="container">
-                <div class="asortiment">
-                    <h2>
-                        <spring:message code="assortment"/>
-                    </h2>
+        <div id="asortiment-nav" class="asortiment-wrap">
+            <div class="assortment-par-wrapper">
+                <div class="container">
+                    <div class="asortiment">
+                        <h2>
+                            <spring:message code="assortment"/>
+                        </h2>
+                    </div>
                 </div>
             </div>
             <div class="toolbar">
@@ -148,6 +151,7 @@
                     <div class="selection-of-beer">
                         <!--This block will be represented as tubs! With one difference between them is content (img, name)
                          It means that block "position-of-beer" is component!-->
+<%--
                         <div class="position-of-beer">
                             <div class="beer-img-wraper">
                                 <div class="beer-img">
@@ -163,81 +167,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="position-of-beer">
-                            <div class="beer-img-wraper">
-                                <div class="beer-img">
-                                    <a href="#">
-                                        <img src="${contextPath}/img/red-beer.png">
-                                    </a>
-                                </div>
-                                <div class="romb-img">
-                                    <div class="romb-text">
-                                        <span>червоне</span>
-                                    </div>
-                                    <img src="${contextPath}/img/romb-bg.png">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="position-of-beer">
-                            <div class="beer-img-wraper">
-                                <div class="beer-img">
-                                    <a href="#">
-                                        <img src="${contextPath}/img/light-beer.png">
-                                    </a>
-                                </div>
-                                <div class="romb-img">
-                                    <div class="romb-text">
-                                        <span>свiтле</span>
-                                    </div>
-                                    <img src="${contextPath}/img/romb-bg.png">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="position-of-beer">
-                            <div class="beer-img-wraper">
-                                <div class="beer-img">
-                                    <a href="#">
-                                        <img src="${contextPath}/img/light-beer.png">
-                                    </a>
-                                </div>
-                                <div class="romb-img">
-                                    <div class="romb-text">
-                                        <span>свiтле</span>
-                                    </div>
-                                    <img src="${contextPath}/img/romb-bg.png">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="position-of-beer">
-                            <div class="beer-img-wraper">
-                                <div class="beer-img">
-                                    <a href="#">
-                                        <img src="${contextPath}/img/light-beer.png">
-                                    </a>
-                                </div>
-                                <div class="romb-img">
-                                    <div class="romb-text">
-                                        <span>свiтле</span>
-                                    </div>
-                                    <img src="${contextPath}/img/romb-bg.png">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="position-of-beer">
-                            <div class="beer-img-wraper">
-                                <div class="beer-img">
-                                    <a href="#">
-                                        <img src="${contextPath}/img/beer-wheaten.png">
-                                    </a>
-                                </div>
-                                <div class="romb-img">
-                                    <div class="romb-text">
-                                        <span>пшеничне</span>
-                                    </div>
-                                    <img src="${contextPath}/img/romb-bg.png">
-                                </div>
-                            </div>
-                        </div>
+--%>
                     </div>
                 </div>
             </div>
@@ -377,7 +307,6 @@
             </div>
         </div>
     </footer>
-        <!-- header sticky script -->
     <script type="text/javascript">
         // Set options
         var options = {
@@ -389,16 +318,6 @@
                 unstick: 'banner--unstick'
             }
         };
-
-        // Initialise with options
-        var banner = new Headhesive('.banner', options);
-
-        // Headhesive destroy
-        // banner.destroy();
-    </script>
-
-        <!-- Slider -->
-    <script type="text/javascript">
         $('.fade').slick({
             dots: true,
             infinite: true,
@@ -407,18 +326,27 @@
             fade: true,
             cssEase: 'linear'
         });
-    </script>
-
-    <script type="text/javascript">
-        $(document).ready(function(){
-            PopUpHide();
-        });
-        function PopUpShow(){
-            $("#popup1").show();
-        }
-        function PopUpHide(){
-            $("#popup1").hide();
-        }
+        // Initialise with options
+        var banner = new Headhesive('.banner', options);
     </script>
 </body>
+<div class="modal fade" id="productModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                ...
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
 </html>

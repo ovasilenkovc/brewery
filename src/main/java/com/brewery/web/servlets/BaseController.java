@@ -19,6 +19,7 @@ public class BaseController extends AbstractController {
     protected ModelAndView handleRequestInternal(HttpServletRequest httpServletRequest,
                                                  HttpServletResponse httpServletResponse) throws Exception {
 
+        ModelAndView modelAndView =  new ModelAndView("index");
         String newLocale = httpServletRequest.getParameter("language");
         if (newLocale != null) {
             LocaleResolver localeResolver = RequestContextUtils.getLocaleResolver(httpServletRequest);
@@ -28,7 +29,8 @@ public class BaseController extends AbstractController {
             localeResolver.setLocale(httpServletRequest, httpServletResponse, StringUtils.parseLocaleString(newLocale));
         }
 
-        return new ModelAndView("index");
+        modelAndView.addObject("authenticated", false);
+        return modelAndView;
     }
 
 }
