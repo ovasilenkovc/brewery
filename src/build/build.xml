@@ -1,4 +1,4 @@
-<project name="TPT-Core" basedir="./">
+<project name="BREWERY" basedir="./">
 
     <property environment="env"/>
     <property file="build.${user.name}.properties"/>

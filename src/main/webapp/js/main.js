@@ -7,15 +7,24 @@ LANG_MAPPING = {
     "ru": "RUS"
 };
 
-
 var functionality = {
 
     init: function init() {
+
+        //using elements initialization
         this.userNameEl = $("#username");
         this.userPasswordEl = $("#password");
         this.loginErorEl = $("#login-error");
+        this.popupDesc = $('#popup .first-paragraph');
+        this.popupDescComp = $('#popup .composition');
+        this.popupProdName = $('#popup .product-name');
+        this.popupProdImage = $('#popup .product-logo-img');
         CURRENT_LANGUAGE = LANG_MAPPING[$('#localization').attr('value')];
+
+        //content initiation
+        this.getAllProductTypes();
         this.getProducts();
+
     },
 
     login: function () {
@@ -48,9 +57,16 @@ var functionality = {
                 self.renderProducts(productsBlock, response[i], CURRENT_LANGUAGE);
             }
             this.productEl = $(".position-of-beer");
-            this.productEl.click(self.viewOneProduct);
+            this.productEl.click(function () {
+                $('#popup').bPopup({
+                    modalClose: true,
+                    opacity: 0.6,
+                    positionStyle: 'fixed'
+                });
+                self.viewOneProduct($(this).attr('value'));
+            });
         }, function (response) {
-            alert(response);
+            alert(response.error);
         })
     },
 
@@ -59,8 +75,8 @@ var functionality = {
         var productType = product.productType;
         var productDsecription = this.getDescriptionByLeng(product.descriptions, local);
         var title = productDsecription ? productDsecription.title : product.name;
-        var productDivEl = $('<div class="position-of-beer" value="' + productId + '" data-toggle="modal" data-target="#productModal">'
-            + '<div class="beer-img"><a href="#"><img src="' + productType.iconPath + '"></a></div>'
+        var productDivEl = $('<div class="position-of-beer" id="#show_popup" value="' + productId + '" data-toggle="modal" data-target="#productModal">'
+            + '<div class="beer-img"><span><img src="' + productType.iconPath + '"></span></div>'
             + '<div class="romb-img"><div class="romb-text"><span>' + title + '</span></div>'
             + '<img src="/brewery/img/romb-bg.png"></div></div>');
         productDivEl.appendTo(parent);
@@ -76,19 +92,75 @@ var functionality = {
         return null;
     },
 
-    viewOneProduct: function () {
-        var prodId = $(this).attr('value');
+    viewOneProduct: function (prodId) {
+        var self = this;
         var url = SERVER_CONTEXT + "/content/product/" + prodId;
         ajaxBuilder(url, "GET", {}, function (response) {
-            debugger;
             var descriptions = response.descriptions;
             var productType = response.productType;
             var productDescription = functionality.getDescriptionByLeng(descriptions, CURRENT_LANGUAGE);
+            var title = productDescription ? productDescription.title : response.name;
+            self.popupProdName.text(title);
+            self.popupDesc.text(productDescription.description);
+            self.popupProdImage.attr("src", productType.iconPath);
+            self.popupDescComp.text(productDescription.composition);
+            $(".edit-product").click(function () {
+                self.editProduct(response)
+            });
         }, function (err) {
-            debugger;
+            alert(err.error);
+        })
+    },
+
+    editProduct: function (product) {
+        var conentWrapEl = $('#content-wrapper');
+        var editFormEl = $('#edit-form');
+
+        var nameEl = $("#name");
+        var descriptionEl = $("#description");
+        var compositionEl = $("#composition");
+        var typesSelectorEl = $("#types-selector");
+        var description = this.getDescriptionByLeng(product.descriptions, CURRENT_LANGUAGE);
+
+        nameEl.val(product.name);
+        typesSelectorEl.val(product.productType.typeName);
+        descriptionEl.val(description.description);
+        compositionEl.val(description.composition);
+
+        conentWrapEl.attr('hidden', true);
+        editFormEl.attr('hidden', false);
+
+        $('#backToProduct').click(function () {
+            conentWrapEl.attr('hidden', false);
+            editFormEl.attr('hidden', true);
+        });
+    },
+
+    sendProductData: function (productId) {
+        var url = productId ? SERVER_CONTEXT + "/admin/content/product/" + productId : SERVER_CONTEXT + "/admin/content/product/",
+            type= productId ? "PUT" : "POST";
+
+        ajaxBuilder(url, type, {}, function () {
+            
+        }, function () {
+            
+        })
+    },
+
+    getAllProductTypes: function () {
+        var self = this;
+        var url = SERVER_CONTEXT + "/content/product/type";
+        ajaxBuilder(url, "GET", {}, function (response) {
+            var typesSelect = $('#types-selector');
+            for (var i = 0; i < response.length; i++) {
+                var type = response[i];
+                var option = $('<option value="' + type.typeName + '">' + type.typeName + '</option>');
+                option.appendTo(typesSelect);
+            }
+        }, function (error) {
+            alert(error.error);
         })
     }
-
 };
 
 var ajaxBuilder = function (url, type, content, success, reject) {
