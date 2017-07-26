@@ -73,6 +73,7 @@ public class ProductController {
         Product forUpdate = (Product) contentService.getOne(productId, ConstantParams.PRODUCT_CONTEXT);
         forUpdate.setProductType(product.getProductType());
         forUpdate.setName(product.getName());
+        forUpdate.setDescriptions(product.getDescriptions());
         contentService.update(forUpdate, ConstantParams.PRODUCT_CONTEXT);
         return ResponseMaker.makeResponse("Product has been updated successfully",
                 ConstantParams.JSON_HEADER_TYPE, HttpStatus.NO_CONTENT);

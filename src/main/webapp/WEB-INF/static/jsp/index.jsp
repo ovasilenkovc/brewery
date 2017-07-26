@@ -8,14 +8,6 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Document</title>
-    <script type="text/javascript" src="${contextPath}/js/jquery-3.2.1.min.js"></script>
-    <script type="text/javascript" src="${contextPath}/js/bootstrap.js"></script>
-    <script type="text/javascript" src="${contextPath}/js/headhesive.js"></script>
-    <script type="text/javascript" src="${contextPath}/js/slick.js"></script>
-    <script src="${contextPath}/js/modal_window.js" type="text/javascript"></script>
-    <script src="${contextPath}/js/templates.js" type="text/javascript"></script>
-    <script type="text/javascript" src="${contextPath}/js/main.js"></script>
-
     <link rel="stylesheet" type="text/css" href="${contextPath}/css/bootstrap.css">
     <link rel="stylesheet" type="text/css" href="${contextPath}/css/bootstrap-reboot.css">
     <link rel="stylesheet" type="text/css" href="${contextPath}/css/bootstrap-grid.css">
@@ -29,6 +21,14 @@
     <link rel="manifest" href="${contextPath}/img/favicon_folder/manifest.json">
     <link rel="mask-icon" href="${contextPath}/img/favicon_folder/safari-pinned-tab.svg" color="#5bbad5">
     <meta name="theme-color" content="#ffffff">
+
+    <script type="text/javascript" src="${contextPath}/js/jquery-3.2.1.min.js"></script>
+    <script type="text/javascript" src="${contextPath}/js/bootstrap.js"></script>
+    <script type="text/javascript" src="${contextPath}/js/headhesive.js"></script>
+    <script type="text/javascript" src="${contextPath}/js/slick.js"></script>
+    <script src="${contextPath}/js/modal_window.js" type="text/javascript"></script>
+    <script src="${contextPath}/js/templates.js" type="text/javascript"></script>
+    <script type="text/javascript" src="${contextPath}/js/main.js"></script>
 </head>
 <body>
 <div id="localization" value="${pageContext.response.locale}" style="display: none"></div>
@@ -145,10 +145,7 @@
             </div>
         </div>
         <div class="toolbar">
-            <button type="button" class="btn btn-default btn-sm">
-                <span class="glyphicon glyphicon-edit"></span> Edit
-            </button>
-            <button type="button" class="btn btn-default btn-sm">
+            <button type="button" class="btn btn-default btn-sm addNew">
                 <span class="glyphicon glyphicon-plus"></span> Plus
             </button>
             <button type="button" class="btn btn-default btn-sm">
@@ -370,7 +367,7 @@
                             <h4 class="product-name"></h4>
                         </div>
                         <div class="windows-text-paragraph">
-                            <button class="btn-info edit-product">Edit</button>
+                            <button class="btn-info" id="edit-product" value="">Edit</button>
                             <p class="first-paragraph">
                             </p>
                             <p class="composition"></p>
@@ -397,7 +394,7 @@
                                 <textarea class="form-control" id="composition" rows="3"></textarea>
                             </div>
                             <button type="button" class="btn btn-info" id="backToProduct">Back</button>
-                            <button type="button" class="btn btn-info login-btn" id="sendProductData">Send</button>
+                            <button type="button" class="btn btn-info login-btn" id="sendProductData" value="">Send</button>
                         </form>
                     </div>
                 </div>
@@ -410,4 +407,46 @@
         </div>
     </div>
 </div>
+<%--<div id="send-form-popup">
+    <div class="wrap-popup">
+        <div class="container">
+            <div class="window">
+                <span class="button b-close">X</span>
+                <div class="window-img">
+                    <img class="product-logo-img" src="${contextPath}/img/dark-beer.png" alt="">
+                </div>
+                <div class="window-text">
+                    <div id="edit-form">
+                        <form>
+                            <div class="form-group">
+                                <label for="name">Product Name:</label>
+                                <input type="text" class="form-control" id="name"/>
+                            </div>
+                            <div class="form-group">
+                                <label for="types-selector">Select types:</label>
+                                <select class="form-control" id="types-selector">
+                                    <option value="light">default</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="description">Product description:</label>
+                                <textarea class="form-control" id="description" rows="7"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="composition">Product composition:</label>
+                                <textarea class="form-control" id="composition" rows="3"></textarea>
+                            </div>
+                            <button type="button" class="btn btn-info login-btn" id="sendProductData">Send</button>
+                        </form>
+                    </div>
+                </div>
+                <div class="last-row-popup">
+                    <span>
+                        <spring:message code="health.warning"/>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>--%>
 </html>
