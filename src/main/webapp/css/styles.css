@@ -650,7 +650,7 @@ input, button {
 .asortiment-wrap{
     width: 100%;
     background: #4a4a4a;
-    padding-bottom: 50px;
+    padding-bottom: 30px;
 }
 .assortment-par-wrapper{
     padding: 100px 0;
@@ -682,18 +682,56 @@ input, button {
     clear: both;
     content: '';
 }
-.position-of-beer {
-    padding: 50px 0;
-    width: 25%;
-    cursor: pointer;
+.toolbar {
+    background:#4a4a4a;
+    text-align: right;
+}
+.toolbar button {
+    margin: 0 0.25%;
+}
+.toolbar .addNew{
+    background: none;
+    color: #b59164;
+}
+.toolbar .addNew:hover{
+    color:#cfc2b1;
+}
+.product-wrapper{
     display: inline-block;
+    width: 25%;
+    margin-bottom: 20px;
+}
+.product-wrapper .product-tools{
+    position: absolute;
+}
+.product-wrapper .position-of-beer {
+    padding: 50px 0;
+    cursor: pointer;
     border: 2px solid transparent;
 }
-.position-of-beer:hover{
+.product-tools .edit-product,
+.product-tools .remove-product, .remove-image{
+    display: inline-block;
+    padding: 2px;
+    margin: 0 5px;
+    color: #b59164;
+    cursor:pointer;
+}
+.product-tools .edit-product:hover,
+.product-tools .remove-product:hover,
+.remove-image:hover{
+    color: #cfc2b1;
+}
+.remove-image{
+    color: #4a4a4a;
+    position: absolute;
+    right: 4px;
+}
+.product-wrapper .position-of-beer:hover{
     /*border-radius: 12px;*/
     background: #444242;
 }
-.beer-img-wraper{
+.product-wrapper .beer-img-wraper{
     position: relative;
 }
 .beer-img{
@@ -720,11 +758,6 @@ input, button {
 }
 .fade in{
     background: #000000;
-}
-.slick-dots{
-    position: absolute;
-    bottom: 16px;
-    left: 46.5%;
 }
 #slick-slide00, #slick-slide01, #slick-slide02, #slick-slide03{
     display: inline-block;
@@ -758,13 +791,13 @@ input, button {
 }
 .our_history_desc{
     width: 754px;
-    margin: 0 auto 100px;
+    margin: 0 auto;
 }
 .history-info{
     text-align: center;
     line-height: 1.4em;
     font-size: 18px;
-    margin-bottom: 30px;
+    padding-bottom: 30px;
     color: #dfdfdf;
 }
 .our_history{
@@ -796,9 +829,8 @@ input, button {
 }
 .contact-info-text{
     width: 72.1929%;
-    margin: 0 auto;
     overflow: hidden;
-    margin-top: 71px;
+    margin: 71px auto 0;
 }
 .contact-info-address{
     float: left;
@@ -879,15 +911,6 @@ input, button {
     color: #b59164;
     margin-right: 10px;
 }
-.toolbar {
-    position: absolute;
-    width: 10%;
-    right: 0;
-    z-index: 1;
-}
-.toolbar button {
-    margin: 0 0.25%;
-}
 .modal-dialog{
     border-radius: 0;
     min-width: 50%;
@@ -920,6 +943,14 @@ input, button {
     height: 641px;
     margin: 0 auto;
     position: relative;
+}
+.image-window{
+    background: #cfc2b1;
+    width: 100%;
+    margin: 0 auto;
+    padding: 50px 50px 80px;
+    position: relative;
+    text-align: center;
 }
 .window-img{
     width: 35%;
@@ -975,7 +1006,7 @@ input, button {
     font-family: "Arial";
     font-size: 11px;
 }
-#popup{
+#popup, #send-form-popup, #save-img-popup{
     display: none;
 }
 .b-close{
@@ -986,4 +1017,30 @@ input, button {
     margin-right: 10px;
     margin-top: 10px;
     color: #000;
+}
+.send-button{
+    text-align: center;
+    background: #4a4a4a;
+    width: 100%;
+    border: none;
+}
+.send-button:hover{
+    text-align: center;
+    background: #656565;
+    width: 100%;
+    border: none;
+}
+#product-send-error{
+    color: red;
+    display: block;
+    margin-top: 20px;
+    overflow-wrap: break-word;
+}
+.b-close-wrapper{
+    width: 100%;
+    overflow: hidden;
+}
+.image-window-container{
+    background: #cfc2b1;
+    width: 450px;
 }

@@ -2,6 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <!DOCTYPE html>
+<html>
 <head>
     <c:set var="contextPath" value="${pageContext.request.contextPath}"/>
     <meta charset="UTF-8">
@@ -10,10 +11,12 @@
     <title>Document</title>
     <link rel="stylesheet" type="text/css" href="${contextPath}/css/bootstrap.css">
     <link rel="stylesheet" type="text/css" href="${contextPath}/css/bootstrap-reboot.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
     <link rel="stylesheet" type="text/css" href="${contextPath}/css/bootstrap-grid.css">
     <link rel="stylesheet" type="text/css" href="${contextPath}/css/slick.css"/>
     <link rel="stylesheet" type="text/css" href="${contextPath}/css/headhesive.css">
     <link rel="stylesheet" type="text/css" href="${contextPath}/css/styles.css">
+
 
     <link rel="apple-touch-icon" sizes="180x180" href="${contextPath}/img/favicon_folder/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="${contextPath}/img/favicon_folder/favicon-32x32.png">
@@ -145,83 +148,37 @@
             </div>
         </div>
         <div class="toolbar">
-            <button type="button" class="btn btn-default btn-sm addNew">
-                <span class="glyphicon glyphicon-plus"></span> Plus
-            </button>
-            <button type="button" class="btn btn-default btn-sm">
-                <span class="glyphicon glyphicon-remove"></span> Remove
+            <button type="button" class="addNew">
+                <span class="fa fa-plus-square-o fa-3x" title="Add new product"></span>
             </button>
         </div>
         <!--Beer variety-->
         <div class="selection-of-beer-wpar">
             <div class="container-fluid">
-                <div class="selection-of-beer">
-                    <!--This block will be represented as tubs! With one difference between them is content (img, name)
-                     It means that block "position-of-beer" is component!-->
-                    <%--
-                    <div class="position-of-beer">
-                        <div class="beer-img-wraper">
-                            <div class="beer-img">
-                                <a href="#">
-                                    <img src="${contextPath}/img/dark-beer.png">
-                                </a>
-                            </div>
-                            <div class="romb-img">
-                                <div class="romb-text">
-                                    <span>темне</span>
-                                </div>
-                                <img src="${contextPath}/img/romb-bg.png">
-                            </div>
-                        </div>
-                    </div>
-                    --%>
-                </div>
+                <div class="selection-of-beer"></div>
             </div>
         </div>
     </div>
     <div id="brewery" class="slider-wrap">
         <div class="container-fluid">
-            <div class="carousel fade">
-                <div>
-                    <div class="carousel-img">
-                        <img src="${contextPath}/img/slider-img-1.png" alt="картинка слайда">
-                    </div>
-                </div>
-                <div>
-                    <div class="carousel-img">
-                        <img src="${contextPath}/img/slider-img-2.png" alt="картинка слайда">
-                    </div>
-                </div>
-                <div>
-                    <div class="carousel-img">
-                        <img src="${contextPath}/img/slider-img.png" alt="картинка слайда">
-                    </div>
-                </div>
-                <div>
-                    <div class="carousel-img">
-                        <img src="${contextPath}/img/slider-img.png" alt="картинка слайда">
-                    </div>
-                </div>
+            <div class="toolbar">
+                <button type="button" class="addNew" id="addNewImg">
+                    <span class="fa fa-plus-square-o fa-3x" title="Add new image"></span>
+                </button>
             </div>
+            <div class="carousel fade"></div>
         </div>
     </div>
     <div id="history" class="history_wrap">
-        <div class="toolbar">
-            <button type="button" class="btn btn-default btn-sm">
-                <span class="glyphicon glyphicon-edit"></span> Edit
-            </button>
-            <button type="button" class="btn btn-default btn-sm">
-                <span class="glyphicon glyphicon-plus"></span> Plus
-            </button>
-            <button type="button" class="btn btn-default btn-sm">
-                <span class="glyphicon glyphicon-remove"></span> Remove
-            </button>
-        </div>
         <div class="container">
-            <div class="asortiment our_history">
-                <h2>
-                    <spring:message code="our.history"/>
-                </h2>
+            <div class="assortment-par-wrapper">
+                <div class="container">
+                    <div class="asortiment our_history">
+                        <h2>
+                            <spring:message code="our.history"/>
+                        </h2>
+                    </div>
+                </div>
             </div>
             <div class="our_history_desc">
                 <p class="history-info">
@@ -336,14 +293,6 @@
             unstick: 'banner--unstick'
         }
     };
-    $('.fade').slick({
-        dots: true,
-        infinite: true,
-        autoplay: true,
-        speed: 500,
-        fade: true,
-        cssEase: 'linear'
-    });
     // Initialise with options
     var banner = new Headhesive('.banner', options);
 </script>
@@ -367,23 +316,39 @@
                             <h4 class="product-name"></h4>
                         </div>
                         <div class="windows-text-paragraph">
-                            <button class="btn-info" id="edit-product" value="">Edit</button>
                             <p class="first-paragraph">
                             </p>
                             <p class="composition"></p>
                         </div>
                     </div>
-                    <div id="edit-form" hidden>
-                        <form>
+                </div>
+                <div class="last-row-popup">
+                    <span>
+                        <spring:message code="health.warning"/>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="send-form-popup">
+    <div class="wrap-popup">
+        <div class="container">
+            <div class="window">
+                <span class="button b-close">X</span>
+                <div class="window-img">
+                    <img class="product-logo-img" src="${contextPath}/img/dark-beer.png" alt="">
+                </div>
+                <div class="window-text">
+                    <div>
+                        <form id="edit-form">
                             <div class="form-group">
                                 <label for="name">Product Name:</label>
                                 <input type="text" class="form-control" id="name"/>
                             </div>
                             <div class="form-group">
                                 <label for="types-selector">Select types:</label>
-                                <select class="form-control" id="types-selector">
-                                    <option value="light">default</option>
-                                </select>
+                                <select class="form-control" id="types-selector"></select>
                             </div>
                             <div class="form-group">
                                 <label for="description">Product description:</label>
@@ -393,8 +358,10 @@
                                 <label for="composition">Product composition:</label>
                                 <textarea class="form-control" id="composition" rows="3"></textarea>
                             </div>
-                            <button type="button" class="btn btn-info" id="backToProduct">Back</button>
-                            <button type="button" class="btn btn-info login-btn" id="sendProductData" value="">Send</button>
+                            <div>
+                                <button type="button" class="btn btn-info send-button" id="sendProductData">Send</button>
+                            </div>
+                            <span id="product-send-error" class="product-send-error"></span>
                         </form>
                     </div>
                 </div>
@@ -407,46 +374,24 @@
         </div>
     </div>
 </div>
-<%--<div id="send-form-popup">
+<div id="save-img-popup">
     <div class="wrap-popup">
-        <div class="container">
-            <div class="window">
+        <div class="image-window-container">
+            <div class="b-close-wrapper">
                 <span class="button b-close">X</span>
-                <div class="window-img">
-                    <img class="product-logo-img" src="${contextPath}/img/dark-beer.png" alt="">
-                </div>
-                <div class="window-text">
-                    <div id="edit-form">
-                        <form>
-                            <div class="form-group">
-                                <label for="name">Product Name:</label>
-                                <input type="text" class="form-control" id="name"/>
-                            </div>
-                            <div class="form-group">
-                                <label for="types-selector">Select types:</label>
-                                <select class="form-control" id="types-selector">
-                                    <option value="light">default</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="description">Product description:</label>
-                                <textarea class="form-control" id="description" rows="7"></textarea>
-                            </div>
-                            <div class="form-group">
-                                <label for="composition">Product composition:</label>
-                                <textarea class="form-control" id="composition" rows="3"></textarea>
-                            </div>
-                            <button type="button" class="btn btn-info login-btn" id="sendProductData">Send</button>
-                        </form>
+            </div>
+            <div class="image-window">
+                <form id="img-form">
+                    <div class="form-group">
+                        <label for="file">Upload Image:</label>
+                        <input id="file" type="file" name="files[]" multiple>
                     </div>
-                </div>
-                <div class="last-row-popup">
-                    <span>
-                        <spring:message code="health.warning"/>
-                    </span>
-                </div>
+                    <div>
+                        <button type="button" class="btn btn-info send-button" onclick="functionality.uploadImages()" id="saveImg">Send</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
-</div>--%>
+</div>
 </html>

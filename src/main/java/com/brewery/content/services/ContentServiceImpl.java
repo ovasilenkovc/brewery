@@ -11,16 +11,15 @@ import com.brewery.content.product.Product;
 import com.brewery.services.fileFolder.FileFolderService;
 import com.brewery.utils.ConstantParams;
 import com.brewery.utils.ParamUtils;
-import com.brewery.utils.ResponseMaker;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.awt.image.BufferedImage;
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.*;
 
 /**
@@ -219,6 +218,21 @@ public class ContentServiceImpl implements ContentService {
         return result;
     }
 
+    @Transactional
+    public Map<Long, String> saveImgFiles(MultipartFile[] files, String context) throws IOException {
+//        Map<Long, String> result = new HashMap<>();
+//
+//        for (MultipartFile file: files){
+//            String fileName = file.getOriginalFilename();
+//            String encodedStr =  fileFolderService.encodeToString(file);
+//            Long imgId = daoFactory.getContentDao(context).save(new Image(fileName, encodedStr));
+//            result.put(imgId, fileName);
+//        }
+//
+
+        return null;
+    }
+
     /**
      * A transactional method for saving file into DB and Store.
      * At first it saves new item information into the data base, if all operations was succeed
@@ -254,7 +268,7 @@ public class ContentServiceImpl implements ContentService {
 
         for (Content content : files) {
             File file = (File) content;
-            String absolutePath = ConstantParams.TEMP_FOLDER_PATH + file.getPath() + "/" + file.getName();
+            String absolutePath = ConstantParams.TEMP_FOLDER_PATH + ConstantParams.ROOT_PROJECT_DIR + file.getPath() + "/" + file.getName();
             String encoded64File = fileFolderService.getBase64StringEncoded(absolutePath);
 
             if (encoded64File != null) {

@@ -46,7 +46,7 @@ public final class ConstantParams {
 
     public static final String ROOT_PROJECT_DIR = "/brewery";
 
-    public static final Map<String, Set<String>> CONTENT_MIME_TYPES = new HashMap<String, Set<String>>(){{
+    public static final Map<String, Set<String>> CONTENT_MIME_TYPES = new HashMap<String, Set<String>>() {{
         put(IMAGE_CONTEXT, new HashSet<>((Arrays.asList("image/gif", "image/jpeg", "image/pjpeg", "image/png"))));
         put(FILE_CONTEXT, new HashSet<>((Arrays.asList("application/pdf", "application/xml", "text/html", "text/javascript", "text/xml"))));
     }};
