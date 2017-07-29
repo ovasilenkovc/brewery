@@ -17,7 +17,6 @@
     <link rel="stylesheet" type="text/css" href="${contextPath}/css/headhesive.css">
     <link rel="stylesheet" type="text/css" href="${contextPath}/css/styles.css">
 
-
     <link rel="apple-touch-icon" sizes="180x180" href="${contextPath}/img/favicon_folder/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="${contextPath}/img/favicon_folder/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="${contextPath}/img/favicon_folder/favicon-16x16.png">
@@ -31,6 +30,7 @@
     <script type="text/javascript" src="${contextPath}/js/slick.js"></script>
     <script src="${contextPath}/js/modal_window.js" type="text/javascript"></script>
     <script src="${contextPath}/js/templates.js" type="text/javascript"></script>
+    <script type="text/javascript" src="${contextPath}/js/brewery-utils.js"></script>
     <script type="text/javascript" src="${contextPath}/js/main.js"></script>
 </head>
 <body>
@@ -181,6 +181,17 @@
                 </div>
             </div>
             <div class="our_history_desc">
+                <div class="toolbar">
+                    <button type="button" class="btn btn-default btn-sm">
+                        <span class="glyphicon glyphicon-edit"></span> Edit
+                    </button>
+                    <button type="button" class="btn btn-default btn-sm">
+                        <span class="glyphicon glyphicon-plus"></span> Plus
+                    </button>
+                    <button type="button" class="btn btn-default btn-sm">
+                        <span class="glyphicon glyphicon-remove"></span> Remove
+                    </button>
+                </div>
                 <p class="history-info">
                     Trillium Brewing Company was established on the values of family, passion, and dedication.
                     Celebratory ales were first crafted to commemorate the marriage of founders JC and Esther Tetreault.
@@ -206,17 +217,6 @@
         </div>
     </div>
     <div id="contact-info-nav" class="contact-info-wrap">
-        <div class="toolbar">
-            <button type="button" class="btn btn-default btn-sm">
-                <span class="glyphicon glyphicon-edit"></span> Edit
-            </button>
-            <button type="button" class="btn btn-default btn-sm">
-                <span class="glyphicon glyphicon-plus"></span> Plus
-            </button>
-            <button type="button" class="btn btn-default btn-sm">
-                <span class="glyphicon glyphicon-remove"></span> Remove
-            </button>
-        </div>
         <div class="container">
             <div class="contact-info">
                 <h2>

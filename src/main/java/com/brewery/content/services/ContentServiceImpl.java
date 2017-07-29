@@ -218,21 +218,6 @@ public class ContentServiceImpl implements ContentService {
         return result;
     }
 
-    @Transactional
-    public Map<Long, String> saveImgFiles(MultipartFile[] files, String context) throws IOException {
-//        Map<Long, String> result = new HashMap<>();
-//
-//        for (MultipartFile file: files){
-//            String fileName = file.getOriginalFilename();
-//            String encodedStr =  fileFolderService.encodeToString(file);
-//            Long imgId = daoFactory.getContentDao(context).save(new Image(fileName, encodedStr));
-//            result.put(imgId, fileName);
-//        }
-//
-
-        return null;
-    }
-
     /**
      * A transactional method for saving file into DB and Store.
      * At first it saves new item information into the data base, if all operations was succeed

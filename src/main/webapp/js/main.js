@@ -11,6 +11,7 @@ var functionality = {
 
     init: function init() {
         var self = this;
+        this.utils = new Utils();
         SESSION_TOKEN += localStorage.getItem("token");
         //using elements initialization
         this.userNameEl = $("#username");
@@ -59,27 +60,19 @@ var functionality = {
                     "type": CURRENT_LANGUAGE
                 }]
             };
-            self.resetFormData(self.formEl);
+            self.utils.resetFormData(self.formEl);
             self.sendProductDataEl.data(product);
-            $('#send-form-popup').bPopup({
-                modalClose: true,
-                opacity: 0.6,
-                positionStyle: 'fixed'
-            });
+            self.utils.initPopup($('#send-form-popup'));
         });
 
         $('#addNewImg').click(function () {
-            $('#save-img-popup').bPopup({
-                modalClose: true,
-                opacity: 0.6,
-                positionStyle: 'fixed'
-            });
+            self.utils.initPopup($('#save-img-popup'));
         });
     },
 
     login: function () {
         var url = SERVER_CONTEXT + "/login";
-        ajaxBuilder(url, "POST", {
+        this.utils.ajaxDataBuilder(url, "POST", {
             "username": functionality.userNameEl.val(),
             "password": functionality.userPasswordEl.val()
         }, function (response) {
@@ -92,7 +85,7 @@ var functionality = {
 
     logout: function () {
         var url = SERVER_CONTEXT + "/logout";
-        ajaxBuilder(url, "DELETE", {},
+        this.utils.ajaxDataBuilder(url, "DELETE", {},
             function () {
                 localStorage.clear()
             });
@@ -101,7 +94,7 @@ var functionality = {
     getProducts: function () {
         var self = this;
         var url = SERVER_CONTEXT + "/content/product";
-        ajaxBuilder(url, 'GET', {}, function (response) {
+        this.utils.ajaxDataBuilder(url, 'GET', {}, function (response) {
             var productsBlock = $('.selection-of-beer');
             productsBlock.html("");
             self.products = response;
@@ -117,7 +110,7 @@ var functionality = {
         var self = this;
         var url = SERVER_CONTEXT + "/content/product/type";
         var typesSelect = $('#types-selector');
-        ajaxBuilder(url, "GET", {}, function (response) {
+        this.utils.ajaxDataBuilder(url, "GET", {}, function (response) {
             self.productTypes = response;
             for (var i = 0; i < response.length; i++) {
                 var type = response[i];
@@ -126,7 +119,7 @@ var functionality = {
             }
             typesSelect.change(function () {
                 var selectedType = $(this).val();
-                var type = self.getListItemByParameter(self.productTypes, "typeName", selectedType);
+                var type = self.utils.getListItemByParameter(self.productTypes, "typeName", selectedType);
                 $('.window-img .product-logo-img').attr('src', type.iconPath);
             })
         }, function (error) {
@@ -138,7 +131,7 @@ var functionality = {
         var self = this;
         var productId = product.productId;
         var productType = product.productType;
-        var productDescription = this.getListItemByParameter(product.descriptions, "type", local);
+        var productDescription = this.utils.getListItemByParameter(product.descriptions, "type", local);
         var title = productDescription ? productDescription.title : product.name;
 
         var productDivWrapEl = $('<div class="product-wrapper">');
@@ -156,20 +149,12 @@ var functionality = {
         productDivEl.data(product).appendTo(productDivWrapEl);
 
         productDivEl.click(function () {
-            $('#popup').bPopup({
-                modalClose: false,
-                opacity: 0.6,
-                positionStyle: 'fixed'
-            });
+            self.utils.initPopup($('#popup'));
             self.viewOneProduct($(this).data());
         });
 
         editBtn.click(function () {
-            $("#send-form-popup").bPopup({
-                modalClose: true,
-                opacity: 0.6,
-                positionStyle: 'fixed'
-            });
+            self.utils.initPopup( $("#send-form-popup"));
             self.editProduct($(this).data());
         });
 
@@ -186,22 +171,21 @@ var functionality = {
         if (product) {
             var descriptions = product.descriptions;
             var productType = product.productType;
-            var productDescription = this.getListItemByParameter(descriptions, "type", CURRENT_LANGUAGE);
-            var title = productDescription ? productDescription.title : product.name();
-            self.popupProdName.text(title);
-            self.popupDesc.text(productDescription.description);
             self.popupProdImage.attr("src", productType.iconPath);
-            self.popupDescComp.text(productDescription.composition);
+            var productDescription = this.utils.getListItemByParameter(descriptions, "type", CURRENT_LANGUAGE);
+            self.popupProdName.text(productDescription && productDescription.title ? productDescription.title : product.name);
+            self.popupDesc.text(productDescription && productDescription.description ? productDescription.description : "");
+            self.popupDescComp.text(productDescription && productDescription.composition ?productDescription.composition: "");
         }
     },
 
     editProduct: function (product) {
-        var description = this.getListItemByParameter(product.descriptions, "type", CURRENT_LANGUAGE);
+        var description = this.utils.getListItemByParameter(product.descriptions, "type", CURRENT_LANGUAGE);
         this.typesSelectorEl.val(product.productType.typeName).attr("selected", true);
         $("#send-form-popup .product-logo-img").attr('src', product.productType.iconPath);
-        this.descriptionEl.val(description.description);
-        this.compositionEl.val(description.composition);
-        this.nameEl.val(description.title);
+        this.descriptionEl.val(description && description.description ? description.description : "");
+        this.compositionEl.val(description && description.composition ? description.composition : "");
+        this.nameEl.val(description && description.title ? description.title : product.name);
         this.sendProductDataEl.data(product);
     },
 
@@ -211,62 +195,49 @@ var functionality = {
         var type = productId ? "PUT" : "POST";
 
         product['name'] = this.nameEl.val();
-        product['productType'] = this.getListItemByParameter(this.productTypes, "typeName", this.typesSelectorEl.val());
-        this.updateProductTextMetaData(product.descriptions, "title", this.nameEl);
-        this.updateProductTextMetaData(product.descriptions, "description", this.descriptionEl);
-        this.updateProductTextMetaData(product.descriptions, "composition", this.compositionEl);
+        product['productType'] = this.utils.getListItemByParameter(this.productTypes, "typeName", this.typesSelectorEl.val());
+        this.utils.updateProductTextMetaData(product.descriptions, "title", this.nameEl);
+        this.utils.updateProductTextMetaData(product.descriptions, "description", this.descriptionEl);
+        this.utils.updateProductTextMetaData(product.descriptions, "composition", this.compositionEl);
 
-        ajaxBuilder(url, type, product, function () {
+        this.utils.ajaxDataBuilder(url, type, product, function () {
             self.getProducts();
-            self.resetFormData(self.formEl);
-            $('#send-form-popup').bPopup().close();
+            self.utils.resetFormData(self.formEl);
+            self.utils.popupDisable($('#send-form-popup'));
         }, function (error) {
             //to do
             $('#product-send-error').text(error);
-        })
+        }, SESSION_TOKEN)
     },
 
     removeProduct: function (product) {
         var self = this;
         var url = SERVER_CONTEXT + "/admin/content/product/" + product.productId;
-        ajaxBuilder(url, "DELETE", {}, function () {
+        this.utils.ajaxDataBuilder(url, "DELETE", {}, function () {
             self.getProducts();
         }, function (error) {
             $('#product-send-error').text(error);
-        })
+        }, SESSION_TOKEN)
     },
 
     uploadImages: function () {
         var self = this;
-        var formData = new FormData();
         var files = $('#file')[0].files;
         var url = SERVER_CONTEXT + "/admin/content/files/pictures";
-        if (files.length !== 0) {
-            $.each(files, function (i, item) {
-                if (!!item.type.match(/image.*/)) {
-                    formData.append("files", item);
-                }
-            });
-            $.ajax({
-                url: url,
-                type: "POST",
-                data: formData,
-                processData: false,
-                contentType: false,
-                headers: {Authorization: SESSION_TOKEN},
-                success: function () {
-                    self.carousel.html("");
-                    self.turnSlickOff();
-                    self.getImages();
-                }
-            })
-        }
+        this.utils.ajaxFilesSender(url, "IMAGES", files, function () {
+            self.utils.popupDisable($('#save-img-popup'));
+            self.carousel.html("");
+            self.utils.turnSlickOff();
+            self.getImages();
+        }, function (error) {
+
+        }, SESSION_TOKEN);
     },
 
     getImages: function () {
         var self = this;
         var url = SERVER_CONTEXT + "/content/files/pictures";
-        ajaxBuilder(url, "GET", {}, function (response) {
+        this.utils.ajaxDataBuilder(url, "GET", {}, function (response) {
             $.each(response, function (key, value) {
                 var img = $("<div><div class='carousel-img'>" +
                     "<span class='fa fa-minus-square-o fa-3x remove-image' title='remove image' value='" + this.id + "'/>" +
@@ -278,7 +249,7 @@ var functionality = {
                 });
                 img.appendTo(functionality.carousel);
             });
-            self.initSlick();
+            self.utils.initSlick();
         });
     },
 
@@ -286,70 +257,15 @@ var functionality = {
         var self = this;
         debugger;
         var url = SERVER_CONTEXT + "/admin/content/files/" + id;
-        ajaxBuilder(url, "DELETE", {}, function (response) {
-            self.carousel.html("");
-            self.turnSlickOff();
+        this.utils.ajaxDataBuilder(url, "DELETE", {}, function (response) {
+            self.utils.turnSlickOff();
+            $('#brewery .carousel').html("");
             self.getImages();
-        });
-    },
+        },function (error) {
 
-    getListItemByParameter: function (list, pramName, paramValue) {
-        var searchedItem = null;
-        $.each(list, function (i, item) {
-            var compareParameter = item[pramName] ? item[pramName] : null;
-            if (compareParameter !== null && compareParameter == paramValue) {
-                searchedItem = item;
-                return false;
-            }
-        });
-        return searchedItem;
-    },
-
-    updateProductTextMetaData: function (list, paramName, element) {
-        $.each(list, function (i, item) {
-            var itemType = item['type'];
-            if (itemType == CURRENT_LANGUAGE) {
-                item[paramName] = element.val();
-                return false;
-            }
-        });
-    },
-
-    resetFormData: function (formEl) {
-        formEl.find('input:text, input:password, input:file, select, textarea').val('');
-        formEl.find('input:radio, input:checkbox').removeAttr('checked').removeAttr('selected');
-    },
-
-    initSlick: function(){
-        $('.fade').slick({
-            dots: false,
-            infinite: true,
-            autoplay: true,
-            speed: 500,
-            fade: true,
-            cssEase: 'linear'
-        });
-    },
-
-    turnSlickOff: function () {
-        $('.fade').slick('unslick');
+        }, SESSION_TOKEN);
     }
 
-};
-
-var ajaxBuilder = function (url, type, content, success, reject) {
-    var ajaxConfig = {
-        url: url,
-        type: type,
-        cache: false,
-        dataType: 'json',
-        headers: {Authorization: SESSION_TOKEN},
-        contentType: "application/json",
-        success: success,
-        error: reject
-    };
-    content ? ajaxConfig.data = JSON.stringify(content) : ajaxConfig;
-    $.ajax(ajaxConfig)
 };
 
 $(document).ready(function () {
