@@ -16,7 +16,7 @@ public class Image extends File {
     @Column(name = "image_id", unique = true, nullable = false)
     private Long id;
 
-    @Column(name = "name", length = 45)
+    @Column(name = "name", length = 270)
     private String name;
 
     @Column(name = "path")

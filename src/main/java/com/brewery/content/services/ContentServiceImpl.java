@@ -11,16 +11,15 @@ import com.brewery.content.product.Product;
 import com.brewery.services.fileFolder.FileFolderService;
 import com.brewery.utils.ConstantParams;
 import com.brewery.utils.ParamUtils;
-import com.brewery.utils.ResponseMaker;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.awt.image.BufferedImage;
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.*;
 
 /**
@@ -254,7 +253,7 @@ public class ContentServiceImpl implements ContentService {
 
         for (Content content : files) {
             File file = (File) content;
-            String absolutePath = ConstantParams.TEMP_FOLDER_PATH + file.getPath() + "/" + file.getName();
+            String absolutePath = ConstantParams.TEMP_FOLDER_PATH + ConstantParams.ROOT_PROJECT_DIR + file.getPath() + "/" + file.getName();
             String encoded64File = fileFolderService.getBase64StringEncoded(absolutePath);
 
             if (encoded64File != null) {

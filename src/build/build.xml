@@ -1,0 +1,47 @@
+<project name="BREWERY" basedir="./">
+
+    <property environment="env"/>
+    <property file="build.${user.name}.properties"/>
+
+    <taskdef name="http" classname="org.missinglink.ant.task.http.HttpClientTask">
+        <classpath>
+            <pathelement location="./lib/ml-ant-http-1.1.1.jar"/>
+        </classpath>
+    </taskdef>
+
+    <taskdef resource="net/sf/antcontrib/antcontrib.properties">
+        <classpath>
+            <pathelement location="./lib/ant-contrib-1.0b3.jar"/>
+        </classpath>
+    </taskdef>
+
+    <!--################################## Custom ######################################################-->
+
+    <target name="reload.js">
+        <copy todir="${brewery.dir}/js" overwrite="true">
+            <fileset dir="${project.dir}/src/main/webapp/js" includes="**"/>
+        </copy>
+    </target>
+
+    <target name="reload.css">
+        <copy todir="${brewery.dir}/css" overwrite="true">
+            <fileset dir="${project.dir}/src/main/webapp/css" includes="**"/>
+        </copy>
+    </target>
+
+    <target name="reload.html">
+        <copy todir="${brewery.dir}/WEB-INF/static/jsp" overwrite="true">
+            <fileset dir="${project.dir}/src/main/webapp/WEB-INF/static/jsp" includes="**"/>
+        </copy>
+    </target>
+
+    <target name="reload.ui" depends="reload.html, reload.css, reload.js">
+        <copy todir="${brewery.dir}" overwrite="true">
+            <fileset dir="${project.dir}/src/main/webapp/css" includes="**"/>
+        </copy>
+    </target>
+
+    <target name="ALL" depends="reload.ui"/>
+
+
+</project>
