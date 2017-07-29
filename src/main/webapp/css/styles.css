@@ -576,22 +576,22 @@ input, button {
     color: #a7a7a7;
 }
 /* header stick style end*/
-.lenguage-change{
+.language-change{
     float: right;
     margin-right: 14px;
     margin-top: 34px;
 }
-.lenguage-change li{
+.language-change li{
     display: inline-block;
     margin: 0 2px 0 2px;
 }
-.lenguage-change li a{
+.language-change li a{
     font-size: 14.26px;
     /*font-family: 'arkhip';*/
     color: #fff;
     text-transform: uppercase;
 }
-.lenguage-change img{
+.language-change img{
     margin-top: -2px;
 }
 .leng:hover{
@@ -647,7 +647,7 @@ input, button {
     margin: 0 8px;
     font-size: 16px;
 }
-.asortiment-wrap{
+.assortment-wrap{
     width: 100%;
     background: #4a4a4a;
     padding-bottom: 30px;
@@ -791,6 +791,7 @@ input, button {
 }
 .our_history_desc{
     width: 754px;
+    min-height: 300px;
     margin: 0 auto;
 }
 .history-info{

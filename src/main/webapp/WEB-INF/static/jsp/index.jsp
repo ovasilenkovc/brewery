@@ -101,7 +101,7 @@
                         </a>
                     </li>
                 </ul>
-                <div class="lenguage-change">
+                <div class="language-change">
                     <ul>
                         <li><a href="${contextPath}?language=ua" class="leng" value="UA">укр</a></li>
                         <li><img src="${contextPath}/img/leng-between.png" alt=""></li>
@@ -137,7 +137,7 @@
             </div>
         </div>
     </div>
-    <div id="asortiment-nav" class="asortiment-wrap">
+    <div id="asortiment-nav" class="assortment-wrap">
         <div class="assortment-par-wrapper">
             <div class="container">
                 <div class="asortiment">
@@ -182,37 +182,20 @@
             </div>
             <div class="our_history_desc">
                 <div class="toolbar">
-                    <button type="button" class="btn btn-default btn-sm">
-                        <span class="glyphicon glyphicon-edit"></span> Edit
-                    </button>
-                    <button type="button" class="btn btn-default btn-sm">
-                        <span class="glyphicon glyphicon-plus"></span> Plus
-                    </button>
-                    <button type="button" class="btn btn-default btn-sm">
-                        <span class="glyphicon glyphicon-remove"></span> Remove
+                    <button type="button" class="addNew">
+                        <span class="fa fa-pencil-square-o fa-3x edit-product" id="editHistory" title="edit history"></span>
                     </button>
                 </div>
-                <p class="history-info">
-                    Trillium Brewing Company was established on the values of family, passion, and dedication.
-                    Celebratory ales were first crafted to commemorate the marriage of founders JC and Esther Tetreault.
-                    This initial concept evolved into a lifestyle and dream to share, not only beer, experiences with
-                    one another and their community.
-                </p>
-                <p class="history-info">
-                    Trillium opened in March 2013 with the support of family, volunteers, two babies, and three
-                    employees. This small brewery has since developed into an exciting venue of collaboration and
-                    innovation. Trillium is a New England farmhouse style brewery, deeply rooted in the dynamic
-                    landscapes, abundant natural resources, and resilient population of the region. From our wild ales,
-                    fermented with our native New England mixed microbe culture, to our more hop-forward offerings, we
-                    aim to produce beer that is both approachable and engaging.
-                </p>
-                <p class="history-info">
-                    Our flagship location is tucked in the vibrant Fort Point neighborhood of South Boston where we
-                    utilize practices representing both tradition and modern re-invention. We find inspiration in the
-                    heritage of farmhouse brewing methods while actively employing novel concepts and technologies. In
-                    December 2015, we opened our secondary facility in Canton, MA, which will allow us to significantly
-                    increase production volume for wider availability and expanded variety.
-                </p>
+                <p class="history-info"></p>
+                <form id="history-edit-form" hidden>
+                    <div class="form-group">
+                        <label for="history-text"></label>
+                        <textarea class="form-control" id="history-text" rows="10"></textarea>
+                    </div>
+                    <div>
+                        <button type="button" class="btn btn-info send-button" id="sendHistoryData">Send</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>

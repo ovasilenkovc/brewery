@@ -36,12 +36,17 @@ var functionality = {
 
         this.products = [];
         this.productTypes = [];
+        this.historyEl = $(".our_history_desc");
+        this.historyEditForm = $('#history-edit-form');
+        this.historyEditFormBtn = $('#sendHistoryData');
+        this.historyInfo = self.historyEl.find('.history-info');
         CURRENT_LANGUAGE = LANG_MAPPING[$('#localization').attr('value')];
 
         //content initiation
         this.getAllProductTypes();
         this.getProducts();
         this.getImages();
+        this.renderArticles();
 
         //elements global binding
         this.sendProductDataEl.click(function () {
@@ -68,6 +73,16 @@ var functionality = {
         $('#addNewImg').click(function () {
             self.utils.initPopup($('#save-img-popup'));
         });
+
+        $('#editHistory').click(function () {
+            self.historyInfo.attr('hidden', !self.historyInfo.attr('hidden'));
+            self.historyEditForm.attr("hidden", !self.historyEditForm.attr("hidden"));
+        });
+
+        this.historyEditFormBtn.click(function () {
+            var history = $(this).data();
+            self.saveUpdateHistory(history)
+        })
     },
 
     login: function () {
@@ -173,6 +188,7 @@ var functionality = {
             var productType = product.productType;
             self.popupProdImage.attr("src", productType.iconPath);
             var productDescription = this.utils.getListItemByParameter(descriptions, "type", CURRENT_LANGUAGE);
+            debugger;
             self.popupProdName.text(productDescription && productDescription.title ? productDescription.title : product.name);
             self.popupDesc.text(productDescription && productDescription.description ? productDescription.description : "");
             self.popupDescComp.text(productDescription && productDescription.composition ?productDescription.composition: "");
@@ -193,8 +209,7 @@ var functionality = {
         var productId = product.productId, self = this;
         var url = productId ? SERVER_CONTEXT + "/admin/content/product/" + productId : SERVER_CONTEXT + "/admin/content/product/";
         var type = productId ? "PUT" : "POST";
-
-        product['name'] = this.nameEl.val();
+        // product['name'] = product.name || product.name === "" ? this.nameEl.val() : product.name;
         product['productType'] = this.utils.getListItemByParameter(this.productTypes, "typeName", this.typesSelectorEl.val());
         this.utils.updateProductTextMetaData(product.descriptions, "title", this.nameEl);
         this.utils.updateProductTextMetaData(product.descriptions, "description", this.descriptionEl);
@@ -230,7 +245,6 @@ var functionality = {
             self.utils.turnSlickOff();
             self.getImages();
         }, function (error) {
-
         }, SESSION_TOKEN);
     },
 
@@ -255,17 +269,59 @@ var functionality = {
 
     removeImg: function (id) {
         var self = this;
-        debugger;
         var url = SERVER_CONTEXT + "/admin/content/files/" + id;
         this.utils.ajaxDataBuilder(url, "DELETE", {}, function (response) {
             self.utils.turnSlickOff();
             $('#brewery .carousel').html("");
             self.getImages();
         },function (error) {
+        }, SESSION_TOKEN);
+    },
 
+    renderArticles: function () {
+        var self = this;
+        var url = SERVER_CONTEXT + "/content/article";
+        this.utils.ajaxDataBuilder(url, "GET", {}, function (response) {
+            var historyArticle = self.utils.getListItemByParameter(response, "title", "history");
+            var historyToolBar = self.historyEl.find('.toolbar');
+            var historyEditFormText = $('#history-text');
+            if(historyArticle){
+                var currentLangDesc = self.utils.getListItemByParameter(historyArticle.translations, "type", CURRENT_LANGUAGE);
+                self.historyInfo.text(currentLangDesc.translation);
+                historyEditFormText.val(currentLangDesc.translation);
+                self.historyEditFormBtn.data(historyArticle);
+            }else {
+                var addButton = $("<span class='fa fa-plus-square-o fa-3x add-history' title='remove article' />");
+                addButton.click(function () {
+                    self.historyInfo.attr('hidden', !self.historyInfo.attr('hidden'));
+                    self.historyEditForm.attr("hidden", !self.historyEditForm.attr("hidden"));
+                    self.historyEditFormBtn.data({
+                        "title": "history",
+                        "date": "",
+                        "translations": [{
+                        "title":"",
+                        "translation":"",
+                        "type": CURRENT_LANGUAGE
+                    }]});
+                });
+                addButton.appendTo(historyToolBar);
+            }
+        }, function (error) {})
+    },
+
+    saveUpdateHistory: function (article) {
+        debugger;
+        var article_id = article.article_id, self = this;
+        var url = article_id ? SERVER_CONTEXT + "/admin/content/article/" + article_id : SERVER_CONTEXT + "/admin/content/article/";
+        var type = article_id ? "PUT" : "POST";
+        this.utils.updateProductTextMetaData(article.translations, "translation", $('#history-text'));
+        this.utils.ajaxDataBuilder(url, type, article, function () {
+            self.renderArticles();
+            self.historyInfo.attr('hidden', !self.historyInfo.attr('hidden'));
+            self.historyEditForm.attr("hidden", !self.historyEditForm.attr("hidden"));
+        },function () {
         }, SESSION_TOKEN);
     }
-
 };
 
 $(document).ready(function () {
