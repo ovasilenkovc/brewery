@@ -2,9 +2,9 @@ function Utils() {
     return {
         updateProductTextMetaData: function (list, paramName, element) {
             var item = this.getListItemByParameter(list, "type", CURRENT_LANGUAGE);
-            if(item){
+            if (item) {
                 item[paramName] = element.val();
-            }else {
+            } else {
                 var descriptionObj = {
                     "description": "",
                     "composition": "",
@@ -44,7 +44,7 @@ function Utils() {
             formEl.find('input:radio, input:checkbox').removeAttr('checked').removeAttr('selected');
         },
 
-        initSlick: function(){
+        initSlick: function () {
             $('.fade').slick({
                 dots: false,
                 infinite: true,
@@ -57,6 +57,54 @@ function Utils() {
 
         turnSlickOff: function () {
             $('.fade').slick('unslick');
+        },
+
+        makeProductDEscriptionObj: function (type) {
+            return {
+                "title": "",
+                "type": type,
+                "description": "",
+                "composition": ""
+            }
+        },
+
+        makeHistoryObj: function (language) {
+            return {
+                "title": "history",
+                "date": "",
+                "translations": [{
+                    "title": "",
+                    "translation": "",
+                    "type": language
+                }]
+            }
+        },
+
+        makeHistoryTranslationObj: function (language) {
+            return {
+                "title": "",
+                "translation": "",
+                "type": language
+            }
+        },
+
+        makeProductObj: function (language) {
+            return {
+                "name": "",
+                "productType": {},
+                "descriptions": [{
+                    "composition": "",
+                    "description": "",
+                    "title": "",
+                    "type": language
+                }]
+            };
+        },
+
+        setProductDescChanges: function (el) {
+            var product = $(el).data(), language = $(el).attr("language"), keyName = $(el).attr("name");
+            var currentDescription = this.utils.getListItemByParameter(product.descriptions, "type", language);
+            currentDescription[keyName] = $(el).val();
         },
 
         ajaxDataBuilder: function (url, type, content, success, reject, token) {
@@ -77,7 +125,7 @@ function Utils() {
         ajaxFilesSender: function (url, type, files, success, reject, token) {
             var formData = new FormData();
             debugger;
-            var dataTypeMatcher = type === "IMAGES"? /image.*/ : /file.*/;
+            var dataTypeMatcher = type === "IMAGES" ? /image.*/ : /file.*/;
             if (files.length !== 0) {
                 $.each(files, function (i, item) {
                     if (!!item.type.match(dataTypeMatcher)) {

@@ -800,6 +800,7 @@ input, button {
     font-size: 18px;
     padding-bottom: 30px;
     color: #dfdfdf;
+    word-wrap: break-word;
 }
 .our_history{
     margin-bottom: 60px;
@@ -941,7 +942,7 @@ input, button {
 .window{
     background: #cfc2b1;
     width: 100%;
-    height: 641px;
+    height: 740px;
     margin: 0 auto;
     position: relative;
 }

@@ -182,12 +182,18 @@
             </div>
             <div class="our_history_desc">
                 <div class="toolbar">
-                    <button type="button" class="addNew">
-                        <span class="fa fa-pencil-square-o fa-3x edit-product" id="editHistory" title="edit history"></span>
-                    </button>
+                    <span class="fa fa-pencil-square-o fa-3x edit-history" id="editHistory" title="edit history" hidden></span>
+                    <span class='fa fa-plus-square-o fa-3x add-history'  id="addHistory" title='add article' hidden></span>
                 </div>
                 <p class="history-info"></p>
                 <form id="history-edit-form" hidden>
+                    <div class="form-group">
+                        <select class="form-control" id="history-lang-selector">
+                            <option value="ENG">English</option>
+                            <option value="UA">Україньська</option>
+                            <option value="RUS">Русский</option>
+                        </select>
+                    </div>
                     <div class="form-group">
                         <label for="history-text"></label>
                         <textarea class="form-control" id="history-text" rows="10"></textarea>
@@ -327,19 +333,31 @@
                         <form id="edit-form">
                             <div class="form-group">
                                 <label for="name">Product Name:</label>
-                                <input type="text" class="form-control" id="name"/>
+                                <input type="text" class="form-control" id="name" disabled/>
                             </div>
                             <div class="form-group">
-                                <label for="types-selector">Select types:</label>
+                                <label for="desc-lang-selector">Description Language:</label>
+                                <select class="form-control" id="desc-lang-selector">
+                                    <option value="ENG">English</option>
+                                    <option value="UA">Україньська</option>
+                                    <option value="RUS">Русский</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="title">Product Title:</label>
+                                <input type="text" class="form-control" name="title" id="title"/>
+                            </div>
+                            <div class="form-group">
+                                <label for="types-selector">Select Types:</label>
                                 <select class="form-control" id="types-selector"></select>
                             </div>
                             <div class="form-group">
-                                <label for="description">Product description:</label>
-                                <textarea class="form-control" id="description" rows="7"></textarea>
+                                <label for="description">Product Description:</label>
+                                <textarea class="form-control" name="description" id="description" rows="7"></textarea>
                             </div>
                             <div class="form-group">
-                                <label for="composition">Product composition:</label>
-                                <textarea class="form-control" id="composition" rows="3"></textarea>
+                                <label for="composition">Product Composition:</label>
+                                <textarea class="form-control" id="composition" name="composition" rows="3"></textarea>
                             </div>
                             <div>
                                 <button type="button" class="btn btn-info send-button" id="sendProductData">Send</button>

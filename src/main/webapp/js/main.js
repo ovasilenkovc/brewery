@@ -21,10 +21,12 @@ var functionality = {
 
         //edit product form elements init
         this.nameEl = $("#name");
+        this.titleEl = $("#title");
         this.formEl = $("#edit-form");
         this.descriptionEl = $("#description");
         this.compositionEl = $("#composition");
         this.typesSelectorEl = $("#types-selector");
+        this.descSelectorEl = $("#desc-lang-selector");
         this.sendProductDataEl = $("#sendProductData");
         this.addToolBtnEl = $("#asortiment-nav .addNew");
 
@@ -37,6 +39,9 @@ var functionality = {
         this.products = [];
         this.productTypes = [];
         this.historyEl = $(".our_history_desc");
+        this.editHistoryEl = $('#editHistory');
+        this.historyTextEl = $('#history-text');
+        this.addHistoryEl = $('#addHistory-info');
         this.historyEditForm = $('#history-edit-form');
         this.historyEditFormBtn = $('#sendHistoryData');
         this.historyInfo = self.historyEl.find('.history-info');
@@ -55,18 +60,9 @@ var functionality = {
         });
 
         this.addToolBtnEl.click(function () {
-            var product = {
-                "name": "",
-                "productType": {},
-                "descriptions": [{
-                    "composition": "",
-                    "description": "",
-                    "title": "",
-                    "type": CURRENT_LANGUAGE
-                }]
-            };
+            var product = self.utils.makeProductObj(CURRENT_LANGUAGE);
             self.utils.resetFormData(self.formEl);
-            self.sendProductDataEl.data(product);
+            self.editProduct(product);
             self.utils.initPopup($('#send-form-popup'));
         });
 
@@ -74,15 +70,46 @@ var functionality = {
             self.utils.initPopup($('#save-img-popup'));
         });
 
-        $('#editHistory').click(function () {
+        this.editHistoryEl.click(function () {
+            $('#history-lang-selector').val(CURRENT_LANGUAGE);
             self.historyInfo.attr('hidden', !self.historyInfo.attr('hidden'));
             self.historyEditForm.attr("hidden", !self.historyEditForm.attr("hidden"));
+        });
+
+        this.addHistoryEl.click(function () {
+            self.historyInfo.attr('hidden', !self.historyInfo.attr('hidden'));
+            self.historyEditForm.attr("hidden", !self.historyEditForm.attr("hidden"));
+            self.historyEditFormBtn.data(self.utils.makeHistoryObj(CURRENT_LANGUAGE));
         });
 
         this.historyEditFormBtn.click(function () {
             var history = $(this).data();
             self.saveUpdateHistory(history)
-        })
+        });
+
+        this.descSelectorEl.change(function () {
+            var currentLang = $(this).val();
+            var form = $(this).closest('form');
+            var product = form.find("#sendProductData").data();
+            self.productLangSwitcher(product, currentLang)
+        });
+
+        $('#history-lang-selector').change(function () {
+            var currentLang = $(this).val();
+            var form = $(this).closest('form');
+            var history = form.find("#sendHistoryData").data();
+            self.viewHistory(history, currentLang);
+        });
+
+        //dynamically saving typed input values
+        this.titleEl.change($.proxy(self.utils.setProductDescChanges, self, self.titleEl));
+        this.descriptionEl.change($.proxy(self.utils.setProductDescChanges, self, self.descriptionEl));
+        this.compositionEl.change($.proxy(self.utils.setProductDescChanges, self, self.compositionEl));
+        this.historyTextEl.change(function () {
+            var translation = $(this).data(), language = $(this).attr("language");
+            var currentTranslation = self.utils.getListItemByParameter(translation.translations, "type", language);
+            currentTranslation.translation = $(this).val();
+        });
     },
 
     login: function () {
@@ -169,7 +196,7 @@ var functionality = {
         });
 
         editBtn.click(function () {
-            self.utils.initPopup( $("#send-form-popup"));
+            self.utils.initPopup($("#send-form-popup"));
             self.editProduct($(this).data());
         });
 
@@ -182,38 +209,56 @@ var functionality = {
     },
 
     viewOneProduct: function (product) {
-        var self = this;
         if (product) {
             var descriptions = product.descriptions;
             var productType = product.productType;
-            self.popupProdImage.attr("src", productType.iconPath);
+            this.popupProdImage.attr("src", productType.iconPath);
             var productDescription = this.utils.getListItemByParameter(descriptions, "type", CURRENT_LANGUAGE);
-            debugger;
-            self.popupProdName.text(productDescription && productDescription.title ? productDescription.title : product.name);
-            self.popupDesc.text(productDescription && productDescription.description ? productDescription.description : "");
-            self.popupDescComp.text(productDescription && productDescription.composition ?productDescription.composition: "");
+            this.popupProdName.text(productDescription && productDescription.title ? productDescription.title : product.name);
+            this.popupDesc.text(productDescription && productDescription.description ? productDescription.description : "");
+            this.popupDescComp.text(productDescription && productDescription.composition ? productDescription.composition : "");
         }
     },
 
     editProduct: function (product) {
+        this.nameEl.val(product.name);
+        !product || product.name === "" ? this.nameEl.attr("disabled", false) : this.nameEl.attr("disabled", true);
+        this.descSelectorEl.val(CURRENT_LANGUAGE);
+        this.titleEl.data(product).attr("language", CURRENT_LANGUAGE);
+        this.descriptionEl.data(product).attr("language", CURRENT_LANGUAGE);
+        this.compositionEl.data(product).attr("language", CURRENT_LANGUAGE);
+
         var description = this.utils.getListItemByParameter(product.descriptions, "type", CURRENT_LANGUAGE);
         this.typesSelectorEl.val(product.productType.typeName).attr("selected", true);
         $("#send-form-popup .product-logo-img").attr('src', product.productType.iconPath);
         this.descriptionEl.val(description && description.description ? description.description : "");
         this.compositionEl.val(description && description.composition ? description.composition : "");
-        this.nameEl.val(description && description.title ? description.title : product.name);
+        this.titleEl.val(description && description.title ? description.title : product.name);
+
         this.sendProductDataEl.data(product);
+    },
+
+    productLangSwitcher: function (product, language) {
+        var currentDescription = this.utils.getListItemByParameter(product.descriptions, "type", language);
+        if (currentDescription === null) {
+            currentDescription = this.utils.makeProductDEscriptionObj(language);
+            product.descriptions.push(currentDescription);
+        }
+
+        this.titleEl.data(product).attr("language", language);
+        this.descriptionEl.data(product).attr("language", language);
+        this.compositionEl.data(product).attr("language", language);
+        this.descriptionEl.val(currentDescription && currentDescription.description ? currentDescription.description : "");
+        this.compositionEl.val(currentDescription && currentDescription.composition ? currentDescription.composition : "");
+        this.titleEl.val(currentDescription && currentDescription.title ? currentDescription.title : "");
     },
 
     sendProductData: function (product) {
         var productId = product.productId, self = this;
         var url = productId ? SERVER_CONTEXT + "/admin/content/product/" + productId : SERVER_CONTEXT + "/admin/content/product/";
         var type = productId ? "PUT" : "POST";
-        // product['name'] = product.name || product.name === "" ? this.nameEl.val() : product.name;
+        product.name || product.name === "" ? product['name'] = this.nameEl.val() : "";
         product['productType'] = this.utils.getListItemByParameter(this.productTypes, "typeName", this.typesSelectorEl.val());
-        this.utils.updateProductTextMetaData(product.descriptions, "title", this.nameEl);
-        this.utils.updateProductTextMetaData(product.descriptions, "description", this.descriptionEl);
-        this.utils.updateProductTextMetaData(product.descriptions, "composition", this.compositionEl);
 
         this.utils.ajaxDataBuilder(url, type, product, function () {
             self.getProducts();
@@ -274,7 +319,7 @@ var functionality = {
             self.utils.turnSlickOff();
             $('#brewery .carousel').html("");
             self.getImages();
-        },function (error) {
+        }, function (error) {
         }, SESSION_TOKEN);
     },
 
@@ -283,43 +328,38 @@ var functionality = {
         var url = SERVER_CONTEXT + "/content/article";
         this.utils.ajaxDataBuilder(url, "GET", {}, function (response) {
             var historyArticle = self.utils.getListItemByParameter(response, "title", "history");
-            var historyToolBar = self.historyEl.find('.toolbar');
-            var historyEditFormText = $('#history-text');
-            if(historyArticle){
-                var currentLangDesc = self.utils.getListItemByParameter(historyArticle.translations, "type", CURRENT_LANGUAGE);
-                self.historyInfo.text(currentLangDesc.translation);
-                historyEditFormText.val(currentLangDesc.translation);
-                self.historyEditFormBtn.data(historyArticle);
-            }else {
-                var addButton = $("<span class='fa fa-plus-square-o fa-3x add-history' title='remove article' />");
-                addButton.click(function () {
-                    self.historyInfo.attr('hidden', !self.historyInfo.attr('hidden'));
-                    self.historyEditForm.attr("hidden", !self.historyEditForm.attr("hidden"));
-                    self.historyEditFormBtn.data({
-                        "title": "history",
-                        "date": "",
-                        "translations": [{
-                        "title":"",
-                        "translation":"",
-                        "type": CURRENT_LANGUAGE
-                    }]});
-                });
-                addButton.appendTo(historyToolBar);
+            if (historyArticle) {
+                self.editHistoryEl.attr("hidden", false);
+                self.viewHistory(historyArticle, CURRENT_LANGUAGE)
+            } else {
+                self.addHistoryEl.attr("hidden", false);
             }
-        }, function (error) {})
+        }, function (error) {
+        })
+    },
+
+    viewHistory: function (history, language) {
+        var currentLangDesc = this.utils.getListItemByParameter(history.translations, "type", language);
+        if (currentLangDesc === null) {
+            currentLangDesc = this.utils.makeHistoryTranslationObj(language);
+            history.translations.push(currentLangDesc);
+        }
+        this.historyTextEl.data(history);
+        this.historyTextEl.attr("language", language);
+        this.historyTextEl.val(currentLangDesc ? currentLangDesc.translation : "");
+        this.historyInfo.html(currentLangDesc ? currentLangDesc.translation : "");
+        this.historyEditFormBtn.data(history);
     },
 
     saveUpdateHistory: function (article) {
-        debugger;
         var article_id = article.article_id, self = this;
         var url = article_id ? SERVER_CONTEXT + "/admin/content/article/" + article_id : SERVER_CONTEXT + "/admin/content/article/";
         var type = article_id ? "PUT" : "POST";
-        this.utils.updateProductTextMetaData(article.translations, "translation", $('#history-text'));
         this.utils.ajaxDataBuilder(url, type, article, function () {
             self.renderArticles();
             self.historyInfo.attr('hidden', !self.historyInfo.attr('hidden'));
             self.historyEditForm.attr("hidden", !self.historyEditForm.attr("hidden"));
-        },function () {
+        }, function () {
         }, SESSION_TOKEN);
     }
 };
