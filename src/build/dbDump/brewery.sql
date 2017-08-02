@@ -1,8 +1,10 @@
--- MySQL dump 10.13  Distrib 5.7.17, for Win64 (x86_64)
+CREATE DATABASE  IF NOT EXISTS `brewery` /*!40100 DEFAULT CHARACTER SET latin1 */;
+USE `brewery`;
+-- MySQL dump 10.13  Distrib 5.7.19, for Linux (x86_64)
 --
 -- Host: localhost    Database: brewery
 -- ------------------------------------------------------
--- Server version	5.7.19-log
+-- Server version	5.7.19-0ubuntu0.16.04.1
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -24,11 +26,10 @@ DROP TABLE IF EXISTS `articles`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `articles` (
   `article_id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `title` varchar(45) NOT NULL,
+  `title` varchar(45) DEFAULT NULL,
   `post_date` date DEFAULT NULL,
-  PRIMARY KEY (`article_id`),
-  UNIQUE KEY `title_UNIQUE` (`title`)
-) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=latin1;
+  PRIMARY KEY (`article_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -37,7 +38,7 @@ CREATE TABLE `articles` (
 
 LOCK TABLES `articles` WRITE;
 /*!40000 ALTER TABLE `articles` DISABLE KEYS */;
-INSERT INTO `articles` VALUES (15,'history','2017-08-07');
+INSERT INTO `articles` VALUES (18,'Our Story','2017-08-07'),(19,'Our Story','2017-08-07'),(20,'history',NULL);
 /*!40000 ALTER TABLE `articles` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -55,7 +56,7 @@ CREATE TABLE `descriptions` (
   `composition` mediumtext COLLATE utf8_unicode_ci,
   `translation_type` varchar(45) COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`desc_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=35 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=56 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -64,7 +65,7 @@ CREATE TABLE `descriptions` (
 
 LOCK TABLES `descriptions` WRITE;
 /*!40000 ALTER TABLE `descriptions` DISABLE KEYS */;
-INSERT INTO `descriptions` VALUES (7,'blonde light beer','this is the most popular variety of beer in all around of the world! world! world! world! world! world! world! world! world! world! world! world! world! world! world! world! ','world! world! world! ','ENG'),(9,'Интенсивно темнок','Темное пиво','В состав входят следующие ингридиенты...','RUS'),(10,'dark','sthshddfjghjdhfghdffdndfdfmfmuyfuymfuyefgseg','ddndnhhggggggggggnmnmbnzsgbdbcvbnxnvbnzbdfbzdb','ENG'),(11,'light','SD:IFHlbslgkbjsn;klsrbn;srtkbnstk;jlbnsrkl;tbjnsrtkl;jbn st;bjo','smnkhsr6o[ihrtmaerlma\nsrt','ENG'),(12,'lager','LAGER LAGER LAGER LAGER LAGER LAGER LAGER LAGER LAGER LAGER LAGER LAGER LAGER LAGER LAGER LAGER LAGER LAGER LAGER LAGER LAGER ','COMPOSITION','ENG'),(14,'Ginnes','awgaergsergsergsergsergsergefgb\nsgsgzsdrghzsetgherhsethhsrthrthrth\naehsethsrthsrthsrthsrthsxfghdfghfg\neahsrthsrthsrthrthrthdrth\nserthsrthsrthsrthsrt','aerhsthdrthdrthdrthdrthdrt\nawgsergergsergergssergsergsergserge','ENG'),(15,'Blonde','Lorem ispum; Lorem ispum;Lorem ispum;Lorem ispum;Lorem ispum;Lorem ispum;Lorem ispum;Lorem ispum;Lorem ispum;Lorem ispum;Lorem ispum;Lorem ispum;Lorem ispum;Lorem ispum;Lorem ispum;Lorem ispum;','Lorem ispum;Lorem ispum;Lorem ispum;Lorem ispum;Lorem ispum;Lorem ispum;Lorem ispum;Lorem ispum;','ENG'),(16,'Semi dark','loren ipsum; loren ipsum;loren ipsum;loren ipsum;loren ipsum;loren ipsum;loren ipsum;loren ipsum;loren ipsum;loren ipsum;loren ipsum;loren ipsum;loren ipsum;loren ipsum;loren ipsum;loren ipsum;','loren ipsum; loren ipsum;loren ipsum;loren ipsum;loren ipsum;loren ipsum;loren ipsum;loren ipsum;loren ipsum;loren ipsum;loren ipsum;loren ipsum;loren ipsum;loren ipsum;loren ipsum;loren ipsum;','ENG'),(22,'темне','пкпукпывапук','укпукпуфыкпявапук','UA'),(23,'Світле','ЯУВПРІЕияіеолдитуежилджівкеиоджфуктщжиуіе','уврікетрпдьтлікджлтьікнждт','UA'),(24,'Світле нефільтроване','цпфукпіркерпкерфукмицкфмфкмфіукиіів','фкифуеиіваиваіпмфукмфіукмиуи','UA'),(25,'Світлий лагер','уедиікеьитдєлзікеьизєіщкеьзкеьитщікеиваьліиджваьлизхщіеьлизіуеьизіуеиьщікджльлієплджкьи','фузпмщулизжіекбизжєлбзікебиєікебди','UA'),(26,'Ginnes','увиеікевкамиікеиікеімииамтва\nувиеікевкамиікеиікеімииамтва\nувиеікевкамиікеиікеімииамтва\nувиеікевкамиікеиікеімииамтваувиеікевкамиікеиікеімииамтва\nувиеікевкамиікеиікеімииамтваувиеікевкамиікеиікеімииамтва','увиеікевкамиікеиікеімииамтваувиеікевкамиікеиікеімииамтваувиеікевкамиікеиікеімииамтва','UA'),(27,'Нефільтроване','лфуьрлщтькеджльафєдпльапшофукщьлфвамиджфвьиджіь джлваьидєівалиьдєваж','фупьлєеиулджьиєдфуклиьфукджиьбфукджибу','UA'),(28,'Напів темне','фуджпиьфулдмиуьємдьіваємбьявамбьва\nфуджпиьфулдмиуьємдьіваємбьявамбьвафуджпиьфулдмиуьємдьіваємбьявамбьвафуджпиьфулдмиуьємдьіваємбьявамбьва\nфуджпиьфулдмиуьємдьіваємбьявамбьва','фуджпиьфулдмиуьємдьіваємбьявамбьвафуджпиьфулдмиуьємдьіваємбьявамбьва','UA'),(29,'Светлое','упфуклиьфуджлиьуфыеджильваидьывадилжьываилдьываджиьлвыаджиьлывджлиьываджильываилджьываиджьлдлвадж','Состав..','RUS'),(30,'Белое нефильтрованное','фукруеиузльифуклщиьфіуеджлитілдотівлди\nфукруеиузльифуклщиьфіуеджлитілдотівлдифукруеиузльифуклщиьфіуеджлитілдотівлдифукруеиузльифуклщиьфіуеджлитілдотівлди','фукруеиузльифуклщиьфіуеджлитілдотівлди','RUS'),(31,'Лагер','фуподфутмиджфукьиджлуфьыилдуытл','фужолдитулджукиофутдклиофукджли','RUS'),(32,'Ginnes','фуирлдьфуджильуджилфуьиджлфуьилджфуткилдж','фукджолтфуклджитфукждиьлдфук','RUS'),(33,'Блонде','улдиотфулиофуктлдифуктлдифукио\nулдиотфулиофуктлдифуктлдифукиоулдиотфулиофуктлдифуктлдифукиоулдиотфулиофуктлдифуктлдифукиоулдиотфулиофуктлдифуктлдифукиоулдиотфулиофуктлдифуктлдифукиоулдиотфулиофуктлдифуктлдифукиоулдиотфулиофуктлдифуктлдифукио','октифуклдитфуклдитфуклдио','RUS'),(34,'Полутемное','фудльфукджильфукджильфукджильуфкждифудльфукджильфукджильфукджильуфкждилфудльфукджильфукджильфукджильуфкждилфудльфукджильфукджильфукджильуфкждилфудльфукджильфукджильфукджильуфкждилфудльфукджильфукджильфукджильуфкждилл','джфулиьфуджлиьфукджлиьукд','RUS');
+INSERT INTO `descriptions` VALUES (7,'blonde light beer','this is the most popular variety of beer in all around of the world!','qwe','ENG'),(9,'Интенсивно темное','Самое Темное пиво в мире !!)','В состав входят следующие следующие следующие следующие ингридиенты...','RUS'),(12,'Темное легкое','Темное легкое','Состав..','RUS'),(13,'Intencive Dark','Really the most dark beer arround the World','Composition:...','ENG'),(14,'Iнтенсивно темне','темне пиво','Складова..','UA'),(15,'Легке свiтле','свiтле пиво','Складова..','UA'),(16,'Легкое светлое','светтлое пиво','Состав..','RUS'),(17,'Light','light beer','Composition..','ENG'),(18,'Светлое нефильтрованное','Светлое нефильтрованное пиво','Состав..','RUS'),(19,'Свiтле нефiльтроване','Свiтле нефiльтроване','Складова..','UA'),(20,'Темне легке','Темне легке пиво','Складова..','UA'),(21,'Темное легкое','Темное легкое','Состав..','RUS'),(22,'Темне легке пиво','Темне легке пиво','Складова..','UA'),(23,'DARK LIGHT BEER','DARK LIGHT BEER','Composition..','ENG'),(24,'BLONDE','Light unfiltered beer','Composition..','ENG'),(25,'Светлое нефильтрованное','Светлое нефильтрованное пиво','Состав..','RUS'),(26,'Свiтле нефiльтроване','Свiтле нефiльтроване пиво','Складова..','UA'),(27,'Свiтле','Свiтле пиво','Складова..','UA'),(28,'Светлое','Светлое пиво','Состав..','RUS'),(29,'Light','True light beer brewed with love and experience of the centuries!','Composition: warer, hope, etc','ENG'),(30,'Dark','Dark beer','Composition..','ENG'),(31,'Темное','Темное пиво','Состав..','RUS'),(32,'Темне','Темне пиво','Складова..','UA'),(33,'night darkness','this is the most popular variety of dark beer in all around of the world!','Vol 5%','RUS'),(34,'night darkness','this is the most popular variety of dark beer in all around of the world!','Vol 5%','UA'),(35,'night darkness','this is the most popular variety of dark beer in all around of the world!','Vol 5%','ENG'),(47,'Темнео нефильтрованное','Темнео нефильтрованное Темнео нефильтрованное Темнео нефильтрованное Темнео нефильтрованное Темнео нефильтрованное','Состав...','RUS'),(48,'Темне нефільтроване','темне нефільтроване','Складова...','UA'),(49,'Unfiltered Dark','True alive unfiltered dark beer','Composition','ENG'),(50,'Св. Патрик','Св. Патрик Ирландское зеленое','Состав...','RUS'),(51,'Св. Патрік ','Св. Патрік зелене Ірландське пиво','Складова','UA'),(52,'St. Patrik Green','St. Patrik Green irish style beer','Composituioin....','ENG'),(53,'Гиннес','Настоящий Ирландский темный Эль','Состав...','RUS'),(54,'Гінес','Справжній Ірландський темній ель','Складова...','UA'),(55,'Guinnes','Tue Irish Dark Ele','Composition...','ENG');
 /*!40000 ALTER TABLE `descriptions` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -77,11 +78,11 @@ DROP TABLE IF EXISTS `images`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `images` (
   `image_id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `name` varchar(350) NOT NULL,
-  `path` varchar(700) NOT NULL,
+  `name` varchar(45) NOT NULL,
+  `path` varchar(255) NOT NULL,
   PRIMARY KEY (`image_id`),
   UNIQUE KEY `uni_img_name` (`name`,`path`)
-) ENGINE=InnoDB AUTO_INCREMENT=36 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -90,30 +91,30 @@ CREATE TABLE `images` (
 
 LOCK TABLES `images` WRITE;
 /*!40000 ALTER TABLE `images` DISABLE KEYS */;
-INSERT INTO `images` VALUES (33,'558fcf8ca0d2e742d7a8cdc3eada9f74.jpg','/pictures'),(30,'fantasy-images-2560x1440-18.jpg','/pictures'),(34,'stella_artois_beer_alcohol_glass_108957_2560x1440.jpg','/pictures');
+INSERT INTO `images` VALUES (16,'slider-img-1.png','/pictures'),(15,'slider-img-2.png','/pictures');
 /*!40000 ALTER TABLE `images` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `invalidtokens`
+-- Table structure for table `invalidTokens`
 --
 
-DROP TABLE IF EXISTS `invalidtokens`;
+DROP TABLE IF EXISTS `invalidTokens`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `invalidtokens` (
+CREATE TABLE `invalidTokens` (
   `token` varchar(250) NOT NULL,
   PRIMARY KEY (`token`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `invalidtokens`
+-- Dumping data for table `invalidTokens`
 --
 
-LOCK TABLES `invalidtokens` WRITE;
-/*!40000 ALTER TABLE `invalidtokens` DISABLE KEYS */;
-/*!40000 ALTER TABLE `invalidtokens` ENABLE KEYS */;
+LOCK TABLES `invalidTokens` WRITE;
+/*!40000 ALTER TABLE `invalidTokens` DISABLE KEYS */;
+/*!40000 ALTER TABLE `invalidTokens` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -141,7 +142,7 @@ CREATE TABLE `prod_descs` (
 
 LOCK TABLES `prod_descs` WRITE;
 /*!40000 ALTER TABLE `prod_descs` DISABLE KEYS */;
-INSERT INTO `prod_descs` VALUES (9,7),(1,9),(1,10),(2,11),(13,12),(15,14),(16,15),(17,16),(1,22),(2,23),(9,24),(13,25),(15,26),(16,27),(17,28),(2,29),(9,30),(13,31),(15,32),(16,33),(17,34);
+INSERT INTO `prod_descs` VALUES (11,21),(11,22),(11,23),(9,24),(9,25),(9,26),(2,27),(2,28),(2,29),(1,30),(1,31),(1,32),(15,47),(15,48),(15,49),(16,50),(16,51),(16,52),(17,53),(17,54),(17,55);
 /*!40000 ALTER TABLE `prod_descs` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -169,7 +170,7 @@ CREATE TABLE `product` (
 
 LOCK TABLES `product` WRITE;
 /*!40000 ALTER TABLE `product` DISABLE KEYS */;
-INSERT INTO `product` VALUES (1,'dark','dark'),(2,'light','light'),(9,'blonde light beer','unfiltered-light'),(13,'lager','light'),(15,'Ginnes','dark'),(16,'Blonde','unfiltered-light'),(17,'Semi dark','semi-dark');
+INSERT INTO `product` VALUES (1,'dark','dark'),(2,'Light','light'),(9,'BLONDE','light unfiltered'),(11,'black light beer','semi dark'),(15,'Unfiltered Dark','unfiltered dark'),(16,'St. Patrik','green irish ale'),(17,'Guinnes','black irish ale');
 /*!40000 ALTER TABLE `product` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -197,7 +198,7 @@ CREATE TABLE `roles` (
 
 LOCK TABLES `roles` WRITE;
 /*!40000 ALTER TABLE `roles` DISABLE KEYS */;
-INSERT INTO `roles` VALUES (15,'Owner','ROLE_ADMIN'),(14,'Owner','ROLE_SUPER_ADMIN');
+INSERT INTO `roles` VALUES (2,'Ander','ROLE_ADMIN'),(4,'DSADF','ROLE_ADMIN'),(5,'DSADFF','ROLE_ADMIN'),(6,'NEWTEST','ROLE_ADMIN'),(14,'Owner','ROLE_ADMIN'),(15,'Owner','ROLE_SUPER_ADMIN'),(9,'ADMIN','USER_ADMIN'),(7,'Coolest','USER_ADMIN'),(10,'TEST','USER_ADMIN'),(11,'TEST','USER_GUEST'),(8,'Coolest','USER_SUPER_ADMIN'),(13,'USER','USER_USER');
 /*!40000 ALTER TABLE `roles` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -214,7 +215,7 @@ CREATE TABLE `translations` (
   `type` varchar(10) COLLATE utf8_unicode_ci DEFAULT NULL,
   `translation` text COLLATE utf8_unicode_ci,
   PRIMARY KEY (`translation_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=47 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=60 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -223,7 +224,7 @@ CREATE TABLE `translations` (
 
 LOCK TABLES `translations` WRITE;
 /*!40000 ALTER TABLE `translations` DISABLE KEYS */;
-INSERT INTO `translations` VALUES (44,'Наша история','RUS','Наша история Наша история Наша история Наша история Наша история Наша история Наша \nНаша история Наша история Наша история Наша история Наша история Наша история Наша история Наша история Наша история Наша история Наша история Наша история Наша история Наша история Наша история Наша история Наша история Наша история Наша история Наша история Наша история Наша история Наша история Наша история Наша история Наша история'),(45,'Наша історія','UA','Наша Історія Наша Історія Наша Історія Наша Історія Наша Історія Наша Історія Наша Історія Наша ІсторіяНаша Історія Наша Історія Наша Історія Наша ІсторіяНаша Історія Наша Історія Наша Історія Наша ІсторіяНаша Історія Наша Історія Наша Історія Наша ІсторіяНаша Історія Наша Історія Наша Історія Наша ІсторіяНаша Історія Наша Історія Наша Історія Наша ІсторіяНаша Історія Наша Історія Наша Історія Наша ІсторіяНаша Історія Наша Історія Наша Історія Наша ІсторіяНаша Історія Наша Історія Наша Історія Наша ІсторіяНаша Історія Наша Історія Наша Історія Наша ІсторіяНаша Історія Наша Історія Наша Історія Наша Історія'),(46,'Our Story','ENG','this is a new article lorem ispum. lorem ispum. lorem ispum. lorem ispum. lorem ispum. lorem ispum. lorem ispum. lorem ispum. lorem ispum. lorem ispum. lorem ispum. lorem ispum. lorem ispum. lorem ispum. lorem ispum. lorem ispum. lorem ispum. lorem ispum. lorem ispum. lorem ispum. lorem ispum. lorem ispum. lorem ispum. lorem ispum. lorem ispum. lorem ispum. \nthis is a new article lorem ispum. lorem ispum. lorem ispum. lorem ispum. lorem ispum. lorem ispum. lorem ispum. lorem ispum. lorem ispum. lorem ispum. lorem ispum. lorem ispum. lorem ispum. lorem ispum. lorem ispum. lorem ispum. lorem ispum. lorem ispum. lorem ispum. this is a new article lorem ispum. lorem ispum. lorem ispum. lorem ispum. lorem ispum. lorem');
+INSERT INTO `translations` VALUES (51,'новая статья','RUS','новая статья'),(52,'нова стаття','UA','це нова стаття'),(53,'new test qwe','ENG','this is a new article'),(54,'новая статья','RUS','новая статья'),(55,'нова стаття','UA','це нова стаття'),(56,'new test qwe','ENG','this is a new article'),(57,'','UA','Україньська УкраїньськаУкраїньськаУкраїньськаУкраїньськаУкраїньськаУкраїньськаУкраїньськаУкраїньська\nУкраїньськаУкраїньськаУкраїньськаУкраїньськаУкраїньськаУкраїньськаУкраїньськаУкраїньська\nУкраїньськаУкраїньськаУкраїньськаУкраїньськаУкраїньськаУкраїньськаУкраїньськаУкраїньська\nУкраїньська'),(58,'','ENG','LOREM ISPUM LOREM ISPUMLOREM ISPUMLOREM ISPUMLOREM ISPUMLOREM ISPUMLOREM ISPUMLOREM ISPUMLOREM ISPUMLOREM ISPUMLOREM ISPUMLOREM ISPUMLOREM ISPUMLOREM ISPUMLOREM ISPUMLOREM ISPUMLOREM ISPUMLOREM ISPUMLOREM ISPUMLOREM ISPUM\n'),(59,'','RUS','Русский РусскийРусскийРусскийРусскийРусскийРусскийРусскийРусскийРусскийРусскийРусскийРусскийР history-infohistory-infohistory-infohistory-infohistory-infohistory-infohistory-infohistory-info');
 /*!40000 ALTER TABLE `translations` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -252,7 +253,7 @@ CREATE TABLE `translations_article` (
 
 LOCK TABLES `translations_article` WRITE;
 /*!40000 ALTER TABLE `translations_article` DISABLE KEYS */;
-INSERT INTO `translations_article` VALUES (44,15),(45,15),(46,15);
+INSERT INTO `translations_article` VALUES (51,18),(52,18),(53,18),(54,19),(55,19),(56,19),(57,20),(58,20),(59,20);
 /*!40000 ALTER TABLE `translations_article` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -277,7 +278,7 @@ CREATE TABLE `type` (
 
 LOCK TABLES `type` WRITE;
 /*!40000 ALTER TABLE `type` DISABLE KEYS */;
-INSERT INTO `type` VALUES ('dark','/brewery/img/dark-beer.png'),('infiltered-dark','/brewery/img/dark-beer.png'),('light','/brewery/img/light-beer.png'),('red','/brewery/img/red-beer.png'),('semi-dark','/brewery/img/red-beer.png'),('unfiltered-light','/brewery/img/beer-wheaten.png');
+INSERT INTO `type` VALUES ('black irish ale','/brewery/img/black-beer.png'),('dark','/brewery/img/dark-beer.png'),('green irish ale','/brewery/img/green-beer.png'),('light','/brewery/img/light-beer.png'),('light unfiltered','/brewery/img/unfiltered-beer.png'),('red','/brewery/img/red-beer.png'),('semi dark','/brewery/img/red-beer.png'),('unfiltered dark','/brewery/img/unfiltered-dark-beer.png');
 /*!40000 ALTER TABLE `type` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -302,7 +303,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES ('Owner','admin',1);
+INSERT INTO `users` VALUES ('ADMIN','123',1),('Ander','adqwmin',1),('Coolest','123',1),('DSADF','adqwmin',1),('DSADFF','123',1),('NEWTEST','123',0),('OstapVasilenko','admin',1),('OV','TESTR',0),('Owner','admin',1),('TEST','TESTR',1),('USER','123',1);
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -315,4 +316,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-07-29 21:46:51
+-- Dump completed on 2017-08-02 20:28:16

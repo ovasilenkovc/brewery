@@ -75,7 +75,7 @@
         <div class="header-wrap">
             <!-- logo -->
             <div class="header-logo">
-                <a href="#"><img src="${contextPath}/img/logo-img.png" alt="logo"></a>
+                <a href="#"><img src="${contextPath}/img/logo.png" alt="logo"></a>
             </div>
             <!-- navigation -->
             <div class="header-nav">
@@ -101,7 +101,7 @@
                         </a>
                     </li>
                 </ul>
-                <div class="language-change">
+                <div class="lenguage-change">
                     <ul>
                         <li><a href="${contextPath}?language=ua" class="leng" value="UA">укр</a></li>
                         <li><img src="${contextPath}/img/leng-between.png" alt=""></li>
@@ -137,8 +137,8 @@
             </div>
         </div>
     </div>
-    <div id="asortiment-nav" class="assortment-wrap">
-        <div class="assortment-par-wrapper">
+    <div id="asortiment-nav" class="asortiment-wrap">
+        <div class="text-wrapper">
             <div class="container">
                 <div class="asortiment">
                     <h2>
@@ -170,48 +170,54 @@
         </div>
     </div>
     <div id="history" class="history_wrap">
-        <div class="container">
-            <div class="assortment-par-wrapper">
-                <div class="container">
-                    <div class="asortiment our_history">
-                        <h2>
-                            <spring:message code="our.history"/>
-                        </h2>
-                    </div>
+        <div class="text-wrapper">
+            <div class="container">
+                <div class="asortiment our_history">
+                    <h2>
+                        <spring:message code="our.history"/>
+                    </h2>
                 </div>
             </div>
-            <div class="our_history_desc">
-                <div class="toolbar">
-                    <span class="fa fa-pencil-square-o fa-3x edit-history" id="editHistory" title="edit history" hidden></span>
-                    <span class='fa fa-plus-square-o fa-3x add-history'  id="addHistory" title='add article' hidden></span>
+        </div>
+        <div class="history-info-wrapper">
+            <div class="container">
+                <div class="our_history_desc">
+                    <div class="toolbar">
+                        <span class="fa fa-pencil-square-o fa-3x edit-history" id="editHistory" title="edit history" hidden></span>
+                        <span class='fa fa-plus-square-o fa-3x add-history'  id="addHistory" title='add article' hidden></span>
+                    </div>
+                    <p class="history-info"></p>
+                    <form id="history-edit-form" hidden>
+                        <div class="form-group">
+                            <select class="form-control" id="history-lang-selector">
+                                <option value="ENG">English</option>
+                                <option value="UA">Україньська</option>
+                                <option value="RUS">Русский</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="history-text"></label>
+                            <textarea class="form-control" id="history-text" rows="10"></textarea>
+                        </div>
+                        <div>
+                            <button type="button" class="btn btn-info send-button" id="sendHistoryData">Send</button>
+                        </div>
+                    </form>
                 </div>
-                <p class="history-info"></p>
-                <form id="history-edit-form" hidden>
-                    <div class="form-group">
-                        <select class="form-control" id="history-lang-selector">
-                            <option value="ENG">English</option>
-                            <option value="UA">Україньська</option>
-                            <option value="RUS">Русский</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="history-text"></label>
-                        <textarea class="form-control" id="history-text" rows="10"></textarea>
-                    </div>
-                    <div>
-                        <button type="button" class="btn btn-info send-button" id="sendHistoryData">Send</button>
-                    </div>
-                </form>
             </div>
         </div>
     </div>
     <div id="contact-info-nav" class="contact-info-wrap">
-        <div class="container">
-            <div class="contact-info">
-                <h2>
-                    <spring:message code="contact.information"/>
-                </h2>
+        <div class="contact-info-logo">
+            <div class="container">
+                <div class="contact-info">
+                    <h2>
+                        <spring:message code="contact.information"/>
+                    </h2>
+                </div>
             </div>
+        </div>
+        <div class="container">
             <div class="contact-info-text">
                 <div class="contact-info-address">
                     <div class="address"><spring:message code="address"/></div>

@@ -124,7 +124,6 @@ function Utils() {
 
         ajaxFilesSender: function (url, type, files, success, reject, token) {
             var formData = new FormData();
-            debugger;
             var dataTypeMatcher = type === "IMAGES" ? /image.*/ : /file.*/;
             if (files.length !== 0) {
                 $.each(files, function (i, item) {

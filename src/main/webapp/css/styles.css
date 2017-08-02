@@ -8,6 +8,7 @@
     appearance: none;
 }
 body{
+    /*background: #fff;*/
     /*background: #4a4a4a;*/
     margin: 0 auto;   /*отступы: 0 - сверху и снизу, auto - справа и слева*/
     font: 12px/1'OpenSans-Regular', arial, helvetica, sans-serif;   /*12px/1 - размер шрифта/ 1 - межстрочное расстояние*/
@@ -494,17 +495,19 @@ input, button {
 /*---- FONTS START ----*/
 @font-face {
     font-family:'t';
-    /*src: url('../fonts/t Semibold.eot');*/
-    /*src: url('../fonts/t Semibold.eot?#iefix') format('embedded-opentype'),*/
-    /*url('../fonts/t Semibold.woff2') format('woff2'),*/
-    /*url('../fonts/t Semibold.woff') format('woff'),*/
-    /*url('../fonts/t Semibold.svg#t Semibold') format('svg');*/
+    src: url('../fonts/t Semibold.eot');
+	src: url('../fonts/t Semibold.eot?#iefix') format('embedded-opentype'),
+		url('../fonts/t Semibold.woff2') format('woff2'),
+		url('../fonts/t Semibold.woff') format('woff'),
+		url('../fonts/t Semibold.svg#t Semibold') format('svg');
     font-weight: 600;
     font-style: normal;
     font-stretch: normal;
     unicode-range: U+0020-2044;
 }
 /*---- FONTS END ----*/
+
+/*Header style start*/
 .container-fluid{
     padding: 0;
 }
@@ -525,9 +528,14 @@ input, button {
     background-position: center;
 }
 .header-logo{
-    margin-left: 29px;
-    margin-top: 40px;
+    /*margin-left: 10px;*/
+    /*margin-top: 40px;*/
     float: left;
+}
+.header-logo img{
+    height: 300px;
+    -webkit-filter: opacity(.5) drop-shadow(0 0 0 #b59164);
+    filter: opacity(.5) drop-shadow(0 0 0 #eecea5) saturate(250%) brightness(150%);
 }
 .header-nav{
     padding-top: 40px;
@@ -538,7 +546,7 @@ input, button {
     color: #dfdfdf;
     font-size: 15pt;
     text-transform: uppercase;
-    /*font-family: 'Arial, Helvetica';*/
+    font-family: 'Tahoma';
     padding: 0;
 }
 .navigation-link:hover{
@@ -551,6 +559,7 @@ input, button {
 .navigation-item{
     margin-right: 65px;
     display: inline-block;
+    font-family: 'Tahoma';
 }
 .navigation-item:last-child{
     margin-right: 15px;
@@ -576,22 +585,22 @@ input, button {
     color: #a7a7a7;
 }
 /* header stick style end*/
-.language-change{
+.lenguage-change{
     float: right;
     margin-right: 14px;
     margin-top: 34px;
 }
-.language-change li{
+.lenguage-change li{
     display: inline-block;
     margin: 0 2px 0 2px;
 }
-.language-change li a{
+.lenguage-change li a{
     font-size: 14.26px;
-    /*font-family: 'arkhip';*/
+    font-family: 'arkhip';
     color: #fff;
     text-transform: uppercase;
 }
-.language-change img{
+.lenguage-change img{
     margin-top: -2px;
 }
 .leng:hover{
@@ -608,11 +617,10 @@ input, button {
 }
 .try-new p{
     text-align: center;
-    font-size: 48px;
+    font-size: 47.9px;
     text-transform: uppercase;
     color: #dfdfdf;
     line-height: 2;
-    padding: 0 20%;
 }
 /*Header style end*/
 
@@ -634,39 +642,39 @@ input, button {
 .white-text{
     color: #dfdfdf;
     text-transform: uppercase;
-    margin: 0 70px;
+    margin-right: 140px;
 }
 .contact-us-text-mail, .number{
+    font-family: 'Tahoma';
     font-size: 18px;
     color: #b59164;
 }
 .contact-us-text-mail{
-    margin:0 55px;
+    margin-right: 109px;
 }
 .number{
-    margin: 0 8px;
+    margin-right: 15px;
     font-size: 16px;
 }
 .assortment-wrap{
     width: 100%;
-    background: #4a4a4a;
-    padding-bottom: 30px;
 }
-.assortment-par-wrapper{
-    padding: 100px 0;
-    overflow: hidden;
+.text-wrapper{
+    background: #4a4a4a;
+    padding: 110px 0 80px;
 }
 .asortiment{
     width: 100%;
     background: url("../img/asort-bg.png") center center no-repeat;
-    height: 220px;
-    /*margin: 100px 0;*/
+    height: 219px;
+    /*margin-top: 110px;*/
 }
 .asortiment h2{
-    font-size: 3vw;
+    font-size: 47.72pt;
+    font-family:'t';
     color: #b59164;
     text-align: center;
-    line-height: 3.55;
+    line-height: 3.3;
     text-transform: uppercase;
 }
 
@@ -676,6 +684,7 @@ input, button {
 }
 .selection-of-beer{
     width: 100%;
+    background: #4a4a4a;
 }
 .selection-of-beer:after{
     display: block;
@@ -791,19 +800,17 @@ input, button {
 }
 .our_history_desc{
     width: 754px;
-    min-height: 300px;
     margin: 0 auto;
+}
+.history-info-wrapper{
+    padding-bottom: 50px;
+    overflow: hidden;
 }
 .history-info{
     text-align: center;
-    line-height: 1.4em;
+    font-family: 'Tahoma';
     font-size: 18px;
-    padding-bottom: 30px;
     color: #dfdfdf;
-    word-wrap: break-word;
-}
-.our_history{
-    margin-bottom: 60px;
 }
 .center-p{
     text-align: center;
@@ -813,16 +820,19 @@ input, button {
 /*contact-info style start*/
 .contact-info-wrap{
     width: 100%;
-    height: 491px;
     background: #cfc2b1;
 }
+.contact-info-logo{
+    padding: 110px 0;
+    overflow: hidden;
+}
 .contact-info{
-    height: 220px;
+    height: 219px;
     background: url('../img/contact-info-bg.png') center no-repeat;
-    margin: 100px 0;
+    /*margin-top: 107px;*/
 }
 .contact-info h2{
-    /*font-family:'t';*/
+    font-family:'t';
     font-size: 48pt;
     color: #1e1e1e;
     text-align: center;
@@ -831,8 +841,9 @@ input, button {
 }
 .contact-info-text{
     width: 72.1929%;
+    margin: 0 auto;
     overflow: hidden;
-    margin: 71px auto 0;
+    padding-bottom: 50px;
 }
 .contact-info-address{
     float: left;
@@ -849,6 +860,7 @@ input, button {
 }
 .contact-email, .contact-info-tel, .bolder-font, .adress-text, .address{
     font-size: 18px;
+   font-family: 'Tahoma';
 }
 .contact-email{
     margin-bottom: 9px;
@@ -856,6 +868,7 @@ input, button {
 .bolder-font{
     font-size: 18px;
 }
+/*finaly img style start*/
 .finaly-img{
     width: 100%;
     height: 410px;
@@ -873,7 +886,6 @@ input, button {
     line-height: 3;
     text-transform: uppercase;
     color: #dfdfdf;
-    position: relative;
 }
 .romb-text:hover{
     color: #b59164;
@@ -887,12 +899,13 @@ input, button {
     text-align: center;
 }
 .footer-nav{
+    width: 844px;
     border: 1px solid transparent;
     border-bottom-color: #606060;
     margin: 0 auto;
 }
 .footer-nav .navigation-link-stick{
-    /*font-family: 'Tahoma';*/
+    font-family: 'Tahoma';
     font-size: 17.57px;
     color: #d7d7d7;
 }
@@ -904,7 +917,7 @@ input, button {
     margin-right: 96px;
 }
 .footer-text{
-    /*font-family: 'Tahoma';*/
+    font-family: 'Tahoma';
     font-size: 17.4px;
     color: #676666;
     line-height: 2.7;
