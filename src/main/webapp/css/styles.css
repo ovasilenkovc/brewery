@@ -8,8 +8,7 @@
     appearance: none;
 }
 body{
-    /*background: #fff;*/
-    /*background: #4a4a4a;*/
+    background: #fff;
     margin: 0 auto;   /*отступы: 0 - сверху и снизу, auto - справа и слева*/
     font: 12px/1'OpenSans-Regular', arial, helvetica, sans-serif;   /*12px/1 - размер шрифта/ 1 - межстрочное расстояние*/
 }
@@ -18,7 +17,7 @@ body:after{
     clear: both;
     content: '';
 }
-body::-webkit-scrollbar {
+body::-webkit-scrollbar{
     width: 0 !important
 }
 
@@ -561,6 +560,7 @@ input, button {
     display: inline-block;
     font-family: 'Tahoma';
 }
+.contacts-nav,
 .navigation-item:last-child{
     margin-right: 15px;
 }
@@ -718,16 +718,19 @@ input, button {
     cursor: pointer;
     border: 2px solid transparent;
 }
-.product-tools .edit-product,
-.product-tools .remove-product, .remove-image{
+.logout-ico, .product-tools .edit-product,
+.product-tools .remove-product, .remove-image,
+.edit-history, .add-history{
     display: inline-block;
     padding: 2px;
     margin: 0 5px;
     color: #b59164;
     cursor:pointer;
 }
+.logout-ico:hover,
 .product-tools .edit-product:hover,
 .product-tools .remove-product:hover,
+.edit-history:hover, .add-history:hover,
 .remove-image:hover{
     color: #cfc2b1;
 }
@@ -1048,7 +1051,10 @@ input, button {
 #product-send-error{
     color: red;
     display: block;
-    margin-top: 20px;
+    font-size: 15px;
+    width: 50%;
+    text-align: center;
+    margin: 0 auto;
     overflow-wrap: break-word;
 }
 .b-close-wrapper{

@@ -7,7 +7,7 @@
     <c:set var="contextPath" value="${pageContext.request.contextPath}"/>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>Document</title>
     <link rel="stylesheet" type="text/css" href="${contextPath}/css/bootstrap.css">
     <link rel="stylesheet" type="text/css" href="${contextPath}/css/bootstrap-reboot.css">
@@ -64,6 +64,9 @@
                                 <spring:message code="contacts"/>
                             </a>
                         </li>
+                        <li class="navigation-item logout" hidden>
+                            <span href="#" class="fa fa-sign-out fa-2x logout-ico"></span>
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -95,10 +98,13 @@
                             <spring:message code="history"/>
                         </a>
                     </li>
-                    <li class="navigation-item">
+                    <li class="navigation-item contacts-nav">
                         <a href="#contact-info-nav" class="navigation-link">
                             <spring:message code="contacts"/>
                         </a>
+                    </li>
+                    <li class="navigation-item logout" hidden>
+                        <span href="#" class="fa fa-sign-out fa-2x logout-ico"></span>
                     </li>
                 </ul>
                 <div class="lenguage-change">
@@ -337,9 +343,10 @@
                 <div class="window-text">
                     <div>
                         <form id="edit-form">
+                            <span id="product-send-error" class="product-send-error"></span>
                             <div class="form-group">
                                 <label for="name">Product Name:</label>
-                                <input type="text" class="form-control" id="name" disabled/>
+                                <input type="text" title="Product name should be consist only from latin chars" class="form-control" id="name" disabled/>
                             </div>
                             <div class="form-group">
                                 <label for="desc-lang-selector">Description Language:</label>
@@ -368,7 +375,6 @@
                             <div>
                                 <button type="button" class="btn btn-info send-button" id="sendProductData">Send</button>
                             </div>
-                            <span id="product-send-error" class="product-send-error"></span>
                         </form>
                     </div>
                 </div>

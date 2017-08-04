@@ -20,18 +20,18 @@
             <h1>Brewery Login</h1>
         </div>
         <div class="login-inputs form-group">
-            <label for="username">Username:</label>
+            <label for="username"><spring:message code="login.username"/></label>
             <input class="form-control" id="username" type="text"/>
         </div>
         <div class="login-inputs form-group">
-            <label for="password">Password:</label>
+            <label for="password"><spring:message code="login.password"/></label>
             <input class="form-control" id="password" type="password"/>
         </div>
         <div class="login-button">
-            <button type="button" class="btn btn-info login-btn" onclick="functionality.login()">Login</button>
-            <button type="button" class="btn btn-info" onclick="history.back()">Back</button>
+            <button type="button" class="btn btn-info login-btn" onclick="functionality.login()"><spring:message code="login.button"/></button>
+            <button type="button" class="btn btn-info" onclick="history.back()"><spring:message code="login.cancel"/></button>
         </div>
-        <span id="login-error" class="login-error">Sorry, the member name and password you entered do not match. Please try again.</span>
+        <span id="login-error" class="login-error"><spring:message code="login.error"/></span>
     </div>
 </body>
 </html>

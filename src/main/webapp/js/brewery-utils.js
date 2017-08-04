@@ -122,6 +122,13 @@ function Utils() {
             $.ajax(ajaxConfig)
         },
 
+        hideAdminTools: function (show) {
+            $('.toolbar').attr("hidden", show);
+            $('.logout').attr("hidden", show);
+            $('.product-tools').attr('hidden', show);
+            $('.remove-image').attr('hidden', show);
+        },
+
         ajaxFilesSender: function (url, type, files, success, reject, token) {
             var formData = new FormData();
             var dataTypeMatcher = type === "IMAGES" ? /image.*/ : /file.*/;
@@ -142,6 +149,20 @@ function Utils() {
                     error: reject
                 })
             }
+        },
+
+        checkRequireFields: function (formEl, parameters) {
+            var nonValid = [];
+            for (var i=0; i < parameters.length; i++) {
+                var input = formEl.find("#" + parameters[i]);
+                if(input.val() == ""){
+                    input.addClass("errorInput");
+                    nonValid.push(input);
+                }else {
+                    input.removeClass("errorInput");
+                }
+            }
+            return nonValid.length === 0;
         }
     }
 }

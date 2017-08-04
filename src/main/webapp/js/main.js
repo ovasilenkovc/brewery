@@ -54,7 +54,8 @@ var functionality = {
         this.renderArticles();
 
         //elements global binding
-        this.sendProductDataEl.click(function () {
+        this.sendProductDataEl.click(function (ev) {
+            ev.preventDefault();
             var product = $(this).data();
             self.sendProductData(product);
         });
@@ -101,6 +102,18 @@ var functionality = {
             self.viewHistory(history, currentLang);
         });
 
+        this.nameEl.bind('keyup', function () {
+            $(this).val($(this).val().replace(/[^a-z ]/i, ""))
+        });
+
+        this.nameEl.focusout(function () {
+            var val = $(this).val();
+            val === "" ? self.sendProductDataEl.attr("disabled", true) : self.sendProductDataEl.attr("disabled", false);
+        });
+
+        this.nameEl.prop('required',true);
+        this.titleEl.prop('required',true);
+
         //dynamically saving typed input values
         this.titleEl.change($.proxy(self.utils.setProductDescChanges, self, self.titleEl));
         this.descriptionEl.change($.proxy(self.utils.setProductDescChanges, self, self.descriptionEl));
@@ -110,6 +123,8 @@ var functionality = {
             var currentTranslation = self.utils.getListItemByParameter(translation.translations, "type", language);
             currentTranslation.translation = $(this).val();
         });
+
+        $('.logout').click($.proxy(this.logout, self));
     },
 
     login: function () {
@@ -119,6 +134,7 @@ var functionality = {
             "password": functionality.userPasswordEl.val()
         }, function (response) {
             localStorage.setItem('token', response.token);
+            localStorage.setItem('registered', true);
             window.location.href = window.location.origin + SERVER_CONTEXT;
         }, function () {
             functionality.loginErorEl.addClass("show")
@@ -127,10 +143,10 @@ var functionality = {
 
     logout: function () {
         var url = SERVER_CONTEXT + "/logout";
-        this.utils.ajaxDataBuilder(url, "DELETE", {},
-            function () {
-                localStorage.clear()
-            });
+        this.utils.ajaxDataBuilder(url, "DELETE", {}, function () {
+            localStorage.clear()
+        }, function () {
+        }, SESSION_TOKEN);
     },
 
     getProducts: function () {
@@ -260,14 +276,20 @@ var functionality = {
         product.name || product.name === "" ? product['name'] = this.nameEl.val() : "";
         product['productType'] = this.utils.getListItemByParameter(this.productTypes, "typeName", this.typesSelectorEl.val());
 
-        this.utils.ajaxDataBuilder(url, type, product, function () {
-            self.getProducts();
-            self.utils.resetFormData(self.formEl);
-            self.utils.popupDisable($('#send-form-popup'));
-        }, function (error) {
-            //to do
-            $('#product-send-error').text(error);
-        }, SESSION_TOKEN)
+        if(this.utils.checkRequireFields(this.formEl, ['name', 'title'])){
+            $('.product-send-error').removeClass('.product-send-error');
+            this.utils.ajaxDataBuilder(url, type, product, function () {
+                self.getProducts();
+                self.utils.resetFormData(self.formEl);
+                self.utils.popupDisable($('#send-form-popup'));
+            }, function (error) {
+                var message = error.status + " " + error.statusText;
+                $('#product-send-error').text(message);
+            }, SESSION_TOKEN)
+        }else {
+            $('.product-send-error').html("Product name and title are required!").addClass('.product-send-error')
+        }
+
     },
 
     removeProduct: function (product) {
@@ -366,4 +388,20 @@ var functionality = {
 
 $(document).ready(function () {
     functionality.init();
+});
+$(document).ajaxComplete(function () {
+    var show = localStorage.getItem('registered') && !!localStorage.getItem('registered') === true ? localStorage.getItem('registered') : false;
+    functionality.utils.hideAdminTools(!show);
+});
+$(document).bind("contextmenu", function (event) {
+    event.preventDefault();
+});
+$(window).bind('mousewheel DOMMouseScroll', function (event) {
+    if (event.ctrlKey == true) {
+        event.preventDefault();
+    }
+});
+$.validator.setDefaults({
+    debug: true,
+    success: "valid"
 });
