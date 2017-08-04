@@ -7,7 +7,7 @@
     <c:set var="contextPath" value="${pageContext.request.contextPath}"/>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>Document</title>
     <link rel="stylesheet" type="text/css" href="${contextPath}/css/bootstrap.css">
     <link rel="stylesheet" type="text/css" href="${contextPath}/css/bootstrap-reboot.css">
@@ -64,6 +64,9 @@
                                 <spring:message code="contacts"/>
                             </a>
                         </li>
+                        <li class="navigation-item logout" hidden>
+                            <span href="#" class="fa fa-sign-out fa-2x logout-ico"></span>
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -75,7 +78,7 @@
         <div class="header-wrap">
             <!-- logo -->
             <div class="header-logo">
-                <a href="#"><img src="${contextPath}/img/logo-img.png" alt="logo"></a>
+                <a href="#"><img src="${contextPath}/img/logo.png" alt="logo"></a>
             </div>
             <!-- navigation -->
             <div class="header-nav">
@@ -95,10 +98,13 @@
                             <spring:message code="history"/>
                         </a>
                     </li>
-                    <li class="navigation-item">
+                    <li class="navigation-item contacts-nav">
                         <a href="#contact-info-nav" class="navigation-link">
                             <spring:message code="contacts"/>
                         </a>
+                    </li>
+                    <li class="navigation-item logout" hidden>
+                        <span href="#" class="fa fa-sign-out fa-2x logout-ico"></span>
                     </li>
                 </ul>
                 <div class="lenguage-change">
@@ -138,7 +144,7 @@
         </div>
     </div>
     <div id="asortiment-nav" class="asortiment-wrap">
-        <div class="assortment-par-wrapper">
+        <div class="text-wrapper">
             <div class="container">
                 <div class="asortiment">
                     <h2>
@@ -170,59 +176,54 @@
         </div>
     </div>
     <div id="history" class="history_wrap">
-        <div class="container">
-            <div class="assortment-par-wrapper">
-                <div class="container">
-                    <div class="asortiment our_history">
-                        <h2>
-                            <spring:message code="our.history"/>
-                        </h2>
-                    </div>
+        <div class="text-wrapper">
+            <div class="container">
+                <div class="asortiment our_history">
+                    <h2>
+                        <spring:message code="our.history"/>
+                    </h2>
                 </div>
             </div>
-            <div class="our_history_desc">
-                <div class="toolbar">
-                    <button type="button" class="btn btn-default btn-sm">
-                        <span class="glyphicon glyphicon-edit"></span> Edit
-                    </button>
-                    <button type="button" class="btn btn-default btn-sm">
-                        <span class="glyphicon glyphicon-plus"></span> Plus
-                    </button>
-                    <button type="button" class="btn btn-default btn-sm">
-                        <span class="glyphicon glyphicon-remove"></span> Remove
-                    </button>
+        </div>
+        <div class="history-info-wrapper">
+            <div class="container">
+                <div class="our_history_desc">
+                    <div class="toolbar">
+                        <span class="fa fa-pencil-square-o fa-3x edit-history" id="editHistory" title="edit history" hidden></span>
+                        <span class='fa fa-plus-square-o fa-3x add-history'  id="addHistory" title='add article' hidden></span>
+                    </div>
+                    <p class="history-info"></p>
+                    <form id="history-edit-form" hidden>
+                        <div class="form-group">
+                            <select class="form-control" id="history-lang-selector">
+                                <option value="ENG">English</option>
+                                <option value="UA">Україньська</option>
+                                <option value="RUS">Русский</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="history-text"></label>
+                            <textarea class="form-control" id="history-text" rows="10"></textarea>
+                        </div>
+                        <div>
+                            <button type="button" class="btn btn-info send-button" id="sendHistoryData">Send</button>
+                        </div>
+                    </form>
                 </div>
-                <p class="history-info">
-                    Trillium Brewing Company was established on the values of family, passion, and dedication.
-                    Celebratory ales were first crafted to commemorate the marriage of founders JC and Esther Tetreault.
-                    This initial concept evolved into a lifestyle and dream to share, not only beer, experiences with
-                    one another and their community.
-                </p>
-                <p class="history-info">
-                    Trillium opened in March 2013 with the support of family, volunteers, two babies, and three
-                    employees. This small brewery has since developed into an exciting venue of collaboration and
-                    innovation. Trillium is a New England farmhouse style brewery, deeply rooted in the dynamic
-                    landscapes, abundant natural resources, and resilient population of the region. From our wild ales,
-                    fermented with our native New England mixed microbe culture, to our more hop-forward offerings, we
-                    aim to produce beer that is both approachable and engaging.
-                </p>
-                <p class="history-info">
-                    Our flagship location is tucked in the vibrant Fort Point neighborhood of South Boston where we
-                    utilize practices representing both tradition and modern re-invention. We find inspiration in the
-                    heritage of farmhouse brewing methods while actively employing novel concepts and technologies. In
-                    December 2015, we opened our secondary facility in Canton, MA, which will allow us to significantly
-                    increase production volume for wider availability and expanded variety.
-                </p>
             </div>
         </div>
     </div>
     <div id="contact-info-nav" class="contact-info-wrap">
-        <div class="container">
-            <div class="contact-info">
-                <h2>
-                    <spring:message code="contact.information"/>
-                </h2>
+        <div class="contact-info-logo">
+            <div class="container">
+                <div class="contact-info">
+                    <h2>
+                        <spring:message code="contact.information"/>
+                    </h2>
+                </div>
             </div>
+        </div>
+        <div class="container">
             <div class="contact-info-text">
                 <div class="contact-info-address">
                     <div class="address"><spring:message code="address"/></div>
@@ -342,26 +343,38 @@
                 <div class="window-text">
                     <div>
                         <form id="edit-form">
+                            <span id="product-send-error" class="product-send-error"></span>
                             <div class="form-group">
                                 <label for="name">Product Name:</label>
-                                <input type="text" class="form-control" id="name"/>
+                                <input type="text" title="Product name should be consist only from latin chars" class="form-control" id="name" disabled/>
                             </div>
                             <div class="form-group">
-                                <label for="types-selector">Select types:</label>
+                                <label for="desc-lang-selector">Description Language:</label>
+                                <select class="form-control" id="desc-lang-selector">
+                                    <option value="ENG">English</option>
+                                    <option value="UA">Україньська</option>
+                                    <option value="RUS">Русский</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="title">Product Title:</label>
+                                <input type="text" class="form-control" name="title" id="title"/>
+                            </div>
+                            <div class="form-group">
+                                <label for="types-selector">Select Types:</label>
                                 <select class="form-control" id="types-selector"></select>
                             </div>
                             <div class="form-group">
-                                <label for="description">Product description:</label>
-                                <textarea class="form-control" id="description" rows="7"></textarea>
+                                <label for="description">Product Description:</label>
+                                <textarea class="form-control" name="description" id="description" rows="7"></textarea>
                             </div>
                             <div class="form-group">
-                                <label for="composition">Product composition:</label>
-                                <textarea class="form-control" id="composition" rows="3"></textarea>
+                                <label for="composition">Product Composition:</label>
+                                <textarea class="form-control" id="composition" name="composition" rows="3"></textarea>
                             </div>
                             <div>
                                 <button type="button" class="btn btn-info send-button" id="sendProductData">Send</button>
                             </div>
-                            <span id="product-send-error" class="product-send-error"></span>
                         </form>
                     </div>
                 </div>

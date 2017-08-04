@@ -87,6 +87,7 @@ public class ContentController {
         Article articleForUpdate = (Article) contentService.getOne(id, ConstantParams.ARTICLE_CONTEXT);
         articleForUpdate.setTitle(article.getTitle());
         articleForUpdate.setDate(article.getDate());
+        articleForUpdate.setTranslations(article.getTranslations());
         contentService.update(articleForUpdate, ConstantParams.ARTICLE_CONTEXT);
         String message = "Article has been updated successfully!";
         return ResponseMaker.makeResponse(message, ConstantParams.JSON_HEADER_TYPE, HttpStatus.NO_CONTENT);

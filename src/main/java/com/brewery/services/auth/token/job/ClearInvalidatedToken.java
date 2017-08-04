@@ -24,15 +24,13 @@ public class ClearInvalidatedToken {
     public ClearInvalidatedToken() {
     }
 
-    @Scheduled(fixedDelay=7200000)
-    public void clearInvalidatedToken(){
+    @Scheduled(fixedDelay = 7200000)
+    public void clearInvalidatedToken() {
         LOGGER.info("Invalidate tokens Database cleaning started");
         List<InvalidToken> invalidTokens = adminUserDao.getInvalidatedTokens();
-        for (InvalidToken invalidToken: invalidTokens){
+        for (InvalidToken invalidToken : invalidTokens) {
             String token = invalidToken.getToken();
-            if(tokenService.isTokenExpired(token)){
-                adminUserDao.removeInvalidatedToken(invalidToken);
-            }
+            adminUserDao.removeInvalidatedToken(invalidToken);
         }
     }
 }

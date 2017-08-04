@@ -40,10 +40,11 @@ public class JwtTokenService {
         long millis = System.currentTimeMillis();
         java.util.Date date = new java.util.Date(millis + (JwtTokenParams.EXPIRATION_TIME * 60 * 1000));
 
-        return Jwts.builder()
-                .setClaims(claims).setExpiration(date)
-                .signWith(SignatureAlgorithm.HS256, JwtTokenParams.SECRET)
-                .compact();
+//        return Jwts.builder()
+//                .setClaims(claims).setExpiration(date)
+//                .signWith(SignatureAlgorithm.HS256, JwtTokenParams.SECRET)
+//                .compact();
+        return Jwts.builder().setClaims(claims).signWith(SignatureAlgorithm.HS256, JwtTokenParams.SECRET).compact();
     }
 
     public boolean isTokenExpired(String token) {

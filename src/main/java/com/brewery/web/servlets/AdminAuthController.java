@@ -18,11 +18,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.io.IOException;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -69,7 +66,7 @@ public class AdminAuthController {
 
     @ResponseBody
     @RequestMapping(value = "/logout", method = RequestMethod.DELETE)
-    public ResponseEntity<String> jsonLogout(HttpServletRequest request) throws IOException, SQLException {
+    public ResponseEntity<String> jsonLogout(HttpServletRequest request) throws Exception {
         String header = request.getHeader(JwtTokenParams.HEADER_STRING);
         LOGGER.info("User logout method called");
         try {
@@ -78,10 +75,14 @@ public class AdminAuthController {
                 return ResponseMaker.makeResponse("token has already been invalidated!",
                         ConstantParams.JSON_HEADER_TYPE, HttpStatus.OK);
             }
-            userDetailService.invalidateToken(header);
+            String token = header.substring(JwtTokenParams.TOKEN_PREFIX.length());
+            User user = tokenService.parseToken(token);
+            if(user != null){
+                userDetailService.invalidateToken(token);
+            }
         } catch (Exception e) {
             LOGGER.error(e.getMessage());
-            throw new SQLException(e.getMessage());
+            throw new Exception(e.getMessage());
         }
 
         LOGGER.info("User has been logged out successfully!");
