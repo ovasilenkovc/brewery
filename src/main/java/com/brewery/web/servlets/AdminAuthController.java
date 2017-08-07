@@ -70,7 +70,7 @@ public class AdminAuthController {
         String header = request.getHeader(JwtTokenParams.HEADER_STRING);
         LOGGER.info("User logout method called");
         try {
-            if (!userDetailService.isValidToken(header)) {
+            if (!userDetailService.isValidToken( header.substring(JwtTokenParams.TOKEN_PREFIX.length()))) {
                 LOGGER.info("token has already been invalidated!");
                 return ResponseMaker.makeResponse("token has already been invalidated!",
                         ConstantParams.JSON_HEADER_TYPE, HttpStatus.OK);
