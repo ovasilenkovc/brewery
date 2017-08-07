@@ -1,5 +1,5 @@
 package com.brewery.admin.model;
 
 public enum RoleTypes {
-    USER_ADMIN, USER_SUPER_ADMIN, USER_GUEST
+    ROLE_ADMIN, ROLE_SUPER_ADMIN, ROLE_GUEST
 }

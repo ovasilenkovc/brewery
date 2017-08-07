@@ -1,0 +1,87 @@
+body {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    background: #4a4a4a;
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#faebd1', endColorstr='#f2ddba', GradientType=1); /* IE6-9 */
+}
+
+body::-webkit-scrollbar {
+    width: 0 !important
+}
+
+.login-page {
+    padding: 2% 4% 3% 4%;
+    width: 37%;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    margin: auto;
+    background: #cfc2b1;
+}
+
+.login-page .login-title {
+    height: 220px;
+    width: 100%;
+    background: url('../img/asort-bg.png') center no-repeat;
+    background-size: contain;
+    margin-bottom: 50px;
+    padding-bottom: 0.5%;
+}
+
+.login-page .login-title h1 {
+    width: 100%;
+    font-size: 3vw;
+    line-height: 3.55;
+    text-align: center;
+    color: #4b5257;
+}
+
+.login-page .login-inputs {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    width: 100%;
+}
+
+.login-page .login-inputs input:focus {
+    border: 1px solid #b59164;
+}
+
+.login-page .login-inputs label {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.login-page .login-button {
+    width: 100%;
+    overflow: hidden;
+}
+
+.login-page .login-button button {
+    text-align: center;
+    background: #4a4a4a;
+    width: 48%;
+    float: left;
+    border: none;
+}
+.login-page .login-button .login-btn{
+    margin-right: 4%;
+}
+
+.login-page .login-button button:hover {
+    background: #dbb17b;
+}
+
+.login-page .login-error {
+    color: red;
+    display: none;
+    overflow-wrap: break-word;
+}
+
+.login-page .show {
+    margin-top: 10px;
+    display: block;
+    text-align: center;
+}

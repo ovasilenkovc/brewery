@@ -12,6 +12,7 @@ import sun.misc.BASE64Encoder;
 import javax.activation.MimetypesFileTypeMap;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -31,19 +32,23 @@ public class FileFolderService {
     private static final Logger LOGGER = Logger.getLogger(FileFolderService.class);
 
     /**
-     *  Method for saving file. It saves items into specified store path.
-     *  If store doesn't exist, it will create new one with specified name.
-     *  @param file multipart file for saving.
-     *  @param path saving path.
+     * Method for saving file. It saves items into specified store path.
+     * If store doesn't exist, it will create new one with specified name.
      *
-     *  @return String returns absolute path for saved file.
+     * @param file multipart file for saving.
+     * @param path saving path.
+     * @return String returns absolute path for saved file.
      */
     public String saveFile(MultipartFile file, String path) throws IOException {
-        String storagePath = ConstantParams.TEMP_FOLDER_PATH + path;
+        String storagePath = ConstantParams.TEMP_FOLDER_PATH + ConstantParams.ROOT_PROJECT_DIR + path;
         String fileName = file.getOriginalFilename();
 
-        if (!new File(ConstantParams.TEMP_FOLDER_PATH + "/" + path).exists())
-            createFolders(path, ConstantParams.TEMP_FOLDER_PATH);
+        if (!new File(ConstantParams.TEMP_FOLDER_PATH + ConstantParams.ROOT_PROJECT_DIR).exists()) {
+            createFolders(ConstantParams.ROOT_PROJECT_DIR, ConstantParams.TEMP_FOLDER_PATH);
+        }
+
+        if (!new File(storagePath).exists())
+            createFolders(path, ConstantParams.TEMP_FOLDER_PATH + ConstantParams.ROOT_PROJECT_DIR);
 
         try {
             byte[] bytes = file.getBytes();
@@ -60,6 +65,7 @@ public class FileFolderService {
     /**
      * A method for removing the file from the store.
      * Uses file name and store path to build full path for deleting.
+     *
      * @param fileName name of the removing file.
      * @param filePath path to the store.
      */
@@ -72,7 +78,8 @@ public class FileFolderService {
     /**
      * A method for checking is a file has a valid mimetype for the current context.
      * As an example, if context equals to "IMAGES", the mimetype for a file must be image/jpg, image/png, etc.
-     * @param type the mimetype for current file.
+     *
+     * @param type    the mimetype for current file.
      * @param context current runtime context.
      */
     public boolean checkIsValidDataType(String type, String context) {
@@ -120,8 +127,8 @@ public class FileFolderService {
     /**
      * A Method for encoding files, obtained from the store to the base64 encoding.
      * Uses absolute path for a file.
-     * @param filePath an absolute file path to the file.
      *
+     * @param filePath an absolute file path to the file.
      * @return an array of encoded bytes.
      */
     public byte[] getBase64Encoded(String filePath) throws IOException {
@@ -135,8 +142,8 @@ public class FileFolderService {
     /**
      * A Method for encoding files, obtained from the store to the base64 encoding.
      * Uses a java.io.File as object for encoding.
-     * @param file file object for encoding.
      *
+     * @param file file object for encoding.
      * @return an array of encoded bytes.
      */
     public byte[] getBase64ByteEncoded(File file) throws IOException {
@@ -150,7 +157,7 @@ public class FileFolderService {
             return encoded;
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
-            if(fileInputStream != null){
+            if (fileInputStream != null) {
                 fileInputStream.close();
             }
             return null;
@@ -160,24 +167,24 @@ public class FileFolderService {
     /**
      * A Method for encoding files, obtained from the store to the base64 encoding.
      * Uses absolute path for obtaining a stored file.
-     * @param fullPath an absolute path to the file.
      *
+     * @param fullPath an absolute path to the file.
      * @return an array of encoded bytes.
      */
     public String getBase64StringEncoded(String fullPath) throws IOException {
         File file = new File(fullPath);
         FileInputStream fileInputStream = null;
-        String mimeType = new MimetypesFileTypeMap().getContentType(file);
+        String mimeType = Files.probeContentType(file.toPath());
         try {
             fileInputStream = new FileInputStream(file);
             byte[] bytes = new byte[(int) file.length()];
             fileInputStream.read(bytes);
-            String sb = ("data:" + mimeType + ";base64,") + Base64.encodeBase64URLSafeString(bytes);
+            String sb = "data:" + mimeType + ";base64," + new String(Base64.encodeBase64(bytes));
             fileInputStream.close();
             return sb;
-        }catch (Exception e){
+        } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
-            if(fileInputStream != null){
+            if (fileInputStream != null) {
                 fileInputStream.close();
             }
             return null;
@@ -189,7 +196,7 @@ public class FileFolderService {
      * Uses path for understanding depth of the folder tree,
      * any part of the path will be used as a new folder name.
      *
-     * @param path path for building three.
+     * @param path   path for building three.
      * @param parent name of the parent folder where the new folder will be created.
      */
     private void createFolders(String path, String parent) throws IOException {

@@ -25,7 +25,7 @@ public final class ConstantParams {
 
     public static final String INFO_MESSAGE = "massage";
 
-    //content parameters
+    //content entity parameters
     public static final String IMAGE_CONTEXT = "IMAGE";
 
     public static final String FILE_CONTEXT = "FILE";
@@ -34,11 +34,19 @@ public final class ConstantParams {
 
     public static final String ARTICLE_CONTEXT = "ARTICLE";
 
+    public static final String PRODUCT_CONTEXT = "PRODUCT";
+
+    public static final String PRODUCT_TYPE_CONTEXT = "PRODUCT_TYPE";
+
+    public static final String PRODUCT_DESCRIPTION = "PRODUCT_DESCRIPTION";
+
+
+    //default paths
     public static final String TEMP_FOLDER_PATH = System.getProperty("java.io.tmpdir");
 
     public static final String ROOT_PROJECT_DIR = "/brewery";
 
-    public static final Map<String, Set<String>> CONTENT_MIME_TYPES = new HashMap<String, Set<String>>(){{
+    public static final Map<String, Set<String>> CONTENT_MIME_TYPES = new HashMap<String, Set<String>>() {{
         put(IMAGE_CONTEXT, new HashSet<>((Arrays.asList("image/gif", "image/jpeg", "image/pjpeg", "image/png"))));
         put(FILE_CONTEXT, new HashSet<>((Arrays.asList("application/pdf", "application/xml", "text/html", "text/javascript", "text/xml"))));
     }};

@@ -5,8 +5,8 @@ import com.brewery.exceptions.JwtTokenMalformedException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
-import org.apache.log4j.Logger;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.apache.log4j.Logger;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
@@ -22,20 +22,13 @@ public class JwtTokenService {
     public JwtTokenService() {
     }
 
-    public User parseToken(String token) {
+    public User parseToken(String token) throws Exception {
         LOGGER.info("token processing has been started");
-        try {
-            Claims body = Jwts.parser().setSigningKey(JwtTokenParams.SECRET).parseClaimsJws(token).getBody();
-            String username = body.getSubject();
-            boolean enabled = (Boolean) body.get("isEnabled");
-            Set<GrantedAuthority> authorities = parseAuthorities((List<Map<String, String>>) body.get("authorities"));
-            return new User(username, null, enabled, authorities);
-        } catch (Exception e) {
-            String message = "Token is not valid!";
-            LOGGER.error(message);
-            throw new JwtTokenMalformedException(message, e);
-        }
-
+        Claims body = Jwts.parser().setSigningKey(JwtTokenParams.SECRET).parseClaimsJws(token).getBody();
+        String username = body.getSubject();
+        boolean enabled = (Boolean) body.get("isEnabled");
+        Set<GrantedAuthority> authorities = parseAuthorities((List<Map<String, String>>) body.get("authorities"));
+        return new User(username, null, enabled, authorities);
     }
 
     public String buildToken(User user) throws UnsupportedEncodingException {

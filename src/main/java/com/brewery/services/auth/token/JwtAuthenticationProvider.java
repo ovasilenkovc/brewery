@@ -3,6 +3,7 @@ package com.brewery.services.auth.token;
 import com.brewery.services.auth.token.jwt.JwtToken;
 import com.brewery.services.auth.token.jwt.JwtTokenService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.dao.AbstractUserDetailsAuthenticationProvider;
 import org.springframework.security.core.AuthenticationException;
@@ -25,6 +26,10 @@ public class JwtAuthenticationProvider extends AbstractUserDetailsAuthentication
     protected UserDetails retrieveUser(String username, UsernamePasswordAuthenticationToken authentication) throws AuthenticationException {
         JwtToken jwtToken = (JwtToken) authentication;
         String token = jwtToken.getToken();
-        return jwtTokenService.parseToken(token);
+        try {
+            return jwtTokenService.parseToken(token);
+        } catch (Exception e) {
+            throw new BadCredentialsException(e.getMessage());
+        }
     }
 }

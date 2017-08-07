@@ -8,13 +8,16 @@
     <session-factory>
         <property name="dialect">org.hibernate.dialect.MySQL5Dialect</property>
         <property name="connection.pool_size">10</property>
-        <property name="show_sql">true</property>
+        <property name="show_sql">false</property>
         <mapping class="com.brewery.admin.model.AdminUser"/>
         <mapping class="com.brewery.admin.model.Roles"/>
         <mapping class="com.brewery.admin.auth.InvalidToken"/>
         <mapping class="com.brewery.content.article.Article"/>
         <mapping class="com.brewery.content.article.Translations"/>
         <mapping class="com.brewery.content.image.Image"/>
+        <mapping class="com.brewery.content.product.Description"/>
+        <mapping class="com.brewery.content.product.ProductType"/>
+        <mapping class="com.brewery.content.product.Product"/>
     </session-factory>
 
 </hibernate-configuration>

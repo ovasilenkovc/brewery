@@ -1,14 +1,14 @@
 package com.brewery.web.servlets;
 
 import com.brewery.content.Content;
-import com.brewery.content.File;
+import com.brewery.content.LocalizationTypes;
 import com.brewery.content.article.Article;
 import com.brewery.content.article.Translations;
 import com.brewery.content.services.ContentServiceImpl;
 import com.brewery.utils.ConstantParams;
+import com.brewery.utils.ParamUtils;
 import com.brewery.utils.ResponseMaker;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.http.HttpStatus;
@@ -17,15 +17,14 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.Valid;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
  * Controller for Content managing.
- *
  */
 @Controller
 public class ContentController {
@@ -33,13 +32,19 @@ public class ContentController {
     @Autowired
     private ContentServiceImpl contentService;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ContentController.class);
+    private static final Logger LOGGER = Logger.getLogger(ContentController.class);
 
     @ResponseBody
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_SUPER_ADMIN')")
     @RequestMapping(value = "/admin/content/article", method = RequestMethod.POST)
-    public ResponseEntity<String> addArticle(@RequestBody Article article) {
+    public ResponseEntity<String> addArticle(@RequestBody @Valid Article article) {
         LOGGER.info("Article saving process execution");
+        Map<String, List<String>> error = contentService.checkLocalization(article);
+        if(!error.isEmpty()){
+            LOGGER.error("Content saving failed!");
+            return ResponseMaker.makeResponse(error, ConstantParams.JSON_HEADER_TYPE, HttpStatus.BAD_REQUEST);
+        }
+
         Long newId = contentService.save(article, ConstantParams.ARTICLE_CONTEXT);
         Map<String, Long> response = new HashMap<>();
         response.put("id", newId);
@@ -76,10 +81,14 @@ public class ContentController {
     @ResponseBody
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_SUPER_ADMIN')")
     @RequestMapping(value = "/admin/content/article/{id}", method = RequestMethod.PUT)
-    public ResponseEntity<String> updateArticle(@PathVariable Long id, @RequestBody Article article) {
+    public ResponseEntity<String> updateArticle(@PathVariable Long id, @RequestBody @Valid Article article) {
         article.setArticle_id(id);
         LOGGER.info("Article updating process execution");
-        contentService.update(article, ConstantParams.ARTICLE_CONTEXT);
+        Article articleForUpdate = (Article) contentService.getOne(id, ConstantParams.ARTICLE_CONTEXT);
+        articleForUpdate.setTitle(article.getTitle());
+        articleForUpdate.setDate(article.getDate());
+        articleForUpdate.setTranslations(article.getTranslations());
+        contentService.update(articleForUpdate, ConstantParams.ARTICLE_CONTEXT);
         String message = "Article has been updated successfully!";
         return ResponseMaker.makeResponse(message, ConstantParams.JSON_HEADER_TYPE, HttpStatus.NO_CONTENT);
     }
@@ -87,8 +96,14 @@ public class ContentController {
     @ResponseBody
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_SUPER_ADMIN')")
     @RequestMapping(value = "/admin/content/article/{id}/translation", method = RequestMethod.POST)
-    public ResponseEntity<String> addTranslation(@PathVariable Long id, @RequestBody Translations translation) {
+    public ResponseEntity<String> addTranslation(@PathVariable Long id, @RequestBody @Valid Translations translation) {
         LOGGER.info("Article translation adding process execution");
+
+        if(!ParamUtils.isLocalizationValid(translation.getType())){
+            LOGGER.error("Content saving failed!");
+            return ResponseMaker.makeResponse("Translation is invalid", ConstantParams.JSON_HEADER_TYPE, HttpStatus.OK);
+        }
+
         contentService.addTranslation(id, translation, ConstantParams.ARTICLE_CONTEXT);
         String message = "Article has been updated successfully!";
         return ResponseMaker.makeResponse(message, ConstantParams.JSON_HEADER_TYPE, HttpStatus.OK);
@@ -103,33 +118,17 @@ public class ContentController {
     }
 
     @ResponseBody
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_SUPER_ADMIN')")
-    @RequestMapping(value = "/admin/content/files/{path}", method = RequestMethod.POST)
-    public ResponseEntity<String> imagesSave(@PathVariable String path,
-                                             @RequestParam(value = "files") MultipartFile[] files) throws Exception {
+    @RequestMapping(value = "/content/local/types", method = RequestMethod.GET)
+    public ResponseEntity<String> getAllAvailableRoles() {
+        String[] typesArr = Arrays.toString(LocalizationTypes.values()).replaceAll("^.|.$", "").split(",");
+        List<String> roles = new ArrayList<>();
 
-        LOGGER.info("Image saving process execution");
-        Map<Long, String> result = contentService.saveFiles(files, ConstantParams.IMAGE_CONTEXT, path);
-        return ResponseMaker.makeResponse(result, ConstantParams.JSON_HEADER_TYPE, HttpStatus.OK);
-    }
+        for (String local: typesArr){
+            String trimmedLocalize = local.trim();
+            roles.add(trimmedLocalize);
+        }
 
-    @ResponseBody
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_SUPER_ADMIN')")
-    @RequestMapping(value = "/admin/content/files/{id}", method = RequestMethod.DELETE)
-    public ResponseEntity<String> removeImage(@PathVariable Long id) throws IOException {
-        LOGGER.info("Image removing process execution");
-        contentService.remove(id, ConstantParams.IMAGE_CONTEXT);
-        String message = "Image with id: " + id + " removed successfully!";
-        return ResponseMaker.makeResponse(message, ConstantParams.JSON_HEADER_TYPE, HttpStatus.OK);
-    }
-
-    @ResponseBody
-    @RequestMapping(value = "/content/files/{path}", method = RequestMethod.GET)
-    public ResponseEntity<String> getImages(@PathVariable String path) throws IOException {
-        LOGGER.info("Image getting process execution");
-        String context = path.equals("pictures") ? ConstantParams.IMAGE_CONTEXT : ConstantParams.FILE_CONTEXT;
-        Map<String, File> result = contentService.getBase64EncodedFiles(context);
-        return ResponseMaker.makeResponse(result, ConstantParams.JSON_HEADER_TYPE, HttpStatus.OK);
+        return ResponseMaker.makeResponse(roles, ConstantParams.JSON_HEADER_TYPE, HttpStatus.OK);
     }
 
     @InitBinder

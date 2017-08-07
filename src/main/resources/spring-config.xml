@@ -3,13 +3,14 @@
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:mongo="http://www.springframework.org/schema/data/mongo"
        xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:aop="http://www.springframework.org/schema/aop"
-       xmlns:task="http://www.springframework.org/schema/task"
+       xmlns:task="http://www.springframework.org/schema/task" xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:util="http://www.springframework.org/schema/util" xmlns:beans="http://www.springframework.org/schema/c"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans.xsd
         http://www.springframework.org/schema/context
         http://www.springframework.org/schema/context/spring-context.xsd
         http://www.springframework.org/schema/data/mongo
-        http://www.springframework.org/schema/data/mongo/spring-mongo.xsd http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd">
+        http://www.springframework.org/schema/data/mongo/spring-mongo.xsd http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 
     <task:annotation-driven />
 
@@ -41,8 +42,51 @@
 
     <context:annotation-config/>
 
+    <mvc:annotation-driven validator="validator"/>
+    <bean id="validator" class="net.sf.oval.integration.spring.SpringValidator" >
+        <property name="validator">
+            <bean class="net.sf.oval.Validator" />
+        </property>
+    </bean>
+<bean id="localeResolver"
+		class="org.springframework.web.servlet.i18n.SessionLocaleResolver">
+		<property name="defaultLocale" value="en" />
+	</bean>
+
+	<!--<bean id="localeChangeInterceptor"-->
+		<!--class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor">-->
+		<!--<property name="paramName" value="language" />-->
+	<!--</bean>-->
+
+    <!--<bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">-->
+        <!--<property name="mappings">-->
+            <!--<props>-->
+                <!--<prop key="/">baseController</prop>-->
+            <!--</props>-->
+        <!--</property>-->
+        <!--<property name="interceptors">-->
+            <!--<list>-->
+                <!--<ref bean="localeChangeInterceptor" />-->
+            <!--</list>-->
+        <!--</property>-->
+    <!--</bean>-->
+
+	<!--<bean class="org.springframework.web.servlet.mvc.support.ControllerClassNameHandlerMapping" >-->
+		<!--<property name="interceptors">-->
+			<!--<list>-->
+				<!--<ref bean="localeChangeInterceptor" />-->
+			<!--</list>-->
+		<!--</property>-->
+	<!--</bean>-->
+
+	<!-- Register the bean -->
+	<bean id="messageSource"
+		class="org.springframework.context.support.ResourceBundleMessageSource">
+		<property name="basename" value="messages" />
+	</bean>
+
     <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
-        <property name="prefix" value="/WEB-INF/pages/"/>
+        <property name="prefix" value="/WEB-INF/static/jsp/"/>
         <property name="suffix" value=".jsp"/>
     </bean>
 
