@@ -11,7 +11,7 @@
     <title>Document</title>
     <link rel="stylesheet" type="text/css" href="${contextPath}/css/bootstrap.css">
     <link rel="stylesheet" type="text/css" href="${contextPath}/css/bootstrap-reboot.css">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="${contextPath}/css/font-awesome.min.css">
     <link rel="stylesheet" type="text/css" href="${contextPath}/css/bootstrap-grid.css">
     <link rel="stylesheet" type="text/css" href="${contextPath}/css/slick.css"/>
     <link rel="stylesheet" type="text/css" href="${contextPath}/css/headhesive.css">
@@ -344,7 +344,7 @@
                     <div>
                         <form id="edit-form">
                             <span id="product-send-error" class="product-send-error"></span>
-                            <div class="form-group">
+                            <div class="form-group" hidden>
                                 <label for="name">Product Name:</label>
                                 <input type="text" title="Product name should be consist only from latin chars" class="form-control" id="name" disabled/>
                             </div>
@@ -357,6 +357,9 @@
                                 </select>
                             </div>
                             <div class="form-group">
+                                <div class="alert alert-danger alert-dismissable" hidden>
+                                    <strong>Danger!</strong> Product tittle is required parameter.
+                                </div>
                                 <label for="title">Product Title:</label>
                                 <input type="text" class="form-control" name="title" id="title"/>
                             </div>

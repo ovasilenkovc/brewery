@@ -104,6 +104,15 @@ function Utils() {
         setProductDescChanges: function (el) {
             var product = $(el).data(), language = $(el).attr("language"), keyName = $(el).attr("name");
             var currentDescription = this.utils.getListItemByParameter(product.descriptions, "type", language);
+            if(!currentDescription){
+                currentDescription =  {
+                    "title": "",
+                    "description": "",
+                    "composition": "",
+                    "type": CURRENT_LANGUAGE
+                };
+                product.descriptions.push(currentDescription);
+            }
             currentDescription[keyName] = $(el).val();
         },
 
@@ -151,14 +160,23 @@ function Utils() {
             }
         },
 
+        nameGenerator: function () {
+            var text = "";
+            var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+            for (var i = 0; i < 10; i++)
+                text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+            return text;
+        },
+
         checkRequireFields: function (formEl, parameters) {
             var nonValid = [];
-            for (var i=0; i < parameters.length; i++) {
+            for (var i = 0; i < parameters.length; i++) {
                 var input = formEl.find("#" + parameters[i]);
-                if(input.val() == ""){
+                if (input.val() == "") {
                     input.addClass("errorInput");
                     nonValid.push(input);
-                }else {
+                } else {
                     input.removeClass("errorInput");
                 }
             }

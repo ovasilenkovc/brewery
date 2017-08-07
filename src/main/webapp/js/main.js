@@ -5,6 +5,11 @@ var SESSION_TOKEN = "Bearer ",
         "en": "ENG",
         "ua": "UA",
         "ru": "RUS"
+    },
+    UNKNOWN_TITLES = {
+        "ENG": "Unnamed Beer variety",
+        "RUS": "Неназванный сорт пива",
+        "UA": "Неназваний сорт пива"
     };
 
 var functionality = {
@@ -102,17 +107,10 @@ var functionality = {
             self.viewHistory(history, currentLang);
         });
 
-        this.nameEl.bind('keyup', function () {
-            $(this).val($(this).val().replace(/[^a-z ]/i, ""))
+        this.titleEl.focusout(function () {
+            var alert = $(this).parent().find('.alert');
+            $(this).val() === "" ? alert.attr("hidden", false) : alert.attr("hidden", true);
         });
-
-        this.nameEl.focusout(function () {
-            var val = $(this).val();
-            val === "" ? self.sendProductDataEl.attr("disabled", true) : self.sendProductDataEl.attr("disabled", false);
-        });
-
-        this.nameEl.prop('required',true);
-        this.titleEl.prop('required',true);
 
         //dynamically saving typed input values
         this.titleEl.change($.proxy(self.utils.setProductDescChanges, self, self.titleEl));
@@ -190,7 +188,7 @@ var functionality = {
         var productId = product.productId;
         var productType = product.productType;
         var productDescription = this.utils.getListItemByParameter(product.descriptions, "type", local);
-        var title = productDescription ? productDescription.title : product.name;
+        var title = productDescription ? productDescription.title : UNKNOWN_TITLES[CURRENT_LANGUAGE];
 
         var productDivWrapEl = $('<div class="product-wrapper">');
         var productToolEl = $('<div class="product-tools">');
@@ -238,7 +236,6 @@ var functionality = {
 
     editProduct: function (product) {
         this.nameEl.val(product.name);
-        !product || product.name === "" ? this.nameEl.attr("disabled", false) : this.nameEl.attr("disabled", true);
         this.descSelectorEl.val(CURRENT_LANGUAGE);
         this.titleEl.data(product).attr("language", CURRENT_LANGUAGE);
         this.descriptionEl.data(product).attr("language", CURRENT_LANGUAGE);
@@ -249,7 +246,7 @@ var functionality = {
         $("#send-form-popup .product-logo-img").attr('src', product.productType.iconPath);
         this.descriptionEl.val(description && description.description ? description.description : "");
         this.compositionEl.val(description && description.composition ? description.composition : "");
-        this.titleEl.val(description && description.title ? description.title : product.name);
+        this.titleEl.val(description && description.title ? description.title : UNKNOWN_TITLES[CURRENT_LANGUAGE]);
 
         this.sendProductDataEl.data(product);
     },
@@ -273,23 +270,17 @@ var functionality = {
         var productId = product.productId, self = this;
         var url = productId ? SERVER_CONTEXT + "/admin/content/product/" + productId : SERVER_CONTEXT + "/admin/content/product/";
         var type = productId ? "PUT" : "POST";
-        product.name || product.name === "" ? product['name'] = this.nameEl.val() : "";
+        type === "POST" ? product['name'] = this.utils.nameGenerator() : this.nameEl.val();
         product['productType'] = this.utils.getListItemByParameter(this.productTypes, "typeName", this.typesSelectorEl.val());
 
-        if(this.utils.checkRequireFields(this.formEl, ['name', 'title'])){
-            $('.product-send-error').removeClass('.product-send-error');
-            this.utils.ajaxDataBuilder(url, type, product, function () {
-                self.getProducts();
-                self.utils.resetFormData(self.formEl);
-                self.utils.popupDisable($('#send-form-popup'));
-            }, function (error) {
-                var message = error.status + " " + error.statusText;
-                $('#product-send-error').text(message);
-            }, SESSION_TOKEN)
-        }else {
-            $('.product-send-error').html("Product name and title are required!").addClass('.product-send-error')
-        }
-
+        this.utils.ajaxDataBuilder(url, type, product, function () {
+            self.getProducts();
+            self.utils.resetFormData(self.formEl);
+            self.utils.popupDisable($('#send-form-popup'));
+        }, function (error) {
+            var message = error.status == 401 ? "Unauthorized!" : error.responseJSON.error;
+            $('#product-send-error').text(message);
+        }, SESSION_TOKEN);
     },
 
     removeProduct: function (product) {
@@ -400,8 +391,4 @@ $(window).bind('mousewheel DOMMouseScroll', function (event) {
     if (event.ctrlKey == true) {
         event.preventDefault();
     }
-});
-$.validator.setDefaults({
-    debug: true,
-    success: "valid"
 });

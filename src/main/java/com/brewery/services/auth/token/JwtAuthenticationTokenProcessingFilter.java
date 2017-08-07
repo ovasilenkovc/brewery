@@ -41,7 +41,7 @@ public class JwtAuthenticationTokenProcessingFilter extends AbstractAuthenticati
             throw new JwtTokenMissingException("Token was not found");
         }
 
-        if (!userDetailService.isValidToken(authToken)) {
+        if (!userDetailService.isValidToken(authToken.substring(JwtTokenParams.TOKEN_PREFIX.length()))) {
             LOGGER.error("This token has been expired!");
             throw new JwtAuthentiacationException("This token has been expired!");
         }
