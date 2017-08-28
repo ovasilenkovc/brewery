@@ -35,6 +35,8 @@
 </head>
 <body>
 <div id="localization" value="${pageContext.response.locale}" style="display: none"></div>
+<input type="text" id="authenticated" value="${authenticated}" hidden/>
+<input type="text" id="token" value="${token}" hidden/>
 <figure id="invis" hidden=>
     <header class="banner">
         <nav class="container">
@@ -64,9 +66,11 @@
                                 <spring:message code="contacts"/>
                             </a>
                         </li>
-                        <li class="navigation-item logout" hidden>
-                            <span href="#" class="fa fa-sign-out fa-2x logout-ico"></span>
-                        </li>
+                        <c:if test="${authenticated}">
+                            <li class="navigation-item logout">
+                                <span class="fa fa-sign-out fa-2x logout-ico"></span>
+                            </li>
+                        </c:if>
                     </ul>
                 </div>
             </div>
@@ -103,9 +107,11 @@
                             <spring:message code="contacts"/>
                         </a>
                     </li>
-                    <li class="navigation-item logout" hidden>
-                        <span href="#" class="fa fa-sign-out fa-2x logout-ico"></span>
-                    </li>
+                    <c:if test="${authenticated}">
+                        <li class="navigation-item logout">
+                            <span class="fa fa-sign-out fa-2x logout-ico"></span>
+                        </li>
+                    </c:if>
                 </ul>
                 <div class="lenguage-change">
                     <ul>
@@ -139,7 +145,7 @@
                     </span>
                 <span class="number">
                         <spring:message code="contact.phone.second"/>
-                    </span>
+                </span>
             </div>
         </div>
     </div>
@@ -154,9 +160,11 @@
             </div>
         </div>
         <div class="toolbar">
-            <button type="button" class="addNew">
-                <span class="fa fa-plus-square-o fa-3x" title="Add new product"></span>
-            </button>
+            <c:if test="${authenticated}">
+                <button type="button" class="addNew">
+                    <span class="fa fa-plus-square-o fa-3x" title="Add new product"></span>
+                </button>
+            </c:if>
         </div>
         <!--Beer variety-->
         <div class="selection-of-beer-wpar">
@@ -168,9 +176,11 @@
     <div id="brewery" class="slider-wrap">
         <div class="container-fluid">
             <div class="toolbar">
-                <button type="button" class="addNew" id="addNewImg">
-                    <span class="fa fa-plus-square-o fa-3x" title="Add new image"></span>
-                </button>
+                <c:if test="${authenticated}">
+                    <button type="button" class="addNew" id="addNewImg">
+                        <span class="fa fa-plus-square-o fa-3x" title="Add new image"></span>
+                    </button>
+                </c:if>
             </div>
             <div class="carousel fade"></div>
         </div>
@@ -189,8 +199,10 @@
             <div class="container">
                 <div class="our_history_desc">
                     <div class="toolbar">
-                        <span class="fa fa-pencil-square-o fa-3x edit-history" id="editHistory" title="edit history" hidden></span>
-                        <span class='fa fa-plus-square-o fa-3x add-history'  id="addHistory" title='add article' hidden></span>
+                        <c:if test="${authenticated}">
+                            <span class="fa fa-pencil-square-o fa-3x edit-history" id="editHistory" title="edit history"></span>
+                            <span class='fa fa-plus-square-o fa-3x add-history'  id="addHistory" title='add article'></span>
+                        </c:if>
                     </div>
                     <p class="history-info"></p>
                     <form id="history-edit-form" hidden>
