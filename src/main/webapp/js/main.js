@@ -1,3 +1,11 @@
+var objectOuter = function () {
+    var INNER_SESSION_TOKEN = "ASSS";
+
+    return {
+        INNER_SESSION_TOKEN: INNER_SESSION_TOKEN
+    }
+};
+
 var SESSION_TOKEN = "Bearer ",
     CURRENT_LANGUAGE = "UA",
     SERVER_CONTEXT = "/brewery",
@@ -17,11 +25,9 @@ var functionality = {
     init: function init() {
         var self = this;
         this.utils = new Utils();
+        this.authenticated = ($("#authenticated").attr("value") === "true");
         SESSION_TOKEN += localStorage.getItem("token");
         //using elements initialization
-        this.userNameEl = $("#username");
-        this.userPasswordEl = $("#password");
-        this.loginErorEl = $("#login-error");
         this.carousel = $('#brewery .carousel');
 
         //edit product form elements init
@@ -125,24 +131,11 @@ var functionality = {
         $('.logout').click($.proxy(this.logout, self));
     },
 
-    login: function () {
-        var url = SERVER_CONTEXT + "/login";
-        this.utils.ajaxDataBuilder(url, "POST", {
-            "username": functionality.userNameEl.val(),
-            "password": functionality.userPasswordEl.val()
-        }, function (response) {
-            localStorage.setItem('token', response.token);
-            localStorage.setItem('registered', true);
-            window.location.href = window.location.origin + SERVER_CONTEXT;
-        }, function () {
-            functionality.loginErorEl.addClass("show")
-        })
-    },
-
     logout: function () {
         var url = SERVER_CONTEXT + "/logout";
         this.utils.ajaxDataBuilder(url, "DELETE", {}, function () {
-            localStorage.clear()
+            localStorage.clear();
+            window.location.href = window.location.origin + SERVER_CONTEXT;
         }, function () {
         }, SESSION_TOKEN);
     },
@@ -189,14 +182,26 @@ var functionality = {
         var productType = product.productType;
         var productDescription = this.utils.getListItemByParameter(product.descriptions, "type", local);
         var title = productDescription ? productDescription.title : UNKNOWN_TITLES[CURRENT_LANGUAGE];
-
         var productDivWrapEl = $('<div class="product-wrapper">');
-        var productToolEl = $('<div class="product-tools">');
-        var editBtn = $('<span class="fa fa-pencil-square-o fa-3x edit-product" />');
-        var removeBtn = $('<span class="fa fa-minus-square-o fa-3x remove-product" />');
-        editBtn.data(product).appendTo(productToolEl);
-        removeBtn.data(product).appendTo(productToolEl);
-        productToolEl.appendTo(productDivWrapEl);
+
+        if(this.authenticated){
+            var productToolEl = $('<div class="product-tools">');
+            var editBtn = $('<span class="fa fa-pencil-square-o fa-3x edit-product" />');
+            var removeBtn = $('<span class="fa fa-minus-square-o fa-3x remove-product" />');
+            editBtn.data(product).appendTo(productToolEl);
+            removeBtn.data(product).appendTo(productToolEl);
+            productToolEl.appendTo(productDivWrapEl);
+
+            editBtn.click(function () {
+                self.utils.initPopup($("#send-form-popup"));
+                self.editProduct($(this).data());
+            });
+
+            removeBtn.click(function () {
+                var product = $(this).data();
+                self.removeProduct(product);
+            });
+        }
 
         var productDivEl = $('<div class="position-of-beer" id="#show_popup" value="' + productId + '" data-toggle="modal" data-target="#productModal">'
             + '<div class="beer-img"><span><img src="' + productType.iconPath + '"></span></div>'
@@ -207,16 +212,6 @@ var functionality = {
         productDivEl.click(function () {
             self.utils.initPopup($('#popup'));
             self.viewOneProduct($(this).data());
-        });
-
-        editBtn.click(function () {
-            self.utils.initPopup($("#send-form-popup"));
-            self.editProduct($(this).data());
-        });
-
-        removeBtn.click(function () {
-            var product = $(this).data();
-            self.removeProduct(product);
         });
 
         productDivWrapEl.appendTo(parent);
@@ -312,9 +307,10 @@ var functionality = {
         this.utils.ajaxDataBuilder(url, "GET", {}, function (response) {
             $.each(response, function (key, value) {
                 var img = $("<div><div class='carousel-img'>" +
-                    "<span class='fa fa-minus-square-o fa-3x remove-image' title='remove image' value='" + this.id + "'/>" +
+                    "<span class='fa fa-minus-square-o fa-3x remove-image' title='remove image' value='" + this.id + "' hidden/>" +
                     "<img src='" + this.base64encodeString + "' alt='картинка слайда'></div></div>");
 
+                self.authenticated ? img.find(".remove-image").attr("hidden", false) : img.find(".remove-image").attr("hidden", true);
                 img.find(".remove-image").click(function () {
                     var id = $(this).attr('value');
                     functionality.removeImg(id);
@@ -378,11 +374,8 @@ var functionality = {
 };
 
 $(document).ready(function () {
+    localStorage.setItem('token', $("#token").val());
     functionality.init();
-});
-$(document).ajaxComplete(function () {
-    var show = localStorage.getItem('registered') && !!localStorage.getItem('registered') === true ? localStorage.getItem('registered') : false;
-    functionality.utils.hideAdminTools(!show);
 });
 $(document).bind("contextmenu", function (event) {
     event.preventDefault();

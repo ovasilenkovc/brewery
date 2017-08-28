@@ -1,6 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <html>
 <head>
     <c:set var="contextPath" value="${pageContext.request.contextPath}"/>
@@ -19,19 +20,11 @@
         <div class="login-title">
             <h1>Brewery Login</h1>
         </div>
-        <div class="login-inputs form-group">
-            <label for="username"><spring:message code="login.username"/></label>
-            <input class="form-control" id="username" type="text"/>
-        </div>
-        <div class="login-inputs form-group">
-            <label for="password"><spring:message code="login.password"/></label>
-            <input class="form-control" id="password" type="password"/>
-        </div>
-        <div class="login-button">
-            <button type="button" class="btn btn-info login-btn" onclick="functionality.login()"><spring:message code="login.button"/></button>
-            <button type="button" class="btn btn-info" onclick="history.back()"><spring:message code="login.cancel"/></button>
-        </div>
-        <span id="login-error" class="login-error"><spring:message code="login.error"/></span>
+        <form:form method="post" modelAttribute="loginUser" action="login">
+            <form:input path="username" type="text" />
+            <form:input path="password" type="password" />
+            <input type="submit" name="login" value="login">
+        </form:form>
     </div>
 </body>
 </html>
