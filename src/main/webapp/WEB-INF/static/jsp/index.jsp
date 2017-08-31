@@ -161,8 +161,11 @@
         </div>
         <div class="toolbar">
             <c:if test="${authenticated}">
+                <button type="button" class="addNewProductType" id="addNewType">
+                    <span class="fa fa-pencil-square fa-3x" aria-hidden="true" title="Add new product type"></span>
+                </button>
                 <button type="button" class="addNew">
-                    <span class="fa fa-plus-square-o fa-3x" title="Add new product"></span>
+                    <span class="fa fa-plus-square-o fa-3x" aria-hidden="true" title="Add new product"></span>
                 </button>
             </c:if>
         </div>
@@ -416,6 +419,30 @@
                     </div>
                     <div>
                         <button type="button" class="btn btn-info send-button" onclick="functionality.uploadImages()" id="saveImg">Send</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="save-type-popup">
+    <div class="wrap-popup">
+        <div class="image-window-container">
+            <div class="b-close-wrapper">
+                <span class="button b-close">X</span>
+            </div>
+            <div class="image-window">
+                <form id="beer-type-form">
+                    <div class="form-group">
+                        <label for="type-name">Type Name:</label>
+                        <input class="form-control" id="type-name" type="text" name="typeName">
+                    </div>
+                    <div class="form-group">
+                        <label for="type-icon">Upload Type Icon:</label>
+                        <input id="type-icon" type="file" name="files" multiple>
+                    </div>
+                    <div>
+                        <button type="button" class="btn btn-info send-button" onclick="functionality.saveProductType()" id="saveType">Save</button>
                     </div>
                 </form>
             </div>

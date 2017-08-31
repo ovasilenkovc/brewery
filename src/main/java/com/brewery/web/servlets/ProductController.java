@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import java.io.IOException;
@@ -92,19 +93,19 @@ public class ProductController {
     @ResponseBody
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_SUPER_ADMIN')")
     @RequestMapping(value = "/admin/content/product/type", method = RequestMethod.POST)
-    public ResponseEntity<String> saveProductType(@RequestBody @Valid ProductType type){
+    public ResponseEntity<String> saveProductType(@RequestParam String typeName, @RequestParam MultipartFile files) throws Exception {
         LOGGER.info("Product type saving process execution");
         Map<String, Long> response = new HashMap<>();
-        response.put("id", contentService.save(type, ConstantParams.PRODUCT_TYPE_CONTEXT));
+        contentService.saveProductType(files, typeName, ConstantParams.PRODUCT_TYPE_CONTEXT);
         return ResponseMaker.makeResponse(response, ConstantParams.JSON_HEADER_TYPE, HttpStatus.OK);
     }
 
     @ResponseBody
     @RequestMapping(value = "/content/product/type", method = RequestMethod.GET)
-    public ResponseEntity<String> getAllTypes(){
+    public ResponseEntity<String> getAllTypes() throws IOException {
         LOGGER.info("Getting all instances of ProductType");
         return ResponseMaker.makeResponse(
-                contentService.getAll(ConstantParams.PRODUCT_TYPE_CONTEXT),
+                contentService.getAllProductTypes(ConstantParams.PRODUCT_TYPE_CONTEXT),
                 ConstantParams.JSON_HEADER_TYPE, HttpStatus.OK);
     }
 

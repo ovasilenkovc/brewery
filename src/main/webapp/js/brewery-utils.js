@@ -104,8 +104,8 @@ function Utils() {
         setProductDescChanges: function (el) {
             var product = $(el).data(), language = $(el).attr("language"), keyName = $(el).attr("name");
             var currentDescription = this.utils.getListItemByParameter(product.descriptions, "type", language);
-            if(!currentDescription){
-                currentDescription =  {
+            if (!currentDescription) {
+                currentDescription = {
                     "title": "",
                     "description": "",
                     "composition": "",
@@ -131,16 +131,16 @@ function Utils() {
             $.ajax(ajaxConfig)
         },
 
-        hideAdminTools: function (show) {
-            $('.toolbar').attr("hidden", show);
-            $('.logout').attr("hidden", show);
-            $('.product-tools').attr('hidden', show);
-            $('.remove-image').attr('hidden', show);
-        },
-
-        ajaxFilesSender: function (url, type, files, success, reject, token) {
+        ajaxFilesSender: function (url, type, files, success, reject, token, additionParams) {
             var formData = new FormData();
             var dataTypeMatcher = type === "IMAGES" ? /image.*/ : /file.*/;
+
+            if (additionParams && Object.keys(additionParams).length > 0) {
+                for (var key in additionParams) {
+                    formData.append(key, additionParams[key]);
+                }
+            }
+
             if (files.length !== 0) {
                 $.each(files, function (i, item) {
                     if (!!item.type.match(dataTypeMatcher)) {
@@ -169,18 +169,23 @@ function Utils() {
             return text;
         },
 
-        checkRequireFields: function (formEl, parameters) {
-            var nonValid = [];
-            for (var i = 0; i < parameters.length; i++) {
-                var input = formEl.find("#" + parameters[i]);
-                if (input.val() == "") {
-                    input.addClass("errorInput");
-                    nonValid.push(input);
-                } else {
-                    input.removeClass("errorInput");
+        validateImageFile: function (file, maxWidth, maxHeight, maxSize) {
+            var width = maxWidth ? maxWidth : 2560;
+            var height = maxHeight ? maxHeight : 1440;
+            var maxSize = maxSize ? maxSize * 1024 : 50 * 1024;
+
+            if (!!file.type.match(/image.*/)) {
+                var image = new Image();
+                image.src = window.URL.createObjectURL(file);
+                image.onload = function () {
+                    debugger;
+                    var width = image.naturalWidth,
+                        height = image.naturalHeight;
                 }
             }
-            return nonValid.length === 0;
+
+            return false;
         }
+
     }
 }

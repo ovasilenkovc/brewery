@@ -8,6 +8,7 @@ import com.brewery.content.contentDao.ContentDaoFactory;
 import com.brewery.content.image.Image;
 import com.brewery.content.product.Description;
 import com.brewery.content.product.Product;
+import com.brewery.content.product.ProductType;
 import com.brewery.services.fileFolder.FileFolderService;
 import com.brewery.utils.ConstantParams;
 import com.brewery.utils.ParamUtils;
@@ -184,6 +185,35 @@ public class ContentServiceImpl implements ContentService {
             product.getDescriptions().add(description);
         }
         daoFactory.getContentDao(context).update(product);
+    }
+
+    @Transactional
+    public void saveProductType(MultipartFile icon, String typeName, String context) throws Exception {
+        String path = "/icons";
+        String fileName = icon.getOriginalFilename();
+        String iconPath = "/icons/" + fileName;
+        try {
+            String savingResult = fileFolderService.saveFile(icon, path);
+            if (!"".equals(savingResult) && savingResult != null) {
+                Content productType = new ProductType(typeName, iconPath);
+                daoFactory.getContentDao(context).save(productType);
+            }
+        } catch (Exception e) {
+            throw new Exception(e.getCause().getMessage(), e);
+        }
+    }
+
+    public List<Content> getAllProductTypes(String context) throws IOException {
+        List<Content> storedTypes = new ArrayList<>();
+        for(Object content: daoFactory.getContentDao(context).getAll()){
+            ProductType type = (ProductType) content;
+            String iconPath = type.getIconPath();
+            String absolutePath = ConstantParams.TEMP_FOLDER_PATH + ConstantParams.ROOT_PROJECT_DIR + iconPath;
+            String encoded64File = fileFolderService.getBase64StringEncoded(absolutePath);
+            type.setIconPath(encoded64File);
+            storedTypes.add(type);
+        }
+        return storedTypes;
     }
 
     /**

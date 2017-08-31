@@ -82,6 +82,10 @@ var functionality = {
             self.utils.initPopup($('#save-img-popup'));
         });
 
+        $('#addNewType').click(function () {
+            self.utils.initPopup($('#save-type-popup'));
+        });
+
         this.editHistoryEl.click(function () {
             $('#history-lang-selector').val(CURRENT_LANGUAGE);
             self.historyInfo.attr('hidden', !self.historyInfo.attr('hidden'));
@@ -202,7 +206,6 @@ var functionality = {
                 self.removeProduct(product);
             });
         }
-
         var productDivEl = $('<div class="position-of-beer" id="#show_popup" value="' + productId + '" data-toggle="modal" data-target="#productModal">'
             + '<div class="beer-img"><span><img src="' + productType.iconPath + '"></span></div>'
             + '<div class="romb-img"><div class="romb-text"><span>' + title + '</span></div>'
@@ -286,6 +289,29 @@ var functionality = {
         }, function (error) {
             $('#product-send-error').text(error);
         }, SESSION_TOKEN)
+    },
+
+    saveProductType: function () {
+        var self = this;
+        var typeName = $("#type-name").val();
+        var files = $('#type-icon')[0].files;
+        var url = SERVER_CONTEXT + "/admin/content/product/type";
+
+        if(typeName !== "" && (files.length !== 0)){
+            var file = files[0];
+            if(!!file.type.match(/image.*/)){
+                this.utils.ajaxFilesSender(url, "IMAGES", files, function () {
+                    self.getAllProductTypes();
+                    self.utils.popupDisable($('#save-type-popup'));
+                }, function (error) {
+                    alert("Error!")
+                }, SESSION_TOKEN, {"typeName": typeName});
+            }else {
+                alert("a file should be an image!")
+            }
+        }else {
+            alert("type name and type icon are required!")
+        }
     },
 
     uploadImages: function () {
