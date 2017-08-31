@@ -12,14 +12,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.servlet.support.RequestContextUtils;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,6 +34,9 @@ import java.util.Map;
 @Controller
 public class AdminAuthController {
 
+    private String token = "";
+    private boolean isSessionAlive = false;
+
     @Autowired
     private JwtTokenService tokenService;
 
@@ -37,23 +45,44 @@ public class AdminAuthController {
 
     private static final Logger LOGGER = Logger.getLogger(AdminAuthController.class);
 
+    @RequestMapping("/")
+    protected ModelAndView handleRequestInternal(HttpServletRequest httpServletRequest,
+                                                 HttpServletResponse httpServletResponse) throws Exception {
+
+        ModelAndView modelAndView = new ModelAndView("index");
+        String newLocale = httpServletRequest.getParameter("language");
+        if (newLocale != null) {
+            LocaleResolver localeResolver = RequestContextUtils.getLocaleResolver(httpServletRequest);
+            if (localeResolver == null) {
+                throw new IllegalStateException("No LocaleResolver found: not in a DispatcherServlet request?");
+            }
+            localeResolver.setLocale(httpServletRequest, httpServletResponse, StringUtils.parseLocaleString(newLocale));
+        }
+
+        modelAndView.addObject("token", token);
+        modelAndView.addObject("authenticated", isSessionAlive);
+        return modelAndView;
+    }
+
+
     @ResponseBody
     @RequestMapping(value = "/login", method = RequestMethod.POST)
-    public ResponseEntity<String> jsonLogin(@RequestBody @Valid JwtLoginTokenRequest credentials) throws Exception {
+    public ModelAndView jsonLogin(@ModelAttribute("userForm") JwtLoginTokenRequest credentials,  RedirectAttributes redirectAttrs) throws Exception {
         LOGGER.info("User login method called");
-        Map<String, String> response = new HashMap<>();
         User userDetails = userDetailService.getUserDetailsByUserName(credentials.getUsername());
 
         if (credentials.getPassword().equals(userDetails.getPassword())) {
-            String token = tokenService.buildToken(userDetails);
-            response.put("token", token);
+            token = tokenService.buildToken(userDetails);
         } else {
             LOGGER.error("Bad credentials");
-            return ResponseMaker.makeResponse("Bad credentials", ConstantParams.JSON_HEADER_TYPE, HttpStatus.BAD_REQUEST);
+            ModelAndView model = new ModelAndView("login");
+            model.addObject("loginUser", credentials);
+            return model;
         }
 
         LOGGER.info("User has been logged successfully!");
-        return ResponseMaker.makeResponse(response, ConstantParams.JSON_HEADER_TYPE, HttpStatus.OK);
+        isSessionAlive = true;
+        return new ModelAndView("redirect:/");
     }
 
 
@@ -61,7 +90,10 @@ public class AdminAuthController {
     @RequestMapping(value = "/authorisation", method = RequestMethod.GET)
     public ModelAndView authorisation() throws Exception {
         LOGGER.info("auth page called");
-        return new ModelAndView("login");
+        ModelAndView model = new ModelAndView("login");
+        JwtLoginTokenRequest user = new JwtLoginTokenRequest();
+        model.addObject("loginUser", user);
+        return model;
     }
 
     @ResponseBody
@@ -72,8 +104,7 @@ public class AdminAuthController {
         try {
             if (!userDetailService.isValidToken( header.substring(JwtTokenParams.TOKEN_PREFIX.length()))) {
                 LOGGER.info("token has already been invalidated!");
-                return ResponseMaker.makeResponse("token has already been invalidated!",
-                        ConstantParams.JSON_HEADER_TYPE, HttpStatus.OK);
+                return ResponseMaker.makeResponse("token has already been invalidated!", ConstantParams.JSON_HEADER_TYPE, HttpStatus.OK);
             }
             String token = header.substring(JwtTokenParams.TOKEN_PREFIX.length());
             User user = tokenService.parseToken(token);
@@ -86,8 +117,9 @@ public class AdminAuthController {
         }
 
         LOGGER.info("User has been logged out successfully!");
-        return ResponseMaker.makeResponse("token has been invalidated successfully",
-                ConstantParams.JSON_HEADER_TYPE, HttpStatus.OK);
+        isSessionAlive = false;
+        token = "";
+        return ResponseMaker.makeResponse("token has been invalidated successfully", ConstantParams.JSON_HEADER_TYPE, HttpStatus.OK);
     }
 
 }
