@@ -75,7 +75,9 @@ public class AdminAuthController {
             token = tokenService.buildToken(userDetails);
         } else {
             LOGGER.error("Bad credentials");
-            return new ModelAndView("login");
+            ModelAndView model = new ModelAndView("login");
+            model.addObject("loginUser", credentials);
+            return model;
         }
 
         LOGGER.info("User has been logged successfully!");
