@@ -126,6 +126,12 @@ public class ExceptionsHandler extends ResponseEntityExceptionHandler {
         return ResponseMaker.makeResponse(makeErrorRespJson(ex), ConstantParams.JSON_HEADER_TYPE, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler
+    public ResponseEntity<String> exceptionHandler(CustomRestException ex) {
+        LOGGER.error(ex.getMessage(), ex);
+        return ResponseMaker.makeResponse(makeErrorRespJson(ex), ConstantParams.JSON_HEADER_TYPE, HttpStatus.BAD_REQUEST);
+    }
+
     private Map<String, String> makeErrorRespJson(Throwable ex) {
         Map<String, String> error = new HashMap<>();
         error.put(ConstantParams.ERROR_MESSAGE, ex.getLocalizedMessage());

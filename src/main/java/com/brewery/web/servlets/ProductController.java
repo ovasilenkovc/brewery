@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,10 +36,10 @@ public class ProductController {
     @ResponseBody
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_SUPER_ADMIN')")
     @RequestMapping(value = "/admin/content/product", method = RequestMethod.POST)
-    public ResponseEntity<String> saveProduct(@RequestBody @Valid Product product){
+    public ResponseEntity<String> saveProduct(@RequestBody @Valid Product product) {
         LOGGER.info("Product saving process execution");
         Map<String, List<String>> error = contentService.checkLocalization(product);
-        if(!error.isEmpty()){
+        if (!error.isEmpty()) {
             LOGGER.error("Content saving failed!");
             return ResponseMaker.makeResponse(error, ConstantParams.JSON_HEADER_TYPE, HttpStatus.BAD_REQUEST);
         }
@@ -52,15 +51,15 @@ public class ProductController {
 
     @ResponseBody
     @RequestMapping(value = "/content/product", method = RequestMethod.GET)
-    public ResponseEntity<String> getProducts(){
+    public ResponseEntity<String> getProducts() {
         LOGGER.info("Getting instances of Product");
-        List<Content> products = contentService.getAll(ConstantParams.PRODUCT_CONTEXT);
+        List<Content> products = contentService.getAllProducts(ConstantParams.PRODUCT_CONTEXT);
         return ResponseMaker.makeResponse(products, ConstantParams.JSON_HEADER_TYPE, HttpStatus.OK);
     }
 
     @ResponseBody
     @RequestMapping(value = "/content/product/{productId}", method = RequestMethod.GET)
-    public ResponseEntity<String> getProduct(@PathVariable Long productId){
+    public ResponseEntity<String> getProduct(@PathVariable Long productId) {
         LOGGER.info("Getting one instance of Product by id");
         Product product = (Product) contentService.getOne(productId, ConstantParams.PRODUCT_CONTEXT);
         return ResponseMaker.makeResponse(product, ConstantParams.JSON_HEADER_TYPE, HttpStatus.OK);
@@ -69,7 +68,7 @@ public class ProductController {
     @ResponseBody
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_SUPER_ADMIN')")
     @RequestMapping(value = "/admin/content/product/{productId}", method = RequestMethod.PUT)
-    public ResponseEntity<String> updateProduct(@PathVariable Long productId, @RequestBody @Valid Product product){
+    public ResponseEntity<String> updateProduct(@PathVariable Long productId, @RequestBody @Valid Product product) {
         LOGGER.info("Product updating process execution");
         Product forUpdate = (Product) contentService.getOne(productId, ConstantParams.PRODUCT_CONTEXT);
         forUpdate.setProductType(product.getProductType());
@@ -83,7 +82,7 @@ public class ProductController {
     @ResponseBody
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_SUPER_ADMIN')")
     @RequestMapping(value = "/admin/content/product/{productId}", method = RequestMethod.DELETE)
-    public ResponseEntity<String> removeProduct(@PathVariable Long productId) throws IOException {
+    public ResponseEntity<String> removeProduct(@PathVariable Long productId) {
         LOGGER.info("Product removing process execution");
         contentService.remove(productId, ConstantParams.PRODUCT_CONTEXT);
         return ResponseMaker.makeResponse("Product has been updated successfully",
@@ -102,7 +101,7 @@ public class ProductController {
 
     @ResponseBody
     @RequestMapping(value = "/content/product/type", method = RequestMethod.GET)
-    public ResponseEntity<String> getAllTypes() throws IOException {
+    public ResponseEntity<String> getAllTypes() {
         LOGGER.info("Getting all instances of ProductType");
         return ResponseMaker.makeResponse(
                 contentService.getAllProductTypes(ConstantParams.PRODUCT_TYPE_CONTEXT),
@@ -111,10 +110,10 @@ public class ProductController {
 
     @ResponseBody
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_SUPER_ADMIN')")
-    @RequestMapping(value = "/admin/content/product/type", method = RequestMethod.DELETE)
-    public ResponseEntity<String> removeType(@RequestBody @Valid ProductType type){
+    @RequestMapping(value = "/admin/content/product/type/{typeName}", method = RequestMethod.DELETE)
+    public ResponseEntity<String> removeType(@PathVariable String typeName) {
         LOGGER.info("Removing instances of ProductType");
-        contentService.remove(type, ConstantParams.PRODUCT_TYPE_CONTEXT);
+        contentService.removeProductType(typeName, ConstantParams.PRODUCT_TYPE_CONTEXT);
         return ResponseMaker.makeResponse("Product type has been removed successfully",
                 ConstantParams.JSON_HEADER_TYPE, HttpStatus.NO_CONTENT);
     }
@@ -122,10 +121,10 @@ public class ProductController {
     @ResponseBody
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_SUPER_ADMIN')")
     @RequestMapping(value = "/admin/content/product/{productId}/description", method = RequestMethod.POST)
-    public ResponseEntity<String> addUpdateDescription(@PathVariable Long productId, @RequestBody @Valid Description description){
+    public ResponseEntity<String> addUpdateDescription(@PathVariable Long productId, @RequestBody @Valid Description description) {
         LOGGER.info("Adding product description process execution");
 
-        if(!ParamUtils.isLocalizationValid(description.getType())){
+        if (!ParamUtils.isLocalizationValid(description.getType())) {
             LOGGER.error("Content saving failed!");
             return ResponseMaker.makeResponse("Description is invalid", ConstantParams.JSON_HEADER_TYPE, HttpStatus.OK);
         }
@@ -138,7 +137,7 @@ public class ProductController {
     @ResponseBody
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_SUPER_ADMIN')")
     @RequestMapping(value = "/admin/content/product/{productId}/description/{type}", method = RequestMethod.DELETE)
-    public ResponseEntity<String> removeDescription(@PathVariable Long productId, @PathVariable String type) throws IOException {
+    public ResponseEntity<String> removeDescription(@PathVariable Long productId, @PathVariable String type) {
         LOGGER.info("Adding product description process execution");
         contentService.removeContentMetadata(productId, type, ConstantParams.PRODUCT_CONTEXT);
         String message = "Description removing was succeeded!";

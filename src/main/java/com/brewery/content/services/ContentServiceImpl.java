@@ -5,10 +5,12 @@ import com.brewery.content.File;
 import com.brewery.content.article.Article;
 import com.brewery.content.article.Translations;
 import com.brewery.content.contentDao.ContentDaoFactory;
+import com.brewery.content.contentDao.impl.ProductTypeDaoImpl;
 import com.brewery.content.image.Image;
 import com.brewery.content.product.Description;
 import com.brewery.content.product.Product;
 import com.brewery.content.product.ProductType;
+import com.brewery.exceptions.CustomRestException;
 import com.brewery.services.fileFolder.FileFolderService;
 import com.brewery.utils.ConstantParams;
 import com.brewery.utils.ParamUtils;
@@ -18,9 +20,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.awt.image.BufferedImage;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.*;
 
 /**
@@ -72,6 +71,24 @@ public class ContentServiceImpl implements ContentService {
         return daoFactory.getContentDao(context).getAll();
     }
 
+    public List<Content> getAllProducts(String context) {
+        List<Content> products = new ArrayList<>();
+
+        for(Object productObj: getAll(context)){
+            Product product = (Product) productObj;
+            ProductType type = product.getProductType();
+            String base64iconRepresentation = getBase64ProductTypeIcon(type.getIconPath());
+
+            if(base64iconRepresentation != null){
+                type.setIconPath(base64iconRepresentation);
+            }
+
+            product.setProductType(type);
+            products.add(product);
+        }
+        return products;
+    }
+
     /**
      * Method for getting one row from the data base.
      * Uses id parameter for getting needed item.
@@ -95,11 +112,10 @@ public class ContentServiceImpl implements ContentService {
      * @param context current context.
      */
     @Transactional
-    public void remove(Long id, String context) throws IOException {
+    public void remove(Long id, String context) {
         Content content = daoFactory.getContentDao(context).getOne(id);
-        if (daoFactory.getContentDao(context).remove(content)
-                && (ConstantParams.IMAGE_CONTEXT.equals(context) || ConstantParams.FILE_CONTEXT.equals(context))) {
-
+        daoFactory.getContentDao(context).remove(content);
+        if (ConstantParams.IMAGE_CONTEXT.equals(context) || ConstantParams.FILE_CONTEXT.equals(context)) {
             File file = (File) content;
             fileFolderService.removeFile(file.getName(), file.getPath());
         }
@@ -203,14 +219,31 @@ public class ContentServiceImpl implements ContentService {
         }
     }
 
-    public List<Content> getAllProductTypes(String context) throws IOException {
+    @Transactional
+    public void removeProductType(String typeName, String context){
+
+        ProductTypeDaoImpl productTypeDao = (ProductTypeDaoImpl) daoFactory.getContentDao(context);
+        ProductType productType = productTypeDao.getOneType(typeName);
+        Set<Product> products = productType.getProducts();
+
+        if(!products.isEmpty()){
+            StringBuilder message = new StringBuilder("You can't remove this product type because you have products: ");
+            for (Product product: products){
+                String prodName = product.getName();
+                message.append(prodName).append(", ");
+            }
+            message.append("that related to type ").append(productType.getTypeName());
+            throw new CustomRestException(message.toString());
+        }
+
+        productTypeDao.remove(productType);
+    }
+
+    public List<Content> getAllProductTypes(String context) {
         List<Content> storedTypes = new ArrayList<>();
         for(Object content: daoFactory.getContentDao(context).getAll()){
             ProductType type = (ProductType) content;
-            String iconPath = type.getIconPath();
-            String absolutePath = ConstantParams.TEMP_FOLDER_PATH + ConstantParams.ROOT_PROJECT_DIR + iconPath;
-            String encoded64File = fileFolderService.getBase64StringEncoded(absolutePath);
-            type.setIconPath(encoded64File);
+            type.setIconPath(getBase64ProductTypeIcon(type.getIconPath()));
             storedTypes.add(type);
         }
         return storedTypes;
@@ -228,7 +261,7 @@ public class ContentServiceImpl implements ContentService {
      * @return Map with information about saved files.
      */
     @Transactional
-    public Map<Long, String> saveFiles(MultipartFile[] files, String context, String path) throws IOException {
+    public Map<Long, String> saveFiles(MultipartFile[] files, String context, String path) {
         Map<Long, String> result = new HashMap<>();
         LOGGER.info("Files saving started");
         String storagePath = "/" + path;
@@ -261,7 +294,7 @@ public class ContentServiceImpl implements ContentService {
      * @return Map with information about saved files.
      */
     @Transactional
-    public void saveFile(Content content, String context, MultipartFile file, String storagePath, Map<Long, String> result) throws Exception {
+    public void saveFile(Content content, String context, MultipartFile file, String storagePath, Map<Long, String> result){
         String savingResult = fileFolderService.saveFile(file, storagePath);
         Long fileId = daoFactory.getContentDao(context).save(content);
         if (savingResult != null) {
@@ -277,7 +310,7 @@ public class ContentServiceImpl implements ContentService {
      * @param context current context.
      * @return Map with files.
      */
-    public Map<String, File> getBase64EncodedFiles(String context) throws IOException {
+    public Map<String, File> getBase64EncodedFiles(String context) {
         Map<String, File> result = new HashMap<>();
         List<Content> files = daoFactory.getContentDao(context).getAll();
 
@@ -418,5 +451,10 @@ public class ContentServiceImpl implements ContentService {
                 break;
         }
         return content;
+    }
+
+    private String getBase64ProductTypeIcon(String iconPath) {
+        String absolutePath = ConstantParams.TEMP_FOLDER_PATH + ConstantParams.ROOT_PROJECT_DIR + iconPath;
+        return fileFolderService.getBase64StringEncoded(absolutePath);
     }
 }

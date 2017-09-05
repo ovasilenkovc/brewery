@@ -3,6 +3,7 @@ package com.brewery.content.contentDao.impl;
 import com.brewery.content.Content;
 import com.brewery.content.contentDao.ContentDao;
 import com.brewery.content.product.Description;
+import org.hibernate.HibernateException;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -10,7 +11,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository(value = "descriptionDao")
-public class DescriptionContentDaoImpl implements ContentDao{
+public class DescriptionContentDaoImpl implements ContentDao {
 
     @Autowired
     private SessionFactory sessionFactory;
@@ -27,7 +28,8 @@ public class DescriptionContentDaoImpl implements ContentDao{
 
     @Override
     public Content getOne(Long id) {
-        return (Content) sessionFactory.getCurrentSession().get(Description.class, id);    }
+        return (Content) sessionFactory.getCurrentSession().get(Description.class, id);
+    }
 
     @Override
     public List<Content> getAll() {
@@ -35,8 +37,11 @@ public class DescriptionContentDaoImpl implements ContentDao{
     }
 
     @Override
-    public boolean remove(Content content) {
-        sessionFactory.getCurrentSession().delete(content);
-        return true;
+    public void remove(Content content) {
+        try {
+            sessionFactory.getCurrentSession().delete(content);
+        } catch (HibernateException e) {
+            throw new HibernateException(e);
+        }
     }
 }
