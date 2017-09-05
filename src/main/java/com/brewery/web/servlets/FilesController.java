@@ -13,7 +13,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.Map;
 
 /**
@@ -41,7 +40,7 @@ public class FilesController {
     @ResponseBody
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_SUPER_ADMIN')")
     @RequestMapping(value = "/admin/content/files/{id}", method = RequestMethod.DELETE)
-    public ResponseEntity<String> removeImage(@PathVariable Long id) throws IOException {
+    public ResponseEntity<String> removeImage(@PathVariable Long id) {
         LOGGER.info("Image removing process execution");
         contentService.remove(id, ConstantParams.IMAGE_CONTEXT);
         String message = "Image with id: " + id + " removed successfully!";
@@ -50,7 +49,7 @@ public class FilesController {
 
     @ResponseBody
     @RequestMapping(value = "/content/files/{path}", method = RequestMethod.GET)
-    public ResponseEntity<String> getImages(@PathVariable String path) throws IOException {
+    public ResponseEntity<String> getImages(@PathVariable String path) {
         LOGGER.info("Image getting process execution");
         String context = path.equals("pictures") ? ConstantParams.IMAGE_CONTEXT : ConstantParams.FILE_CONTEXT;
         Map<String, File> result = contentService.getBase64EncodedFiles(context);

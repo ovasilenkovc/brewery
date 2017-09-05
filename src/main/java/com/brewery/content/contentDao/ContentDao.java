@@ -16,6 +16,6 @@ public interface ContentDao {
 
     List getAll();
 
-    boolean remove(Content content);
+    void remove(Content content);
 
 }

@@ -1,6 +1,7 @@
 package com.brewery.services.fileFolder;
 
 import com.brewery.content.image.Image;
+import com.brewery.utils.ConnectionUtils;
 import com.brewery.utils.ConstantParams;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.output.ByteArrayOutputStream;
@@ -19,6 +20,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,26 +41,29 @@ public class FileFolderService {
      * @param path saving path.
      * @return String returns absolute path for saved file.
      */
-    public String saveFile(MultipartFile file, String path) throws IOException {
+    public String saveFile(MultipartFile file, String path) {
+
         String storagePath = ConstantParams.TEMP_FOLDER_PATH + ConstantParams.ROOT_PROJECT_DIR + path;
         String fileName = file.getOriginalFilename();
 
-        if (!new File(ConstantParams.TEMP_FOLDER_PATH + ConstantParams.ROOT_PROJECT_DIR).exists()) {
-            createFolders(ConstantParams.ROOT_PROJECT_DIR, ConstantParams.TEMP_FOLDER_PATH);
-        }
-
-        if (!new File(storagePath).exists())
-            createFolders(path, ConstantParams.TEMP_FOLDER_PATH + ConstantParams.ROOT_PROJECT_DIR);
-
         try {
+            if (!new File(ConstantParams.TEMP_FOLDER_PATH + ConstantParams.ROOT_PROJECT_DIR).exists()) {
+                createFolders(ConstantParams.ROOT_PROJECT_DIR, ConstantParams.TEMP_FOLDER_PATH);
+            }
+
+            if (!new File(storagePath).exists())
+                createFolders(path, ConstantParams.TEMP_FOLDER_PATH + ConstantParams.ROOT_PROJECT_DIR);
+
             byte[] bytes = file.getBytes();
             Path filePath = Paths.get(storagePath + "/" + fileName);
             Files.write(filePath, bytes);
             return filePath.toString();
-        } catch (Exception e) {
+
+        } catch (IOException e) {
             String message = "Files saving failed! " + fileName;
             LOGGER.error(message, e);
-            throw new IOException(message, e);
+            e.printStackTrace();
+            return null;
         }
     }
 
@@ -69,10 +74,15 @@ public class FileFolderService {
      * @param fileName name of the removing file.
      * @param filePath path to the store.
      */
-    public void removeFile(String fileName, String filePath) throws IOException {
+    public void removeFile(String fileName, String filePath){
         String pathForRemove = ConstantParams.TEMP_FOLDER_PATH + filePath + "/" + fileName;
         Path path = Paths.get(pathForRemove);
-        Files.deleteIfExists(path);
+        try {
+            Files.deleteIfExists(path);
+        } catch (IOException e) {
+            LOGGER.error(e.getMessage(), e);
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -131,7 +141,7 @@ public class FileFolderService {
      * @param filePath an absolute file path to the file.
      * @return an array of encoded bytes.
      */
-    public byte[] getBase64Encoded(String filePath) throws IOException {
+    public byte[] getBase64Encoded(String filePath) {
         File file = new File(filePath);
         if (file.isFile()) {
             return getBase64ByteEncoded(file);
@@ -146,7 +156,7 @@ public class FileFolderService {
      * @param file file object for encoding.
      * @return an array of encoded bytes.
      */
-    public byte[] getBase64ByteEncoded(File file) throws IOException {
+    public byte[] getBase64ByteEncoded(File file) {
         FileInputStream fileInputStream = null;
         try {
             fileInputStream = new FileInputStream(file);
@@ -157,9 +167,7 @@ public class FileFolderService {
             return encoded;
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
-            if (fileInputStream != null) {
-                fileInputStream.close();
-            }
+            ConnectionUtils.close(fileInputStream);
             return null;
         }
     }
@@ -171,24 +179,24 @@ public class FileFolderService {
      * @param fullPath an absolute path to the file.
      * @return an array of encoded bytes.
      */
-    public String getBase64StringEncoded(String fullPath) throws IOException {
+    public String getBase64StringEncoded(String fullPath) {
         File file = new File(fullPath);
         FileInputStream fileInputStream = null;
-        String mimeType = Files.probeContentType(file.toPath());
+
         try {
+            String mimeType = Files.probeContentType(file.toPath());
             fileInputStream = new FileInputStream(file);
             byte[] bytes = new byte[(int) file.length()];
             fileInputStream.read(bytes);
             String sb = "data:" + mimeType + ";base64," + new String(Base64.encodeBase64(bytes));
             fileInputStream.close();
             return sb;
-        } catch (Exception e) {
+        } catch (IOException e) {
             LOGGER.error(e.getMessage(), e);
-            if (fileInputStream != null) {
-                fileInputStream.close();
-            }
+            ConnectionUtils.close(fileInputStream);
             return null;
         }
+
     }
 
     /**

@@ -3,6 +3,7 @@ package com.brewery.content.contentDao.impl;
 import com.brewery.content.Content;
 import com.brewery.content.article.Translations;
 import com.brewery.content.contentDao.ContentDao;
+import org.hibernate.HibernateException;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -40,8 +41,11 @@ public class TranslationContentImpl implements ContentDao {
     }
 
     @Override
-    public boolean remove(Content content) {
-        sessionFactory.getCurrentSession().delete(content);
-        return true;
+    public void remove(Content content) {
+        try {
+            sessionFactory.getCurrentSession().delete(content);
+        } catch (HibernateException e) {
+            throw new HibernateException(e);
+        }
     }
 }

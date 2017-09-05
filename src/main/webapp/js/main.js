@@ -82,6 +82,42 @@ var functionality = {
             self.utils.initPopup($('#save-img-popup'));
         });
 
+        $('#addNewType').click(function () {
+            self.utils.initPopup($('#save-type-popup'));
+        });
+
+        $('.logout').click($.proxy(this.logout, self));
+
+        $(".error").click(function () {
+            $(this).attr("hidden", true);
+        });
+
+        $('#history-lang-selector').change(function () {
+            var currentLang = $(this).val();
+            var form = $(this).closest('form');
+            var history = form.find("#sendHistoryData").data();
+            self.viewHistory(history, currentLang);
+        });
+
+        $('#typesManage').click(function () {
+            self.utils.initPopup($('#manage-type-popup'));
+            var typesListEl = $("#types");
+            typesListEl.html("");
+
+            for (var i in self.productTypes) {
+                var type = self.productTypes[i];
+                var listEl = $("<li class='list-group-item types-item'>");
+                var typeEl = $('<div class="type-title">' + type.typeName + '</div>' +
+                    '<div class="remove-type-el"><span class="fa fa-minus" aria-hidden="true"></span></div>').val(type);
+                typeEl.appendTo(listEl);
+                listEl.appendTo(typesListEl);
+            }
+
+            $('.remove-type-el').click(function () {
+                self.removeProductType(this)
+            });
+        });
+
         this.editHistoryEl.click(function () {
             $('#history-lang-selector').val(CURRENT_LANGUAGE);
             self.historyInfo.attr('hidden', !self.historyInfo.attr('hidden'));
@@ -106,13 +142,6 @@ var functionality = {
             self.productLangSwitcher(product, currentLang)
         });
 
-        $('#history-lang-selector').change(function () {
-            var currentLang = $(this).val();
-            var form = $(this).closest('form');
-            var history = form.find("#sendHistoryData").data();
-            self.viewHistory(history, currentLang);
-        });
-
         this.titleEl.focusout(function () {
             var alert = $(this).parent().find('.alert');
             $(this).val() === "" ? alert.attr("hidden", false) : alert.attr("hidden", true);
@@ -128,7 +157,6 @@ var functionality = {
             currentTranslation.translation = $(this).val();
         });
 
-        $('.logout').click($.proxy(this.logout, self));
     },
 
     logout: function () {
@@ -151,16 +179,18 @@ var functionality = {
                 self.renderProducts(productsBlock, item, CURRENT_LANGUAGE);
             });
         }, function (response) {
-            alert(response.error);
+            alert(response.responseJSON.error);
         })
     },
 
     getAllProductTypes: function () {
         var self = this;
+        this.productTypes = [];
         var url = SERVER_CONTEXT + "/content/product/type";
         var typesSelect = $('#types-selector');
         this.utils.ajaxDataBuilder(url, "GET", {}, function (response) {
             self.productTypes = response;
+            typesSelect.html("");
             for (var i = 0; i < response.length; i++) {
                 var type = response[i];
                 var option = $('<option value="' + type.typeName + '">' + type.typeName + '</option>');
@@ -172,7 +202,7 @@ var functionality = {
                 $('.window-img .product-logo-img').attr('src', type.iconPath);
             })
         }, function (error) {
-            alert(error.error);
+            alert(error.responseJSON.error);
         })
     },
 
@@ -184,7 +214,7 @@ var functionality = {
         var title = productDescription ? productDescription.title : UNKNOWN_TITLES[CURRENT_LANGUAGE];
         var productDivWrapEl = $('<div class="product-wrapper">');
 
-        if(this.authenticated){
+        if (this.authenticated) {
             var productToolEl = $('<div class="product-tools">');
             var editBtn = $('<span class="fa fa-pencil-square-o fa-3x edit-product" />');
             var removeBtn = $('<span class="fa fa-minus-square-o fa-3x remove-product" />');
@@ -202,7 +232,6 @@ var functionality = {
                 self.removeProduct(product);
             });
         }
-
         var productDivEl = $('<div class="position-of-beer" id="#show_popup" value="' + productId + '" data-toggle="modal" data-target="#productModal">'
             + '<div class="beer-img"><span><img src="' + productType.iconPath + '"></span></div>'
             + '<div class="romb-img"><div class="romb-text"><span>' + title + '</span></div>'
@@ -284,8 +313,42 @@ var functionality = {
         this.utils.ajaxDataBuilder(url, "DELETE", {}, function () {
             self.getProducts();
         }, function (error) {
-            $('#product-send-error').text(error);
+            $('#product-send-error').text(error.responseJSON.error);
         }, SESSION_TOKEN)
+    },
+
+    saveProductType: function () {
+        var self = this;
+        var typeName = $("#type-name").val();
+        var files = $('#type-icon')[0].files;
+        var url = SERVER_CONTEXT + "/admin/content/product/type";
+
+        if (typeName !== "" && (files.length !== 0)) {
+            var file = files[0];
+            if (!!file.type.match(/image.*/)) {
+                this.utils.ajaxFilesSender(url, "IMAGES", files, function () {
+                    self.getAllProductTypes();
+                    self.utils.popupDisable($('#save-type-popup'));
+                    self.utils.resetFormData($("#beer-type-form"));
+                }, function (error) {
+                    alert("Error!")
+                }, SESSION_TOKEN, {"typeName": typeName});
+            } else {
+                alert("a file should be an image!")
+            }
+        } else {
+            alert("type name and type icon are required!")
+        }
+    },
+
+    removeProductType: function (element) {
+        var type = $(element).val();
+        var url = SERVER_CONTEXT + "/admin/content/product/type/" + type.typeName;
+        this.utils.ajaxDataBuilder(url, "DELETE", {}, function () {
+            $(element).parent().remove();
+        }, function (error) {
+            $(".error").attr("hidden", false).text(error.responseJSON.error);
+        }, SESSION_TOKEN);
     },
 
     uploadImages: function () {
@@ -311,6 +374,7 @@ var functionality = {
                     "<img src='" + this.base64encodeString + "' alt='картинка слайда'></div></div>");
 
                 self.authenticated ? img.find(".remove-image").attr("hidden", false) : img.find(".remove-image").attr("hidden", true);
+
                 img.find(".remove-image").click(function () {
                     var id = $(this).attr('value');
                     functionality.removeImg(id);
@@ -377,11 +441,12 @@ $(document).ready(function () {
     localStorage.setItem('token', $("#token").val());
     functionality.init();
 });
-$(document).bind("contextmenu", function (event) {
-    event.preventDefault();
-});
-$(window).bind('mousewheel DOMMouseScroll', function (event) {
-    if (event.ctrlKey == true) {
-        event.preventDefault();
-    }
-});
+/*
+ $(document).bind("contextmenu", function (event) {
+ event.preventDefault();
+ });
+ $(window).bind('mousewheel DOMMouseScroll', function (event) {
+ if (event.ctrlKey == true) {
+ event.preventDefault();
+ }
+ });*/
