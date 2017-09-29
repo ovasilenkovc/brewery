@@ -23,12 +23,13 @@ var SESSION_TOKEN = "Bearer ",
 var functionality = {
 
     init: function init() {
+
         var self = this;
         this.utils = new Utils();
         this.authenticated = ($("#authenticated").attr("value") === "true");
         SESSION_TOKEN += localStorage.getItem("token");
         //using elements initialization
-        this.carousel = $('#brewery .carousel');
+        this.carousel = $('#brewery').find('.carousel');
 
         //edit product form elements init
         this.nameEl = $("#name");
@@ -39,13 +40,14 @@ var functionality = {
         this.typesSelectorEl = $("#types-selector");
         this.descSelectorEl = $("#desc-lang-selector");
         this.sendProductDataEl = $("#sendProductData");
-        this.addToolBtnEl = $("#asortiment-nav .addNew");
+        this.addToolBtnEl = $("#asortiment-nav").find(".addNew");
 
         //view popup elements init
-        this.popupDesc = $('#popup .first-paragraph');
-        this.popupDescComp = $('#popup .composition');
-        this.popupProdName = $('#popup .product-name');
-        this.popupProdImage = $('#popup .product-logo-img');
+        this.prodPopup = $('#popup');
+        this.popupDesc = this.prodPopup.find('.first-paragraph');
+        this.popupDescComp = this.prodPopup.find('.composition');
+        this.popupProdName = this.prodPopup.find('.product-name');
+        this.popupProdImage = this.prodPopup.find('.product-logo-img');
 
         this.products = [];
         this.productTypes = [];
@@ -267,7 +269,7 @@ var functionality = {
 
         var description = this.utils.getListItemByParameter(product.descriptions, "type", CURRENT_LANGUAGE);
         this.typesSelectorEl.val(product.productType.typeName).attr("selected", true);
-        $("#send-form-popup .product-logo-img").attr('src', product.productType.iconPath);
+        $("#send-form-popup").find(".product-logo-img").attr('src', product.productType.iconPath);
         this.descriptionEl.val(description && description.description ? description.description : "");
         this.compositionEl.val(description && description.composition ? description.composition : "");
         this.titleEl.val(description && description.title ? description.title : UNKNOWN_TITLES[CURRENT_LANGUAGE]);

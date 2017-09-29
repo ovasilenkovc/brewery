@@ -242,6 +242,11 @@
             </div>
         </div>
         <div class="container">
+            <div>
+                <c:if test="${authenticated}">
+                    <span class="fa fa-pencil-square-o fa-3x" id="editContacts" title="edit contact information"></span>
+                </c:if>
+            </div>
             <div class="contact-info-text">
                 <div class="contact-info-address">
                     <div class="address"><spring:message code="address"/></div>
@@ -252,10 +257,31 @@
                         <span class="bolder-font">e-mail:</span> hzpivovarnya@com.ua
                     </div>
                     <div class="contact-info-tel">
-                        <span class="bolder-font"><spring:message code="phone"/></span> +38 (057) 888-22-55, +38 (095)
-                        111-22-33
+                        <span class="bolder-font"><spring:message code="phone"/></span> +38 (057) 888-22-55, +38 (095)111-22-33
                     </div>
                 </div>
+                <form id="contacts-edit-form">
+                    <div class="form-group">
+                        <label for="contact-address">Address: </label>
+                        <input class="form-control" id="contact-address"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="contact-address">Email: </label>
+                        <input class="form-control" id="contact-email"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="contact-phone">Phone: </label>
+                        <input class="form-control" id="contact-phone"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="contact-phone">Our Channels: </label>
+                        <input class="form-control" id="contact-channel"/>
+                        <span class="fa fa-plus-square-o fa-3x add-history" id="addAnother" title="add another one channel"></span>
+                    </div>
+                    <div>
+                        <button type="button" class="btn btn-info send-button" id="saveContacts">Send</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>

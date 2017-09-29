@@ -4,6 +4,7 @@ import com.brewery.content.Content;
 import com.brewery.content.LocalizationTypes;
 import com.brewery.content.article.Article;
 import com.brewery.content.article.Translations;
+import com.brewery.content.contacts.Contacts;
 import com.brewery.content.services.ContentServiceImpl;
 import com.brewery.utils.ConstantParams;
 import com.brewery.utils.ParamUtils;
@@ -129,6 +130,13 @@ public class ContentController {
         }
 
         return ResponseMaker.makeResponse(roles, ConstantParams.JSON_HEADER_TYPE, HttpStatus.OK);
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/admin/content/contacts", method = RequestMethod.POST)
+    public ResponseEntity<String> saveContacts(@RequestBody Map<String, Object> reqMap){
+        contentService.saveContacts(reqMap);
+        return ResponseMaker.makeResponse("Contacts have been saved!", ConstantParams.JSON_HEADER_TYPE, HttpStatus.OK);
     }
 
     @InitBinder

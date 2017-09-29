@@ -4,6 +4,7 @@ import com.brewery.content.Content;
 import com.brewery.content.File;
 import com.brewery.content.article.Article;
 import com.brewery.content.article.Translations;
+import com.brewery.content.contacts.Contacts;
 import com.brewery.content.contentDao.ContentDaoFactory;
 import com.brewery.content.contentDao.impl.ProductTypeDaoImpl;
 import com.brewery.content.image.Image;
@@ -20,6 +21,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.Serializable;
+import java.lang.reflect.Field;
 import java.util.*;
 
 /**
@@ -74,12 +77,12 @@ public class ContentServiceImpl implements ContentService {
     public List<Content> getAllProducts(String context) {
         List<Content> products = new ArrayList<>();
 
-        for(Object productObj: getAll(context)){
+        for (Object productObj : getAll(context)) {
             Product product = (Product) productObj;
             ProductType type = product.getProductType();
             String base64iconRepresentation = getBase64ProductTypeIcon(type.getIconPath());
 
-            if(base64iconRepresentation != null){
+            if (base64iconRepresentation != null) {
                 type.setIconPath(base64iconRepresentation);
             }
 
@@ -220,15 +223,15 @@ public class ContentServiceImpl implements ContentService {
     }
 
     @Transactional
-    public void removeProductType(String typeName, String context){
+    public void removeProductType(String typeName, String context) {
 
         ProductTypeDaoImpl productTypeDao = (ProductTypeDaoImpl) daoFactory.getContentDao(context);
         ProductType productType = productTypeDao.getOneType(typeName);
         Set<Product> products = productType.getProducts();
 
-        if(!products.isEmpty()){
+        if (!products.isEmpty()) {
             StringBuilder message = new StringBuilder("You can't remove this product type because you have products: ");
-            for (Product product: products){
+            for (Product product : products) {
                 String prodName = product.getName();
                 message.append(prodName).append(", ");
             }
@@ -241,7 +244,7 @@ public class ContentServiceImpl implements ContentService {
 
     public List<Content> getAllProductTypes(String context) {
         List<Content> storedTypes = new ArrayList<>();
-        for(Object content: daoFactory.getContentDao(context).getAll()){
+        for (Object content : daoFactory.getContentDao(context).getAll()) {
             ProductType type = (ProductType) content;
             type.setIconPath(getBase64ProductTypeIcon(type.getIconPath()));
             storedTypes.add(type);
@@ -294,7 +297,7 @@ public class ContentServiceImpl implements ContentService {
      * @return Map with information about saved files.
      */
     @Transactional
-    public void saveFile(Content content, String context, MultipartFile file, String storagePath, Map<Long, String> result){
+    public void saveFile(Content content, String context, MultipartFile file, String storagePath, Map<Long, String> result) {
         String savingResult = fileFolderService.saveFile(file, storagePath);
         Long fileId = daoFactory.getContentDao(context).save(content);
         if (savingResult != null) {
@@ -340,6 +343,11 @@ public class ContentServiceImpl implements ContentService {
     public void removeContentMetadata(Long id, String localizeType, String context) {
         Content content = daoFactory.getContentDao(context).getOne(id);
         removeMetadata(content, localizeType, context);
+    }
+
+    public void saveContacts(Map<String, Object> contactsProps) {
+        String propFileName = "contacts.properties";
+        fileFolderService.updatePropFiles(contactsProps, propFileName);
     }
 
     private void removeMetadata(Content content, String local, String context) {

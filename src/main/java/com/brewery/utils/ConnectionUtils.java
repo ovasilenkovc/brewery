@@ -1,29 +1,55 @@
 package com.brewery.utils;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 
 public class ConnectionUtils {
 
-    public static void close(FileInputStream fileInputStream){
+    public static void close(InputStream inputStream) {
         try {
-            if (fileInputStream != null) {
-                fileInputStream.close();
+            if (inputStream != null) {
+                inputStream.close();
             }
         } catch (IOException ex) {
             ex.printStackTrace();
+        } finally {
+            if(inputStream != null){
+                try {
+                    inputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 
-    public static void close(FileOutputStream fileOutputStream){
+    public static void close(OutputStream outputStream) {
         try {
-            if (fileOutputStream != null) {
-                fileOutputStream.close();
+            if (outputStream != null) {
+                outputStream.close();
             }
-        } catch (IOException ex) {
-            ex.printStackTrace();
+        } catch (IOException io) {
+            io.printStackTrace();
+        } finally {
+            if (outputStream != null) {
+                try {
+                    outputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
+//
+//    private void close(Object object){
+//
+//        try {
+//            if(object != null){
+//                ()object
+//            }
+//        }catch (IOException io){
+//
+//        }
+//
+//    }
 
 }

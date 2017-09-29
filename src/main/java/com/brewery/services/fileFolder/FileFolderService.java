@@ -3,26 +3,23 @@ package com.brewery.services.fileFolder;
 import com.brewery.content.image.Image;
 import com.brewery.utils.ConnectionUtils;
 import com.brewery.utils.ConstantParams;
+import net.sf.oval.constraint.Assert;
+import net.sf.oval.constraint.NotNull;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
+import org.springframework.util.DefaultPropertiesPersister;
 import org.springframework.web.multipart.MultipartFile;
 import sun.misc.BASE64Encoder;
 
-import javax.activation.MimetypesFileTypeMap;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Service for managing stored files and folders.
@@ -74,7 +71,7 @@ public class FileFolderService {
      * @param fileName name of the removing file.
      * @param filePath path to the store.
      */
-    public void removeFile(String fileName, String filePath){
+    public void removeFile(String fileName, String filePath) {
         String pathForRemove = ConstantParams.TEMP_FOLDER_PATH + filePath + "/" + fileName;
         Path path = Paths.get(pathForRemove);
         try {
@@ -196,7 +193,59 @@ public class FileFolderService {
             ConnectionUtils.close(fileInputStream);
             return null;
         }
+    }
 
+    public void updatePropFiles(Map<String, Object> contactValues, String fileName) {
+
+        Properties properties = loadProperties(fileName);
+
+        for (Map.Entry<String, Object> entry : contactValues.entrySet()) {
+            String entryKey = entry.getKey();
+            Object entryVal = entry.getValue();
+
+            if (entryVal instanceof String) {
+                properties.setProperty(entryKey, (String) entryVal);
+            } else if (entryVal instanceof Number) {
+                properties.setProperty(entryKey, entryVal.toString());
+            } else if (entryVal instanceof List) {
+                List<Object> values = (List<Object>) entryVal;
+                StringBuilder sb = new StringBuilder();
+                for (Object iterator : values) {
+                    sb.append(iterator.toString()).append(",");
+                }
+                properties.setProperty(entryKey, sb.toString());
+            }
+        }
+        savePropertiesToFile(properties, fileName);
+    }
+
+    private void savePropertiesToFile(Properties props, String fileName) {
+        ClassLoader classLoader = getClass().getClassLoader();
+        File file = new File(classLoader.getResource(fileName).getFile());
+        try (OutputStream fileOutputStream = new FileOutputStream(file)) {
+//            DefaultPropertiesPersister p = new DefaultPropertiesPersister();
+//            p.store(props, fileOutputStream, "header");
+            props.store(fileOutputStream, null);
+        } catch (IOException e) {
+            LOGGER.info("Property file loading was corrupted with message: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    private Properties loadProperties(String fileName) {
+        Properties properties = new Properties();
+        ClassLoader classLoader = getClass().getClassLoader();
+
+        try (InputStream inputStream = classLoader.getResourceAsStream(fileName)) {
+            if (inputStream != null) {
+                properties.load(inputStream);
+            } else {
+                throw new FileNotFoundException("property file with name: " + fileName + "not found!");
+            }
+        } catch (IOException e) {
+            LOGGER.info("Property file loading was corrupted with message: " + e.getMessage());
+        }
+        return properties;
     }
 
     /**
