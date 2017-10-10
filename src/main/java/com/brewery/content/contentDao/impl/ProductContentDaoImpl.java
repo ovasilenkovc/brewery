@@ -4,6 +4,7 @@ import com.brewery.content.Content;
 import com.brewery.content.contentDao.ContentDao;
 import com.brewery.content.product.Product;
 import com.brewery.content.product.ProductType;
+import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,9 +61,12 @@ public class ProductContentDaoImpl implements ContentDao {
     }
 
     @Override
-    public boolean remove(Content content) {
-        sessionFactory.getCurrentSession().delete(content);
-        return true;
+    public void remove(Content content) {
+        try {
+            sessionFactory.getCurrentSession().delete(content);
+        }catch (HibernateException e){
+            throw new HibernateException(e);
+        }
     }
 
     private ProductType initProductType(Product product) {

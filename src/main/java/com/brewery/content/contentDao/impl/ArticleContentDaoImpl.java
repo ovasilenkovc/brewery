@@ -3,6 +3,7 @@ package com.brewery.content.contentDao.impl;
 import com.brewery.content.Content;
 import com.brewery.content.article.Article;
 import com.brewery.content.contentDao.ContentDao;
+import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +16,7 @@ import java.util.List;
  * Article implementation of Content DAO.
  */
 @Repository(value = "articleDao")
-public class ArticleContentDaoImpl implements ContentDao{
+public class ArticleContentDaoImpl implements ContentDao {
 
     @Autowired
     private SessionFactory sessionFactory;
@@ -35,7 +36,7 @@ public class ArticleContentDaoImpl implements ContentDao{
         Session session = sessionFactory.openSession();
         Article article = (Article) session.get(Article.class, id);
 
-        if(article == null){
+        if (article == null) {
             throw new NullPointerException("Article with specified id: " + id + " was not found!");
         }
 
@@ -51,7 +52,7 @@ public class ArticleContentDaoImpl implements ContentDao{
         List<Content> articles = (ArrayList<Content>) session.createCriteria(Article.class).list();
 
         for (Content article : articles) {
-            ((Article)article).getTranslations().size();
+            ((Article) article).getTranslations().size();
         }
 
         session.flush();
@@ -60,9 +61,12 @@ public class ArticleContentDaoImpl implements ContentDao{
     }
 
     @Override
-    public boolean remove(Content content) {
-        sessionFactory.getCurrentSession().delete(content);
-        return true;
+    public void remove(Content content) {
+        try {
+            sessionFactory.getCurrentSession().delete(content);
+        } catch (HibernateException e) {
+            throw new HibernateException(e);
+        }
     }
 
 }

@@ -52,9 +52,12 @@ public class ImageContentDaoImpl implements ContentDao {
     }
 
     @Override
-    public boolean remove(Content content) {
-        sessionFactory.getCurrentSession().delete(content);
-        return true;
+    public void remove(Content content) {
+        try {
+            sessionFactory.getCurrentSession().delete(content);
+        } catch (HibernateException e) {
+            throw new HibernateException(e);
+        }
     }
 
     private boolean isImgExist(Image image) {

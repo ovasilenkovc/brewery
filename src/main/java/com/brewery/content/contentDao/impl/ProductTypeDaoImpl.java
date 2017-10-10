@@ -3,15 +3,18 @@ package com.brewery.content.contentDao.impl;
 import com.brewery.content.Content;
 import com.brewery.content.contentDao.ContentDao;
 import com.brewery.content.product.ProductType;
+import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+/*Need to refactor*/
 @Repository(value = "productTypeDao")
 public class ProductTypeDaoImpl implements ContentDao {
 
@@ -34,7 +37,7 @@ public class ProductTypeDaoImpl implements ContentDao {
         Session session = sessionFactory.openSession();
         ProductType type = (ProductType) session.get(ProductType.class, id);
 
-        if(type == null){
+        if (type == null) {
             throw new NullPointerException("Product type wasn't found!");
         }
 
@@ -69,8 +72,26 @@ public class ProductTypeDaoImpl implements ContentDao {
     }
 
     @Override
-    public boolean remove(Content content) {
-        sessionFactory.getCurrentSession().delete(content);
-        return true;
+    public void remove(Content content) {
+        try {
+            sessionFactory.getCurrentSession().delete(content);
+        } catch (HibernateException e) {
+            throw new HibernateException(e);
+        }
     }
+
+    public ProductType getOneType(String typeName) {
+        Session session = sessionFactory.openSession();
+        ProductType type = (ProductType) session.createQuery("SELECT pt FROM ProductType pt WHERE pt.typeName = :typeName").setParameter("typeName", typeName).uniqueResult();
+
+        if (type == null) {
+            throw new NullPointerException("Product type wasn't found!");
+        }
+
+        type.getProducts().size();
+        session.flush();
+        session.close();
+        return type;
+    }
+
 }

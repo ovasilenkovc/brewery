@@ -161,8 +161,14 @@
         </div>
         <div class="toolbar">
             <c:if test="${authenticated}">
+                <button type="button" class="addNewProductType" id="addNewType">
+                    <span class="fa fa-pencil-square fa-3x" aria-hidden="true" title="Add new product type"></span>
+                </button>
+                <button type="button" class="addNewProductType" id="typesManage">
+                    <span class="fa fa-list-ul fa-3x" aria-hidden="true" title="Manage Types"></span>
+                </button>
                 <button type="button" class="addNew">
-                    <span class="fa fa-plus-square-o fa-3x" title="Add new product"></span>
+                    <span class="fa fa-plus-square-o fa-3x" aria-hidden="true" title="Add new product"></span>
                 </button>
             </c:if>
         </div>
@@ -236,6 +242,11 @@
             </div>
         </div>
         <div class="container">
+            <div>
+                <c:if test="${authenticated}">
+                    <span class="fa fa-pencil-square-o fa-3x" id="editContacts" title="edit contact information"></span>
+                </c:if>
+            </div>
             <div class="contact-info-text">
                 <div class="contact-info-address">
                     <div class="address"><spring:message code="address"/></div>
@@ -246,10 +257,31 @@
                         <span class="bolder-font">e-mail:</span> hzpivovarnya@com.ua
                     </div>
                     <div class="contact-info-tel">
-                        <span class="bolder-font"><spring:message code="phone"/></span> +38 (057) 888-22-55, +38 (095)
-                        111-22-33
+                        <span class="bolder-font"><spring:message code="phone"/></span> +38 (057) 888-22-55, +38 (095)111-22-33
                     </div>
                 </div>
+                <form id="contacts-edit-form">
+                    <div class="form-group">
+                        <label for="contact-address">Address: </label>
+                        <input class="form-control" id="contact-address"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="contact-address">Email: </label>
+                        <input class="form-control" id="contact-email"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="contact-phone">Phone: </label>
+                        <input class="form-control" id="contact-phone"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="contact-phone">Our Channels: </label>
+                        <input class="form-control" id="contact-channel"/>
+                        <span class="fa fa-plus-square-o fa-3x add-history" id="addAnother" title="add another one channel"></span>
+                    </div>
+                    <div>
+                        <button type="button" class="btn btn-info send-button" id="saveContacts">Send</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -408,16 +440,67 @@
             <div class="b-close-wrapper">
                 <span class="button b-close">X</span>
             </div>
+            <div>
+                <h4 class="title-name">Add new image</h4>
+            </div>
             <div class="image-window">
                 <form id="img-form">
                     <div class="form-group">
-                        <label for="file">Upload Image:</label>
-                        <input id="file" type="file" name="files[]" multiple>
+                        <label class="custom-file col-md-12"> Upload Image:
+                            <input type="file" id="file" class="custom-file-input" name="files[]" multiple>
+                            <span class="custom-file-control"></span>
+                        </label>
                     </div>
                     <div>
                         <button type="button" class="btn btn-info send-button" onclick="functionality.uploadImages()" id="saveImg">Send</button>
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="save-type-popup">
+    <div class="wrap-popup">
+        <div class="window-container">
+            <div class="b-close-wrapper">
+                <span class="button b-close">X</span>
+            </div>
+            <div>
+                <h4 class="title-name">Add new Product Type</h4>
+            </div>
+            <div class="image-window">
+                <div class="error" hidden></div>
+                <form id="beer-type-form">
+                    <div class="form-group">
+                        <label for="type-name">Type Name:</label>
+                        <input class="form-control" id="type-name" type="text" name="typeName">
+                    </div>
+                    <div class="form-group">
+                        <label class="custom-file col-md-12"> Upload Type Icon:
+                            <input type="file" id="type-icon" class="custom-file-input" name="files">
+                            <span class="custom-file-control"></span>
+                        </label>
+                    </div>
+                    <div>
+                        <button type="button" class="btn btn-info send-button" onclick="functionality.saveProductType()" id="saveType">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="manage-type-popup">
+    <div class="wrap-popup">
+        <div class="window-container">
+            <div class="b-close-wrapper">
+                <span class="button b-close">X</span>
+            </div>
+            <div>
+                <h4 class="title-name">Product Types managing</h4>
+            </div>
+            <div class="types-wrapper">
+                <div class="error" hidden></div>
+                <ul class="list-group" id="types"></ul>
             </div>
         </div>
     </div>
