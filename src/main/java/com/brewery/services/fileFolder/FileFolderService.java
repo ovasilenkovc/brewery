@@ -196,54 +196,48 @@ public class FileFolderService {
     }
 
     public void updatePropFiles(Map<String, Object> contactValues, String fileName) {
+        try {
+            Properties properties = loadProperties(fileName);
+            for (Map.Entry<String, Object> entry : contactValues.entrySet()) {
+                String entryKey = entry.getKey();
+                Object entryVal = entry.getValue();
 
-        Properties properties = loadProperties(fileName);
-
-        for (Map.Entry<String, Object> entry : contactValues.entrySet()) {
-            String entryKey = entry.getKey();
-            Object entryVal = entry.getValue();
-
-            if (entryVal instanceof String) {
-                properties.setProperty(entryKey, (String) entryVal);
-            } else if (entryVal instanceof Number) {
-                properties.setProperty(entryKey, entryVal.toString());
-            } else if (entryVal instanceof List) {
-                List<Object> values = (List<Object>) entryVal;
-                StringBuilder sb = new StringBuilder();
-                for (Object iterator : values) {
-                    sb.append(iterator.toString()).append(",");
+                if (entryVal instanceof String) {
+                    properties.setProperty(entryKey, (String) entryVal);
+                } else if (entryVal instanceof Number) {
+                    properties.setProperty(entryKey, entryVal.toString());
+                } else if (entryVal instanceof List) {
+                    List<Object> values = (List<Object>) entryVal;
+                    StringBuilder sb = new StringBuilder();
+                    for (Object iterator : values) {
+                        sb.append(iterator.toString()).append(",");
+                    }
+                    properties.setProperty(entryKey, sb.toString());
                 }
-                properties.setProperty(entryKey, sb.toString());
             }
+            savePropertiesToFile(properties, fileName);
+        } catch (IOException e) {
+            e.printStackTrace();
+            LOGGER.info("Property file loading was corrupted with message: " + e.getMessage());
         }
-        savePropertiesToFile(properties, fileName);
     }
 
-    private void savePropertiesToFile(Properties props, String fileName) {
+    private void savePropertiesToFile(Properties props, String fileName) throws IOException {
         ClassLoader classLoader = getClass().getClassLoader();
         File file = new File(classLoader.getResource(fileName).getFile());
-        try (OutputStream fileOutputStream = new FileOutputStream(file)) {
-//            DefaultPropertiesPersister p = new DefaultPropertiesPersister();
-//            p.store(props, fileOutputStream, "header");
-            props.store(fileOutputStream, null);
-        } catch (IOException e) {
-            LOGGER.info("Property file loading was corrupted with message: " + e.getMessage());
-            e.printStackTrace();
-        }
+        OutputStream fileOutputStream = new FileOutputStream(file);
+        props.store(fileOutputStream, null);
     }
 
-    private Properties loadProperties(String fileName) {
+    private Properties loadProperties(String fileName) throws IOException {
         Properties properties = new Properties();
         ClassLoader classLoader = getClass().getClassLoader();
 
-        try (InputStream inputStream = classLoader.getResourceAsStream(fileName)) {
-            if (inputStream != null) {
-                properties.load(inputStream);
-            } else {
-                throw new FileNotFoundException("property file with name: " + fileName + "not found!");
-            }
-        } catch (IOException e) {
-            LOGGER.info("Property file loading was corrupted with message: " + e.getMessage());
+        InputStream inputStream = classLoader.getResourceAsStream("contacts.properties");
+        if (inputStream != null) {
+            properties.load(inputStream);
+        } else {
+            throw new FileNotFoundException("property file with name: " + fileName + " not found!");
         }
         return properties;
     }
