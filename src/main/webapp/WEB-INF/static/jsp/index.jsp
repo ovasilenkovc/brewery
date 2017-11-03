@@ -141,11 +141,8 @@
                         <spring:message code="contact.email"/>
                     </span>
                 <span class="number">
-                        <spring:message code="contact.phone.first"/>
+                        <spring:message code="contact.phones"/>
                     </span>
-                <span class="number">
-                        <spring:message code="contact.phone.second"/>
-                </span>
             </div>
         </div>
     </div>
@@ -242,20 +239,54 @@
             </div>
         </div>
         <div class="container">
+            <div class="toolbar contacts-toolbar col-md-11">
+                <c:if test="${authenticated}">
+                    <span class="fa fa-pencil-square-o fa-3x" id="editContacts" title="edit contact information"></span>
+                </c:if>
+            </div>
             <div class="contact-info-text">
-                <div class="contact-info-address">
-                    <div class="address"><spring:message code="address"/></div>
-                    <div class="adress-text"><spring:message code="address.text"/></div>
-                </div>
-                <div class="contact-info-numbers">
-                    <div class="contact-email">
-                        <span class="bolder-font">e-mail:</span> hzpivovarnya@com.ua
+                <div id="contacts-text">
+                    <div class="contact-info-address">
+                        <div class="address"><spring:message code="address"/></div>
+                        <div class="adress-text"></div>
                     </div>
-                    <div class="contact-info-tel">
-                        <span class="bolder-font"><spring:message code="phone"/></span> +38 (057) 888-22-55, +38 (095)
-                        111-22-33
+                    <div class="contact-info-numbers">
+                        <div class="contact-email">
+                            <span class="bolder-font">e-mail:</span>
+                            <span class="email-text"></span>
+                        </div>
+                        <div class="contact-info-tel">
+                            <span class="bolder-font"><spring:message code="phone"/></span>
+                            <span class="phone-text"></span>
+                        </div>
+                    </div>
+                    <div class="contact-info-channels">
+                        <div>Our channels: </div>
+                        <input type="text" id="channelsStr" value="" hidden/>
                     </div>
                 </div>
+                <form id="contacts-edit-form" hidden>
+                    <div class="form-group">
+                        <label for="contact-address">Address: </label>
+                        <input class="form-control" id="contact-address"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="contact-email">Email: </label>
+                        <input class="form-control" id="contact-email"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="contact-phone">Phone: </label>
+                        <input class="form-control" id="contact-phone"/>
+                    </div>
+                    <div class="form-group channels">
+                        <label>Our Channels: </label>
+                        <div></div>
+                        <span class="fa fa-plus-square-o fa-3x add-channel" id="addAnother" title="add another one channel"></span>
+                    </div>
+                    <div>
+                        <button type="button" class="btn btn-info send-button" id="saveContacts">Send</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>

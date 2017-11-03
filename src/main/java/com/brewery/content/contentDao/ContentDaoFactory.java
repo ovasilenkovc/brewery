@@ -38,7 +38,7 @@ public class ContentDaoFactory {
 
     private static final Logger LOGGER = Logger.getLogger(ContentDaoFactory.class);
 
-    private Map<String, ContentDao> CONTENT_DAO_IMPLEMENTATIONS = new HashMap<>();
+    private Map<String, AbstractContentDaoImpl> CONTENT_DAO_IMPLEMENTATIONS = new HashMap<>();
 
     @PostConstruct
     public void init(){
@@ -52,7 +52,7 @@ public class ContentDaoFactory {
 
     public ContentDao getContentDao(String context){
 
-        ContentDao contentDao = CONTENT_DAO_IMPLEMENTATIONS.get(context);
+        AbstractContentDaoImpl contentDao = CONTENT_DAO_IMPLEMENTATIONS.get(context);
 
         if(contentDao == null){
             LOGGER.error("Content DAO implementation doesn't exist for specified context!");

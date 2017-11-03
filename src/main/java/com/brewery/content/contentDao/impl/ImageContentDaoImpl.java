@@ -1,6 +1,7 @@
 package com.brewery.content.contentDao.impl;
 
 import com.brewery.content.Content;
+import com.brewery.content.contentDao.AbstractContentDaoImpl;
 import com.brewery.content.contentDao.ContentDao;
 import com.brewery.content.image.Image;
 import org.hibernate.HibernateException;
@@ -16,10 +17,7 @@ import java.util.List;
  * Image implementation of Content DAO.
  */
 @Repository(value = "imageDao")
-public class ImageContentDaoImpl implements ContentDao {
-
-    @Autowired
-    private SessionFactory sessionFactory;
+public class ImageContentDaoImpl extends AbstractContentDaoImpl {
 
     @Override
     public Long save(Content content) {
@@ -31,13 +29,7 @@ public class ImageContentDaoImpl implements ContentDao {
     }
 
     @Override
-    //Don't need to implement
-    public void update(Content content) {
-
-    }
-
-    @Override
-    public Image getOne(Long id) {
+    public Content getOne(Long id) {
         return (Image) sessionFactory.getCurrentSession().get(Image.class, id);
 
     }
@@ -49,15 +41,6 @@ public class ImageContentDaoImpl implements ContentDao {
         session.flush();
         session.close();
         return articles;
-    }
-
-    @Override
-    public void remove(Content content) {
-        try {
-            sessionFactory.getCurrentSession().delete(content);
-        } catch (HibernateException e) {
-            throw new HibernateException(e);
-        }
     }
 
     private boolean isImgExist(Image image) {

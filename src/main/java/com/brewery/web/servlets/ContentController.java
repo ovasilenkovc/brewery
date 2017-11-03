@@ -131,6 +131,20 @@ public class ContentController {
         return ResponseMaker.makeResponse(roles, ConstantParams.JSON_HEADER_TYPE, HttpStatus.OK);
     }
 
+    @ResponseBody
+    @RequestMapping(value = "/content/contacts", method = RequestMethod.GET)
+    public ResponseEntity<String> getContacts() throws IOException {
+        Map<String, String> cntacts = contentService.getContacts();
+        return ResponseMaker.makeResponse(cntacts, ConstantParams.JSON_HEADER_TYPE, HttpStatus.OK);
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/admin/content/contacts", method = RequestMethod.POST)
+    public ResponseEntity<String> saveContacts(@RequestBody Map<String, Object> reqMap) throws IOException {
+        contentService.saveContacts(reqMap);
+        return ResponseMaker.makeResponse("Contacts have been saved!", ConstantParams.JSON_HEADER_TYPE, HttpStatus.OK);
+    }
+
     @InitBinder
     public void initBinder(WebDataBinder binder) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
