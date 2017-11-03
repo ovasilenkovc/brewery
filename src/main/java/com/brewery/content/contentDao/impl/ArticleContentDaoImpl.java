@@ -2,7 +2,7 @@ package com.brewery.content.contentDao.impl;
 
 import com.brewery.content.Content;
 import com.brewery.content.article.Article;
-import com.brewery.content.contentDao.ContentDao;
+import com.brewery.content.contentDao.AbstractContentDaoImpl;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -16,20 +16,7 @@ import java.util.List;
  * Article implementation of Content DAO.
  */
 @Repository(value = "articleDao")
-public class ArticleContentDaoImpl implements ContentDao {
-
-    @Autowired
-    private SessionFactory sessionFactory;
-
-    @Override
-    public Long save(Content content) {
-        return (Long) sessionFactory.getCurrentSession().save(content);
-    }
-
-    @Override
-    public void update(Content content) {
-        sessionFactory.getCurrentSession().update(content);
-    }
+public class ArticleContentDaoImpl extends AbstractContentDaoImpl {
 
     @Override
     public Article getOne(Long id) {
@@ -58,15 +45,6 @@ public class ArticleContentDaoImpl implements ContentDao {
         session.flush();
         session.close();
         return articles;
-    }
-
-    @Override
-    public void remove(Content content) {
-        try {
-            sessionFactory.getCurrentSession().delete(content);
-        } catch (HibernateException e) {
-            throw new HibernateException(e);
-        }
     }
 
 }

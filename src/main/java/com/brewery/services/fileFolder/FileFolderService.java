@@ -3,26 +3,28 @@ package com.brewery.services.fileFolder;
 import com.brewery.content.image.Image;
 import com.brewery.utils.ConnectionUtils;
 import com.brewery.utils.ConstantParams;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.log4j.Logger;
+import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import sun.misc.BASE64Encoder;
 
-import javax.activation.MimetypesFileTypeMap;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+
+import static java.nio.charset.StandardCharsets.*;
 
 /**
  * Service for managing stored files and folders.
@@ -74,7 +76,7 @@ public class FileFolderService {
      * @param fileName name of the removing file.
      * @param filePath path to the store.
      */
-    public void removeFile(String fileName, String filePath){
+    public void removeFile(String fileName, String filePath) {
         String pathForRemove = ConstantParams.TEMP_FOLDER_PATH + filePath + "/" + fileName;
         Path path = Paths.get(pathForRemove);
         try {
@@ -196,7 +198,64 @@ public class FileFolderService {
             ConnectionUtils.close(fileInputStream);
             return null;
         }
+    }
 
+    public Map<String, String> getJSonFileContent(String fileName) throws IOException {
+
+        ObjectMapper mapper = new ObjectMapper();
+        ClassLoader classLoader = getClass().getClassLoader();
+        File file = new File(classLoader.getResource(fileName).getFile());
+        InputStream fileInputStram = new FileInputStream(file);
+
+        String jsonString = IOUtils.toString(fileInputStram, UTF_8.name());
+        fileInputStram.close();
+
+        TypeReference<HashMap<String, String>> typeRef = new TypeReference<HashMap<String, String>>() {};
+
+        return mapper.readValue(jsonString, typeRef);
+    }
+
+    public void updateJsonFile(Map<String, Object> contactValues, String fileName) throws IOException {
+
+        ClassLoader classLoader = getClass().getClassLoader();
+        File file = new File(classLoader.getResource(fileName).getFile());
+        InputStream fileInputStream = new FileInputStream(file);
+        String jsonString = IOUtils.toString(fileInputStream, UTF_8.name());
+        fileInputStream.close();
+        JSONObject jsonObject = new JSONObject(jsonString);
+
+        for (Map.Entry<String, Object> entry : contactValues.entrySet()) {
+            String entryKey = entry.getKey();
+            jsonObject.put(entryKey, entry.getValue());
+        }
+
+        FileWriter fileWriter = new FileWriter(file.toString());
+        fileWriter.write(jsonObject.toString());
+        fileWriter.close();
+    }
+
+    private void savePropertiesToFile(Properties props, String fileName) throws IOException {
+        ClassLoader classLoader = getClass().getClassLoader();
+        File file = new File(classLoader.getResource(fileName).getFile());
+        FileOutputStream fileOutputStream = new FileOutputStream(file);
+        props.store(fileOutputStream, null);
+
+        ConnectionUtils.close(fileOutputStream);
+    }
+
+    private Properties loadProperties(String fileName) throws IOException {
+        Properties properties = new Properties();
+        ClassLoader classLoader = getClass().getClassLoader();
+        InputStream inputStream = classLoader.getResourceAsStream(fileName);
+
+        if (inputStream != null) {
+            properties.load(inputStream);
+        } else {
+            throw new FileNotFoundException("property file with name: " + fileName + " not found!");
+        }
+
+        ConnectionUtils.close(inputStream);
+        return properties;
     }
 
     /**

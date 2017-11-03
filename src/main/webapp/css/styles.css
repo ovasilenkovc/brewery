@@ -691,6 +691,9 @@ input, button {
     clear: both;
     content: '';
 }
+.contacts-toolbar{
+    background: #cfc2b1 !important;
+}
 .toolbar {
     background:#4a4a4a;
     text-align: right;
@@ -734,6 +737,14 @@ input, button {
 .edit-history:hover, .add-history:hover,
 .remove-image:hover{
     color: #cfc2b1;
+}
+#editContacts, .add-channel, .remove-channel{
+    cursor: pointer;
+}
+#editContacts:hover,
+.add-channel:hover,
+.remove-channel:hover{
+    color: #656565;
 }
 .remove-image{
     color: #4a4a4a;
@@ -849,8 +860,13 @@ input, button {
     overflow: hidden;
     padding-bottom: 50px;
 }
-.contact-info-address{
-    float: left;
+.contacts-text{
+    text-align: left;
+}
+.contact-info-address, .contact-info-numbers{
+    width: 45%;
+    display: inline-block;
+    margin-bottom: 25px;
 }
 .address{
     margin-bottom: 9px;
@@ -859,9 +875,9 @@ input, button {
     font-size: 18px;
 
 }
-.contact-info-numbers{
-    float: right;
-}
+/*.contact-info-numbers{*/
+    /*float: right;*/
+/*}*/
 .contact-email, .contact-info-tel, .bolder-font, .adress-text, .address{
     font-size: 18px;
    font-family: 'Tahoma';
@@ -1084,4 +1100,16 @@ input, button {
 .type-title{
     width: 95%;
     display: inline-block;
+}
+.contact-info-channels{
+    text-align: center;
+}
+.youtube-element{
+    margin-right: 10px;
+}
+.youtube-element span:hover{
+    color: #dd0008;
+}
+.channels-wrapper{
+    margin-left: 0;
 }

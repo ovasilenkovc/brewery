@@ -116,7 +116,7 @@ function Utils() {
             currentDescription[keyName] = $(el).val();
         },
 
-        ajaxDataBuilder: function (url, type, content, success, reject, token) {
+        ajaxDataSender: function (url, type, content, success, reject, token) {
             var ajaxConfig = {
                 url: url,
                 type: type,

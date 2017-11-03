@@ -1,6 +1,7 @@
 package com.brewery.content.contentDao.impl;
 
 import com.brewery.content.Content;
+import com.brewery.content.contentDao.AbstractContentDaoImpl;
 import com.brewery.content.contentDao.ContentDao;
 import com.brewery.content.product.ProductType;
 import org.hibernate.HibernateException;
@@ -16,21 +17,13 @@ import java.util.List;
 
 /*Need to refactor*/
 @Repository(value = "productTypeDao")
-public class ProductTypeDaoImpl implements ContentDao {
+public class ProductTypeDaoImpl extends AbstractContentDaoImpl {
 
-    @Autowired
-    private SessionFactory sessionFactory;
-
-    @Override
-    public Long save(Content content) {
-        sessionFactory.getCurrentSession().save(content);
-        return 0L;
-    }
-
-    @Override
-    public void update(Content content) {
-        sessionFactory.getCurrentSession().update(content);
-    }
+//    @Override
+//    public Long save(Content content) {
+//        sessionFactory.getCurrentSession().save(content);
+//        return 0L;
+//    }
 
     @Override
     public Content getOne(Long id) {
@@ -69,15 +62,6 @@ public class ProductTypeDaoImpl implements ContentDao {
         session.flush();
         session.close();
         return result;
-    }
-
-    @Override
-    public void remove(Content content) {
-        try {
-            sessionFactory.getCurrentSession().delete(content);
-        } catch (HibernateException e) {
-            throw new HibernateException(e);
-        }
     }
 
     public ProductType getOneType(String typeName) {

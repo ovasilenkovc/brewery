@@ -39,13 +39,13 @@ var functionality = {
         this.typesSelectorEl = $("#types-selector");
         this.descSelectorEl = $("#desc-lang-selector");
         this.sendProductDataEl = $("#sendProductData");
-        this.addToolBtnEl = $("#asortiment-nav .addNew");
+        this.addToolBtnEl = $("#asortiment-nav").find(".addNew");
 
         //view popup elements init
-        this.popupDesc = $('#popup .first-paragraph');
-        this.popupDescComp = $('#popup .composition');
-        this.popupProdName = $('#popup .product-name');
-        this.popupProdImage = $('#popup .product-logo-img');
+        this.popupDesc = $('#popup').find('.first-paragraph');
+        this.popupDescComp = $('#popup').find('.composition');
+        this.popupProdName = $('#popup').find('.product-name');
+        this.popupProdImage = $('#popup').find('.product-logo-img');
 
         this.products = [];
         this.productTypes = [];
@@ -63,6 +63,7 @@ var functionality = {
         this.getProducts();
         this.getImages();
         this.renderArticles();
+        this.getContacts();
 
         //elements global binding
         this.sendProductDataEl.click(function (ev) {
@@ -118,6 +119,18 @@ var functionality = {
             });
         });
 
+        $("#editContacts").click(function () {
+            var contactsForm = $("#contacts-edit-form");
+            var contactsText = $("#contacts-text");
+            contactsForm.attr('hidden', !contactsForm.attr('hidden'));
+            contactsText.attr('hidden') ? contactsText.attr('hidden', !contactsText.attr('hidden')) : contactsText.attr('hidden', true);
+            if (!contactsForm.attr('hidden')) self.renderContactEditForm()
+        });
+
+        $("#saveContacts").click(function () {
+            self.saveContacts();
+        });
+
         this.editHistoryEl.click(function () {
             $('#history-lang-selector').val(CURRENT_LANGUAGE);
             self.historyInfo.attr('hidden', !self.historyInfo.attr('hidden'));
@@ -161,7 +174,7 @@ var functionality = {
 
     logout: function () {
         var url = SERVER_CONTEXT + "/logout";
-        this.utils.ajaxDataBuilder(url, "DELETE", {}, function () {
+        this.utils.ajaxDataSender(url, "DELETE", {}, function () {
             localStorage.clear();
             window.location.href = window.location.origin + SERVER_CONTEXT;
         }, function () {
@@ -171,7 +184,7 @@ var functionality = {
     getProducts: function () {
         var self = this;
         var url = SERVER_CONTEXT + "/content/product";
-        this.utils.ajaxDataBuilder(url, 'GET', {}, function (response) {
+        this.utils.ajaxDataSender(url, 'GET', {}, function (response) {
             var productsBlock = $('.selection-of-beer');
             productsBlock.html("");
             self.products = response;
@@ -188,7 +201,7 @@ var functionality = {
         this.productTypes = [];
         var url = SERVER_CONTEXT + "/content/product/type";
         var typesSelect = $('#types-selector');
-        this.utils.ajaxDataBuilder(url, "GET", {}, function (response) {
+        this.utils.ajaxDataSender(url, "GET", {}, function (response) {
             self.productTypes = response;
             typesSelect.html("");
             for (var i = 0; i < response.length; i++) {
@@ -297,7 +310,7 @@ var functionality = {
         type === "POST" ? product['name'] = this.utils.nameGenerator() : this.nameEl.val();
         product['productType'] = this.utils.getListItemByParameter(this.productTypes, "typeName", this.typesSelectorEl.val());
 
-        this.utils.ajaxDataBuilder(url, type, product, function () {
+        this.utils.ajaxDataSender(url, type, product, function () {
             self.getProducts();
             self.utils.resetFormData(self.formEl);
             self.utils.popupDisable($('#send-form-popup'));
@@ -310,7 +323,7 @@ var functionality = {
     removeProduct: function (product) {
         var self = this;
         var url = SERVER_CONTEXT + "/admin/content/product/" + product.productId;
-        this.utils.ajaxDataBuilder(url, "DELETE", {}, function () {
+        this.utils.ajaxDataSender(url, "DELETE", {}, function () {
             self.getProducts();
         }, function (error) {
             $('#product-send-error').text(error.responseJSON.error);
@@ -344,7 +357,7 @@ var functionality = {
     removeProductType: function (element) {
         var type = $(element).val();
         var url = SERVER_CONTEXT + "/admin/content/product/type/" + type.typeName;
-        this.utils.ajaxDataBuilder(url, "DELETE", {}, function () {
+        this.utils.ajaxDataSender(url, "DELETE", {}, function () {
             $(element).parent().remove();
         }, function (error) {
             $(".error").attr("hidden", false).text(error.responseJSON.error);
@@ -367,7 +380,7 @@ var functionality = {
     getImages: function () {
         var self = this;
         var url = SERVER_CONTEXT + "/content/files/pictures";
-        this.utils.ajaxDataBuilder(url, "GET", {}, function (response) {
+        this.utils.ajaxDataSender(url, "GET", {}, function (response) {
             $.each(response, function (key, value) {
                 var img = $("<div><div class='carousel-img'>" +
                     "<span class='fa fa-minus-square-o fa-3x remove-image' title='remove image' value='" + this.id + "' hidden/>" +
@@ -388,7 +401,7 @@ var functionality = {
     removeImg: function (id) {
         var self = this;
         var url = SERVER_CONTEXT + "/admin/content/files/" + id;
-        this.utils.ajaxDataBuilder(url, "DELETE", {}, function (response) {
+        this.utils.ajaxDataSender(url, "DELETE", {}, function (response) {
             self.utils.turnSlickOff();
             $('#brewery .carousel').html("");
             self.getImages();
@@ -399,7 +412,7 @@ var functionality = {
     renderArticles: function () {
         var self = this;
         var url = SERVER_CONTEXT + "/content/article";
-        this.utils.ajaxDataBuilder(url, "GET", {}, function (response) {
+        this.utils.ajaxDataSender(url, "GET", {}, function (response) {
             var historyArticle = self.utils.getListItemByParameter(response, "title", "history");
             if (historyArticle) {
                 self.editHistoryEl.attr("hidden", false);
@@ -428,12 +441,90 @@ var functionality = {
         var article_id = article.article_id, self = this;
         var url = article_id ? SERVER_CONTEXT + "/admin/content/article/" + article_id : SERVER_CONTEXT + "/admin/content/article/";
         var type = article_id ? "PUT" : "POST";
-        this.utils.ajaxDataBuilder(url, type, article, function () {
+        this.utils.ajaxDataSender(url, type, article, function () {
             self.renderArticles();
             self.historyInfo.attr('hidden', !self.historyInfo.attr('hidden'));
             self.historyEditForm.attr("hidden", !self.historyEditForm.attr("hidden"));
         }, function () {
         }, SESSION_TOKEN);
+    },
+
+    getContacts: function () {
+        var url = SERVER_CONTEXT + "/content/contacts";
+        this.utils.ajaxDataSender(url, "GET", {}, function (response) {
+            var contactsText = $("#contacts-text");
+            contactsText.find(".adress-text").text(response["address"]);
+            contactsText.find(".email-text").text(response["email"]);
+            contactsText.find(".phone-text").text(response["phones"]);
+            $("#channelsStr").val(response["channels"]);
+
+            var channels = response["channels"].split(",");
+            var contactsWrpEl = $(".contact-info-channels");
+
+            for (var i = 0; i < channels.length; i++) {
+                var channelLink = $("<a class='youtube-element' href='" + channels[i] + "' target='_blank'><span class='fa fa-youtube-square fa-5x' aria-hidden='true'></span></a>");
+                channelLink.appendTo(contactsWrpEl);
+            }
+        }, SESSION_TOKEN)
+    },
+
+    renderContactEditForm: function () {
+        var contactsText = $("#contacts-text");
+        var channelsEditBlock = $('.channels').find("div");
+
+        var addressText = contactsText.find(".adress-text").text().trim();
+        $("#contact-address").val(addressText);
+
+        var emailText = contactsText.find(".email-text").text().trim();
+        $("#contact-email").val(emailText);
+
+        var phoneText = contactsText.find(".phone-text").text().trim();
+        $("#contact-phone").val(phoneText);
+
+        var channels = $("#channelsStr").val().split(",");
+
+        channelsEditBlock.html("");
+        for (var i = 0; i < channels.length; i++) {
+            var blockWrap = $("<div class='row channels-wrapper'>");
+            var input = $("<input class='form-control col-md-11'>").val(channels[i].trim());
+            var removeBtn = $('<span class="fa fa-minus-square-o fa-3x  col-md-1 remove-channel" title="remove this channel" data="' + i + '">');
+
+            removeBtn.click(function () {
+                var id = $(this).attr("data");
+                channels.slice(id, 1);
+                $(this).parent().remove();
+            });
+
+            input.appendTo(blockWrap);
+            removeBtn.appendTo(blockWrap);
+            blockWrap.appendTo(channelsEditBlock)
+        }
+    },
+
+    saveContacts: function () {
+        var self = this, url = SERVER_CONTEXT + "/admin/content/contacts";
+        var contactJson = {
+            "contact.address": $("#contact-address").val(),
+            "contact.email": $("#contact-email").val(),
+            "contact.phones": $("#contact-phone").val(),
+            "contact.channels": (function () {
+                var channelsString = "",
+                    channelsArray = $('.channels').find("input:text");
+
+                for (var i = 0; i < channelsArray.length; i++) {
+                    channelsString += i < channelsArray.length - 1 ? channelsArray[i].value + "," : channelsArray[i].value;
+                }
+                return channelsString;
+            })()
+        };
+        this.utils.ajaxDataSender(url, "POST", contactJson, function () {
+            self.getContacts();
+            $("#contacts-edit-form").attr('hidden', true);
+            $("#contacts-text").attr('hidden', false);
+        }, function () {
+            debugger
+        }, SESSION_TOKEN);
+
     }
 };
 

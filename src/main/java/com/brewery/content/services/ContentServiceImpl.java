@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -42,6 +43,8 @@ public class ContentServiceImpl implements ContentService {
     private FileFolderService fileFolderService;
 
     private static final Logger LOGGER = Logger.getLogger(ContentServiceImpl.class);
+
+    private static final String CONTACT_FILE_NAME = "contacts.json";
 
     /**
      * Transactional method for data base saving of Content items.
@@ -291,10 +294,9 @@ public class ContentServiceImpl implements ContentService {
      * @param file        Physical File for saving.
      * @param storagePath path for storage where file should be saved.
      * @param result      result map that will be filled.
-     * @return Map with information about saved files.
      */
     @Transactional
-    public void saveFile(Content content, String context, MultipartFile file, String storagePath, Map<Long, String> result){
+    private void saveFile(Content content, String context, MultipartFile file, String storagePath, Map<Long, String> result){
         String savingResult = fileFolderService.saveFile(file, storagePath);
         Long fileId = daoFactory.getContentDao(context).save(content);
         if (savingResult != null) {
@@ -340,6 +342,14 @@ public class ContentServiceImpl implements ContentService {
     public void removeContentMetadata(Long id, String localizeType, String context) {
         Content content = daoFactory.getContentDao(context).getOne(id);
         removeMetadata(content, localizeType, context);
+    }
+
+    public Map<String, String> getContacts() throws IOException {
+        return fileFolderService.getJSonFileContent(CONTACT_FILE_NAME);
+    }
+
+    public void saveContacts(Map<String, Object> contactsProps) throws IOException {
+        fileFolderService.updateJsonFile(contactsProps, CONTACT_FILE_NAME);
     }
 
     private void removeMetadata(Content content, String local, String context) {

@@ -2,6 +2,7 @@ package com.brewery.content.contentDao.impl;
 
 import com.brewery.content.Content;
 import com.brewery.content.article.Translations;
+import com.brewery.content.contentDao.AbstractContentDaoImpl;
 import com.brewery.content.contentDao.ContentDao;
 import org.hibernate.HibernateException;
 import org.hibernate.SessionFactory;
@@ -14,21 +15,7 @@ import java.util.List;
  * Translations implementation of Content DAO.
  */
 @Repository(value = "translationsDao")
-public class TranslationContentImpl implements ContentDao {
-
-    @Autowired
-    private SessionFactory sessionFactory;
-
-    @Override
-    //Don't need to implement
-    public Long save(Content content) {
-        return null;
-    }
-
-    @Override
-    public void update(Content content) {
-        sessionFactory.getCurrentSession().update(content);
-    }
+public class TranslationContentImpl extends AbstractContentDaoImpl {
 
     @Override
     public Translations getOne(Long id) {
@@ -38,14 +25,5 @@ public class TranslationContentImpl implements ContentDao {
     @Override
     public List<Content> getAll() {
         return null;
-    }
-
-    @Override
-    public void remove(Content content) {
-        try {
-            sessionFactory.getCurrentSession().delete(content);
-        } catch (HibernateException e) {
-            throw new HibernateException(e);
-        }
     }
 }

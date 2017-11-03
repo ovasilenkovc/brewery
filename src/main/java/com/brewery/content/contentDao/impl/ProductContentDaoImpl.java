@@ -1,6 +1,7 @@
 package com.brewery.content.contentDao.impl;
 
 import com.brewery.content.Content;
+import com.brewery.content.contentDao.AbstractContentDaoImpl;
 import com.brewery.content.contentDao.ContentDao;
 import com.brewery.content.product.Product;
 import com.brewery.content.product.ProductType;
@@ -14,15 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Repository(value = "productDao")
-public class ProductContentDaoImpl implements ContentDao {
-
-    @Autowired
-    private SessionFactory sessionFactory;
-
-    @Override
-    public Long save(Content content) {
-        return (Long) sessionFactory.getCurrentSession().save(content);
-    }
+public class ProductContentDaoImpl extends AbstractContentDaoImpl {
 
     @Override
     public void update(Content content) {
@@ -58,15 +51,6 @@ public class ProductContentDaoImpl implements ContentDao {
         session.flush();
         session.close();
         return products;
-    }
-
-    @Override
-    public void remove(Content content) {
-        try {
-            sessionFactory.getCurrentSession().delete(content);
-        }catch (HibernateException e){
-            throw new HibernateException(e);
-        }
     }
 
     private ProductType initProductType(Product product) {
