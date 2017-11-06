@@ -131,6 +131,12 @@ var functionality = {
             self.saveContacts();
         });
 
+        $("#addChannel").click(function () {
+            debugger;
+            var channels = $(this).attr("data").split(",");
+            self.addNewChannelEditRow(channels, channels.length, $('.channels').find(".clist"));
+        });
+
         this.editHistoryEl.click(function () {
             $('#history-lang-selector').val(CURRENT_LANGUAGE);
             self.historyInfo.attr('hidden', !self.historyInfo.attr('hidden'));
@@ -454,13 +460,14 @@ var functionality = {
         this.utils.ajaxDataSender(url, "GET", {}, function (response) {
             var contactsText = $("#contacts-text");
             contactsText.find(".adress-text").text(response["address"]);
-            contactsText.find(".email-text").text(response["email"]);
-            contactsText.find(".phone-text").text(response["phones"]);
+            $(".email-text").text(response["email"]);
+            $(".phone-text").text(response["phones"]);
             $("#channelsStr").val(response["channels"]);
 
             var channels = response["channels"].split(",");
-            var contactsWrpEl = $(".contact-info-channels");
+            var contactsWrpEl = $("#channels");
 
+            contactsWrpEl.html("");
             for (var i = 0; i < channels.length; i++) {
                 var channelLink = $("<a class='youtube-element' href='" + channels[i] + "' target='_blank'><span class='fa fa-youtube-square fa-5x' aria-hidden='true'></span></a>");
                 channelLink.appendTo(contactsWrpEl);
@@ -470,7 +477,7 @@ var functionality = {
 
     renderContactEditForm: function () {
         var contactsText = $("#contacts-text");
-        var channelsEditBlock = $('.channels').find("div");
+        var channelsEditBlock = $('.channels').find(".clist");
 
         var addressText = contactsText.find(".adress-text").text().trim();
         $("#contact-address").val(addressText);
@@ -482,32 +489,21 @@ var functionality = {
         $("#contact-phone").val(phoneText);
 
         var channels = $("#channelsStr").val().split(",");
+        $("#addChannel").attr("data", channels);
 
         channelsEditBlock.html("");
         for (var i = 0; i < channels.length; i++) {
-            var blockWrap = $("<div class='row channels-wrapper'>");
-            var input = $("<input class='form-control col-md-11'>").val(channels[i].trim());
-            var removeBtn = $('<span class="fa fa-minus-square-o fa-3x  col-md-1 remove-channel" title="remove this channel" data="' + i + '">');
-
-            removeBtn.click(function () {
-                var id = $(this).attr("data");
-                channels.slice(id, 1);
-                $(this).parent().remove();
-            });
-
-            input.appendTo(blockWrap);
-            removeBtn.appendTo(blockWrap);
-            blockWrap.appendTo(channelsEditBlock)
+            this.addNewChannelEditRow(channels, i, channelsEditBlock);
         }
     },
 
     saveContacts: function () {
         var self = this, url = SERVER_CONTEXT + "/admin/content/contacts";
         var contactJson = {
-            "contact.address": $("#contact-address").val(),
-            "contact.email": $("#contact-email").val(),
-            "contact.phones": $("#contact-phone").val(),
-            "contact.channels": (function () {
+            "email"   : $("#contact-email").val(),
+            "phones"  : $("#contact-phone").val(),
+            "address" : $("#contact-address").val(),
+            "channels": (function () {
                 var channelsString = "",
                     channelsArray = $('.channels').find("input:text");
 
@@ -521,10 +517,25 @@ var functionality = {
             self.getContacts();
             $("#contacts-edit-form").attr('hidden', true);
             $("#contacts-text").attr('hidden', false);
-        }, function () {
-            debugger
-        }, SESSION_TOKEN);
+        }, function () {}, SESSION_TOKEN);
 
+    },
+
+    addNewChannelEditRow: function (array, index, parentEl) {
+        var channel = array[index] ? array[index].trim() : "";
+        var blockWrap = $("<div class='row channels-wrapper'>");
+        var input = $("<input class='form-control col-md-11'>").val(channel);
+        var removeBtn = $('<span class="fa fa-minus-square-o fa-3x  col-md-1 remove-channel" title="remove this channel" data="' + index + '">');
+
+        removeBtn.click(function () {
+            var id = $(this).attr("data");
+            array.slice(id, 1);
+            $(this).parent().remove();
+        });
+
+        input.appendTo(blockWrap);
+        removeBtn.appendTo(blockWrap);
+        blockWrap.appendTo(parentEl)
     }
 };
 

@@ -137,11 +137,11 @@
                     <span class="white-text">
                         <spring:message code="contact.us"/>
                     </span>
-                <span class="contact-us-text-mail">
-                        <spring:message code="contact.email"/>
+                <span class="contact-us-text-mail email-text">
+                        <%--<spring:message code="contact.email"/>--%>
                     </span>
-                <span class="number">
-                        <spring:message code="contact.phones"/>
+                <span class="number phone-text">
+                        <%--<spring:message code="contact.phones"/>--%>
                     </span>
             </div>
         </div>
@@ -263,6 +263,7 @@
                     <div class="contact-info-channels">
                         <div>Our channels: </div>
                         <input type="text" id="channelsStr" value="" hidden/>
+                        <div id="channels"></div>
                     </div>
                 </div>
                 <form id="contacts-edit-form" hidden>
@@ -280,8 +281,8 @@
                     </div>
                     <div class="form-group channels">
                         <label>Our Channels: </label>
-                        <div></div>
-                        <span class="fa fa-plus-square-o fa-3x add-channel" id="addAnother" title="add another one channel"></span>
+                        <div class="clist"></div>
+                        <span class="fa fa-plus-square-o fa-3x add-channel" id="addChannel" title="add channel"></span>
                     </div>
                     <div>
                         <button type="button" class="btn btn-info send-button" id="saveContacts">Send</button>
