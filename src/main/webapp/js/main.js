@@ -24,35 +24,11 @@ var functionality = {
 
     init: function init() {
         var self = this;
+        this.products = [];
+        this.productTypes = [];
         this.utils = new Utils();
         this.authenticated = ($("#authenticated").attr("value") === "true");
 
-        //edit product form elements init
-        this.nameEl = $("#name");
-        this.titleEl = $("#title");
-        this.formEl = $("#edit-form");
-        this.descriptionEl = $("#description");
-        this.compositionEl = $("#composition");
-        this.typesSelectorEl = $("#types-selector");
-        this.descSelectorEl = $("#desc-lang-selector");
-        this.sendProductDataEl = $("#sendProductData");
-        this.addToolBtnEl = $("#asortiment-nav").find(".addNew");
-
-        //view popup elements init
-        this.popupDesc = $('#popup').find('.first-paragraph');
-        this.popupDescComp = $('#popup').find('.composition');
-        this.popupProdName = $('#popup').find('.product-name');
-        this.popupProdImage = $('#popup').find('.product-logo-img');
-
-        this.products = [];
-        this.productTypes = [];
-        this.historyEl = $(".our_history_desc");
-        this.editHistoryEl = $('#editHistory');
-        this.historyTextEl = $('#history-text');
-        this.addHistoryEl = $('#addHistory-info');
-        this.historyEditForm = $('#history-edit-form');
-        this.historyEditFormBtn = $('#sendHistoryData');
-        this.historyInfo = self.historyEl.find('.history-info');
         CURRENT_LANGUAGE = privateConstants().LANG_MAPPING[$('#localization').attr('value')];
 
         //content initiation
@@ -63,15 +39,15 @@ var functionality = {
         this.getContacts();
 
         //elements global binding
-        this.sendProductDataEl.click(function (ev) {
+        $("#sendProductData").click(function (ev) {
             ev.preventDefault();
             var product = $(this).data();
             self.sendProductData(product);
         });
 
-        this.addToolBtnEl.click(function () {
+        $("#asortiment-nav").find(".addNew").click(function () {
             var product = self.utils.makeProductObj(CURRENT_LANGUAGE);
-            self.utils.resetFormData(self.formEl);
+            self.utils.resetFormData($("#edit-form"));
             self.editProduct(product);
             self.utils.initPopup($('#send-form-popup'));
         });
@@ -132,40 +108,53 @@ var functionality = {
             self.addNewChannelEditRow(channels, channels.length, $('.channels').find(".clist"));
         });
 
-        this.editHistoryEl.click(function () {
+        $('#editHistory').click(function () {
+            var historyEditForm = $('#history-edit-form'),
+                historyInfo = $(".our_history_desc").find('.history-info');
+
             $('#history-lang-selector').val(CURRENT_LANGUAGE);
-            self.historyInfo.attr('hidden', !self.historyInfo.attr('hidden'));
-            self.historyEditForm.attr("hidden", !self.historyEditForm.attr("hidden"));
+            historyInfo.attr('hidden', !historyInfo.attr('hidden'));
+            historyEditForm.attr("hidden", !historyEditForm.attr("hidden"));
         });
 
-        this.addHistoryEl.click(function () {
-            self.historyInfo.attr('hidden', !self.historyInfo.attr('hidden'));
-            self.historyEditForm.attr("hidden", !self.historyEditForm.attr("hidden"));
-            self.historyEditFormBtn.data(self.utils.makeHistoryObj(CURRENT_LANGUAGE));
+        $('#addHistory-info').click(function () {
+            var historyEditForm = $('#history-edit-form'),
+                historyEditFormBtn = $('#sendHistoryData'),
+                historyInfo = $(".our_history_desc").find('.history-info');
+
+            historyInfo.attr('hidden', !historyInfo.attr('hidden'));
+            historyEditForm.attr("hidden", !historyEditForm.attr("hidden"));
+            historyEditFormBtn.data(self.utils.makeHistoryObj(CURRENT_LANGUAGE));
         });
 
-        this.historyEditFormBtn.click(function () {
+        $('#sendHistoryData').click(function () {
             var history = $(this).data();
             self.saveUpdateHistory(history)
         });
 
-        this.descSelectorEl.change(function () {
+        $("#desc-lang-selector").change(function () {
             var currentLang = $(this).val();
             var form = $(this).closest('form');
             var product = form.find("#sendProductData").data();
             self.productLangSwitcher(product, currentLang)
         });
 
-        this.titleEl.focusout(function () {
+        //Beer description content managing part
+        var $titleEl = $("#title"),
+            $compositionEl = $("#composition"),
+            $descriptionEl = $("#description");
+
+        $titleEl.focusout(function () {
             var alert = $(this).parent().find('.alert');
             $(this).val() === "" ? alert.attr("hidden", false) : alert.attr("hidden", true);
         });
 
         //dynamically saving typed input values
-        this.titleEl.change($.proxy(self.utils.setProductDescChanges, self, self.titleEl));
-        this.descriptionEl.change($.proxy(self.utils.setProductDescChanges, self, self.descriptionEl));
-        this.compositionEl.change($.proxy(self.utils.setProductDescChanges, self, self.compositionEl));
-        this.historyTextEl.change(function () {
+        $titleEl.change($.proxy(self.utils.setProductDescChanges, self, $titleEl));
+        $descriptionEl.change($.proxy(self.utils.setProductDescChanges, self, $descriptionEl));
+        $compositionEl.change($.proxy(self.utils.setProductDescChanges, self, $compositionEl));
+
+        $('#history-text').change(function () {
             var translation = $(this).data(), language = $(this).attr("language");
             var currentTranslation = self.utils.getListItemByParameter(translation.translations, "type", language);
             currentTranslation.translation = $(this).val();
@@ -253,46 +242,62 @@ var functionality = {
 
     viewOneProduct: function (product) {
         if (product) {
-            var descriptions = product.descriptions;
-            var productType = product.productType;
-            this.popupProdImage.attr("src", productType.iconPath);
+            var descriptions = product.descriptions,
+                productType = product.productType,
+                popupDescComp = $('#popup').find('.composition'),
+                popupDesc = $('#popup').find('.first-paragraph'),
+                popupProdName = $('#popup').find('.product-name'),
+                popupProdImage =$('#popup').find('.product-logo-img');
+
+            popupProdImage.attr("src", productType.iconPath);
             var productDescription = this.utils.getListItemByParameter(descriptions, "type", CURRENT_LANGUAGE);
-            this.popupProdName.text(productDescription && productDescription.title ? productDescription.title : product.name);
-            this.popupDesc.text(productDescription && productDescription.description ? productDescription.description : "");
-            this.popupDescComp.text(productDescription && productDescription.composition ? productDescription.composition : "");
+
+            popupProdName.text(productDescription && productDescription.title ? productDescription.title : product.name);
+            popupDesc.text(productDescription && productDescription.description ? productDescription.description : "");
+            popupDescComp.text(productDescription && productDescription.composition ? productDescription.composition : "");
         }
     },
 
     editProduct: function (product) {
-        this.nameEl.val(product.name);
-        this.descSelectorEl.val(CURRENT_LANGUAGE);
-        this.titleEl.data(product).attr("language", CURRENT_LANGUAGE);
-        this.descriptionEl.data(product).attr("language", CURRENT_LANGUAGE);
-        this.compositionEl.data(product).attr("language", CURRENT_LANGUAGE);
+        var titleEl = $("#title"),
+            descriptionEl = $("#description"),
+            compositionEl = $("#composition"),
+            description = this.utils.getListItemByParameter(product.descriptions, "type", CURRENT_LANGUAGE)
 
-        var description = this.utils.getListItemByParameter(product.descriptions, "type", CURRENT_LANGUAGE);
-        this.typesSelectorEl.val(product.productType.typeName).attr("selected", true);
-        $("#send-form-popup .product-logo-img").attr('src', product.productType.iconPath);
-        this.descriptionEl.val(description && description.description ? description.description : "");
-        this.compositionEl.val(description && description.composition ? description.composition : "");
-        this.titleEl.val(description && description.title ? description.title : privateConstants().UNKNOWN_TITLES[CURRENT_LANGUAGE]);
+        $("#name").val(product.name);
+        $("#desc-lang-selector").val(CURRENT_LANGUAGE);
 
-        this.sendProductDataEl.data(product);
+        titleEl.data(product).attr("language", CURRENT_LANGUAGE);
+        descriptionEl.data(product).attr("language", CURRENT_LANGUAGE);
+        compositionEl.data(product).attr("language", CURRENT_LANGUAGE);
+
+        $("#types-selector").val(product.productType.typeName).attr("selected", true);
+        $("#send-form-popup").find(".product-logo-img").attr('src', product.productType.iconPath);
+
+        descriptionEl.val(description && description.description ? description.description : "");
+        compositionEl.val(description && description.composition ? description.composition : "");
+        titleEl.val(description && description.title ? description.title : privateConstants().UNKNOWN_TITLES[CURRENT_LANGUAGE]);
+
+        $("#sendProductData").data(product);
     },
 
     productLangSwitcher: function (product, language) {
-        var currentDescription = this.utils.getListItemByParameter(product.descriptions, "type", language);
+        var titleEl = $("#title"),
+            descriptionEl = $("#description"),
+            compositionEl = $("#composition"),
+            currentDescription = this.utils.getListItemByParameter(product.descriptions, "type", language);
+
         if (currentDescription === null) {
             currentDescription = this.utils.makeProductDEscriptionObj(language);
             product.descriptions.push(currentDescription);
         }
 
-        this.titleEl.data(product).attr("language", language);
-        this.descriptionEl.data(product).attr("language", language);
-        this.compositionEl.data(product).attr("language", language);
-        this.descriptionEl.val(currentDescription && currentDescription.description ? currentDescription.description : "");
-        this.compositionEl.val(currentDescription && currentDescription.composition ? currentDescription.composition : "");
-        this.titleEl.val(currentDescription && currentDescription.title ? currentDescription.title : "");
+        titleEl.data(product).attr("language", language);
+        descriptionEl.data(product).attr("language", language);
+        compositionEl.data(product).attr("language", language);
+        descriptionEl.val(currentDescription && currentDescription.description ? currentDescription.description : "");
+        compositionEl.val(currentDescription && currentDescription.composition ? currentDescription.composition : "");
+        titleEl.val(currentDescription && currentDescription.title ? currentDescription.title : "");
     },
 
     sendProductData: function (product) {
@@ -300,12 +305,12 @@ var functionality = {
         var serverContext = privateConstants().SERVER_CONTEXT;
         var url = productId ? serverContext + "/admin/content/product/" + productId : serverContext + "/admin/content/product/";
         var type = productId ? "PUT" : "POST";
-        type === "POST" ? product['name'] = this.utils.nameGenerator() : this.nameEl.val();
-        product['productType'] = this.utils.getListItemByParameter(this.productTypes, "typeName", this.typesSelectorEl.val());
+        type === "POST" ? product['name'] = this.utils.nameGenerator() : $("#name").val();
+        product['productType'] = this.utils.getListItemByParameter(this.productTypes, "typeName", $("#types-selector").val());
 
         this.utils.ajaxDataSender(url, type, product, function () {
             self.getProducts();
-            self.utils.resetFormData(self.formEl);
+            self.utils.resetFormData($("#edit-form"));
             self.utils.popupDisable($('#send-form-popup'));
         }, function (error) {
             var message = error.status == 401 ? "Unauthorized!" : error.responseJSON.error;
@@ -409,37 +414,47 @@ var functionality = {
         this.utils.ajaxDataSender(url, "GET", {}, function (response) {
             var historyArticle = self.utils.getListItemByParameter(response, "title", "history");
             if (historyArticle) {
-                self.editHistoryEl.attr("hidden", false);
+                $('#editHistory').attr("hidden", false);
                 self.viewHistory(historyArticle, CURRENT_LANGUAGE)
             } else {
-                self.addHistoryEl.attr("hidden", false);
+                $('#addHistory-info').attr("hidden", false);
             }
         }, function (error) {
         })
     },
 
     viewHistory: function (history, language) {
-        var currentLangDesc = this.utils.getListItemByParameter(history.translations, "type", language);
+
+        var historyText = $('#history-text'),
+            historyInfo = $(".our_history_desc").find('.history-info'),
+            currentLangDesc = this.utils.getListItemByParameter(history.translations, "type", language);
+
         if (currentLangDesc === null) {
             currentLangDesc = this.utils.makeHistoryTranslationObj(language);
             history.translations.push(currentLangDesc);
         }
-        this.historyTextEl.data(history);
-        this.historyTextEl.attr("language", language);
-        this.historyTextEl.val(currentLangDesc ? currentLangDesc.translation : "");
-        this.historyInfo.html(currentLangDesc ? currentLangDesc.translation : "");
-        this.historyEditFormBtn.data(history);
+
+        historyText.data(history);
+        historyText.attr("language", language);
+        historyText.val(currentLangDesc ? currentLangDesc.translation : "");
+        historyInfo.html(currentLangDesc ? currentLangDesc.translation : "");
+
+        $('#sendHistoryData').data(history);
     },
 
     saveUpdateHistory: function (article) {
-        var article_id = article.article_id, self = this;
-        var serverContext = privateConstants().SERVER_CONTEXT;
-        var url = article_id ? serverContext + "/admin/content/article/" + article_id : serverContext + "/admin/content/article/";
-        var type = article_id ? "PUT" : "POST";
+        var article_id = article.article_id, self = this,
+            historyEditForm = $('#history-edit-form'),
+            historyInfo = $(".our_history_desc").find('.history-info'),
+
+            serverContext = privateConstants().SERVER_CONTEXT,
+            url = article_id ? serverContext + "/admin/content/article/" + article_id : serverContext + "/admin/content/article/",
+            type = article_id ? "PUT" : "POST";
+
         this.utils.ajaxDataSender(url, type, article, function () {
             self.renderArticles();
-            self.historyInfo.attr('hidden', !self.historyInfo.attr('hidden'));
-            self.historyEditForm.attr("hidden", !self.historyEditForm.attr("hidden"));
+            historyInfo.attr('hidden', !historyInfo.attr('hidden'));
+            historyEditForm.attr("hidden", !historyEditForm.attr("hidden"));
         }, function () {
         });
     },
