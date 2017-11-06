@@ -1,6 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -20,7 +21,7 @@
     <link rel="apple-touch-icon" sizes="180x180" href="${contextPath}/img/favicon_folder/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="${contextPath}/img/favicon_folder/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="${contextPath}/img/favicon_folder/favicon-16x16.png">
-    <link rel="manifest" href="${contextPath}/img/favicon_folder/manifest.json">
+    <%--<link rel="manifest" href="${contextPath}/img/favicon_folder/manifest.json">--%>
     <link rel="mask-icon" href="${contextPath}/img/favicon_folder/safari-pinned-tab.svg" color="#5bbad5">
     <meta name="theme-color" content="#ffffff">
 
@@ -36,7 +37,6 @@
 <body>
 <div id="localization" value="${pageContext.response.locale}" style="display: none"></div>
 <input type="text" id="authenticated" value="${authenticated}" hidden/>
-<input type="text" id="token" value="${token}" hidden/>
 <figure id="invis" hidden=>
     <header class="banner">
         <nav class="container">
@@ -68,7 +68,11 @@
                         </li>
                         <c:if test="${authenticated}">
                             <li class="navigation-item logout">
-                                <span class="fa fa-sign-out fa-2x logout-ico"></span>
+                                <form:form method="delete" action="logout">
+                                    <button type="submit" class="logout-btn">
+                                        <span class="fa fa-sign-out fa-2x logout-ico"></span>
+                                    </button>
+                                </form:form>
                             </li>
                         </c:if>
                     </ul>
@@ -109,7 +113,11 @@
                     </li>
                     <c:if test="${authenticated}">
                         <li class="navigation-item logout">
-                            <span class="fa fa-sign-out fa-2x logout-ico"></span>
+                            <form:form method="delete" action="logout">
+                                <button type="submit" class="logout-btn">
+                                    <span class="fa fa-sign-out fa-2x logout-ico"></span>
+                                </button>
+                            </form:form>
                         </li>
                     </c:if>
                 </ul>

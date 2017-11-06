@@ -24,7 +24,7 @@ public class CustomUserDetailServiceImpl implements CustomUserDetailService {
     private static final Logger LOGGER = Logger.getLogger(CustomUserDetailService.class);
 
     @Override
-    public User getUserDetailsByUserName(String username) throws Exception {
+    public User getUserDetailsByUserName(String username) {
         LOGGER.info("The users obtaining started");
         User user = new User();
         try {
@@ -36,8 +36,6 @@ public class CustomUserDetailServiceImpl implements CustomUserDetailService {
             return user;
         }catch (NullPointerException ex){
             throw new UserNotFoundException("The user was not found or not exist!");
-        }catch (Exception ex){
-            throw new Exception("Getting of user metadata was failed with next problem: " + ex.getMessage());
         }
     }
 
