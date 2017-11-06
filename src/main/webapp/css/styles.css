@@ -1113,3 +1113,7 @@ input, button {
 .channels-wrapper{
     margin-left: 0;
 }
+.logout-btn{
+    background: none;
+
+}

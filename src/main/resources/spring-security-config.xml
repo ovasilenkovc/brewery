@@ -8,20 +8,60 @@
         http://www.springframework.org/schema/security
         http://www.springframework.org/schema/security/spring-security-3.2.xsd">
 
-    <global-method-security pre-post-annotations="enabled" />
-    <http use-expressions="true" auto-config="false" create-session="stateless" entry-point-ref="customAuthenticationEntryPoint">
-        <custom-filter ref="authenticationTokenProcessingFilter" before="PRE_AUTH_FILTER" />
+    <!--JWT token authentication part-->
+
+    <!--<global-method-security pre-post-annotations="enabled" />-->
+    <!--<http use-expressions="true" auto-config="false" create-session="stateless" entry-point-ref="customAuthenticationEntryPoint">-->
+        <!--<custom-filter ref="authenticationTokenProcessingFilter" before="PRE_AUTH_FILTER" />-->
+    <!--</http>-->
+
+    <!--<beans:bean id="customAuthenticationEntryPoint" class="com.brewery.services.auth.token.JwtCustomAuthenticationEntryPoint" />-->
+
+    <!--<beans:bean  id="authenticationTokenProcessingFilter" class="com.brewery.services.auth.token.JwtAuthenticationTokenProcessingFilter">-->
+        <!--<beans:property name="authenticationManager" ref="authenticationManager" />-->
+        <!--<beans:property name="authenticationSuccessHandler" ref="securityLoginSuccessHandler"/>-->
+    <!--</beans:bean>-->
+
+    <!--<authentication-manager alias="authenticationManager">-->
+        <!--<authentication-provider ref="jwtAuthenticationProvider"/>-->
+    <!--</authentication-manager>-->
+
+
+    <!--Session authentication-->
+
+    <http auto-config="false" use-expressions="true" entry-point-ref="customLoginUrlAuthenticationEntryPoint">
+        <intercept-url pattern="/login" access="permitAll" />
+        <intercept-url pattern="/logout" access="isAuthenticated()" />
+        <intercept-url pattern="/admin/**" access="hasAnyRole('ROLE_ADMIN', 'ROLE_SUPER_ADMIN')"/>
+
+        <logout invalidate-session="true"
+                logout-url="/logout"
+                success-handler-ref="customLogoutSuccessHandler"/>
+
+        <!--IMPORTANT INF-->
+        <!--this option used for setting up custom authentication filter-->
+        <custom-filter ref="customLoginJsonAuthFilter" position="FORM_LOGIN_FILTER"/>
     </http>
 
-    <beans:bean id="customAuthenticationEntryPoint" class="com.brewery.services.auth.token.JwtCustomAuthenticationEntryPoint" />
+    <beans:bean name="customLogoutSuccessHandler" class="com.brewery.services.auth.session.CustomLogoutSuccessHandler"/>
+    <beans:bean id="customLoginUrlAuthenticationEntryPoint" class="com.brewery.services.auth.session.CustomAuthEntryPoint" />
+    <beans:bean id="securityLoginSuccessHandler" class="com.brewery.services.auth.session.CustomLoginSuccessHandler" >
+        <beans:property name="defaultTargetUrl" value="/" />
+    </beans:bean>
 
-    <beans:bean  id="authenticationTokenProcessingFilter" class="com.brewery.services.auth.token.JwtAuthenticationTokenProcessingFilter">
+    <beans:bean id="securityLoginFailureHandler" class="org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler"/>
+
+    <beans:bean id="customLoginJsonAuthFilter" class="com.brewery.services.auth.session.CustomLoginJsonAuthFilter">
         <beans:property name="authenticationManager" ref="authenticationManager" />
-        <beans:property name="authenticationSuccessHandler" ref="securityLoginSuccessHandler"/>
+        <beans:property name="authenticationFailureHandler" ref="securityLoginFailureHandler" />
+        <beans:property name="authenticationSuccessHandler" ref="securityLoginSuccessHandler" />
+        <beans:property name="filterProcessesUrl" value="/login" />
+        <beans:property name="usernameParameter" value="j_username" />
+        <beans:property name="passwordParameter" value="j_password" />
     </beans:bean>
 
     <authentication-manager alias="authenticationManager">
-        <authentication-provider ref="jwtAuthenticationProvider"/>
+        <authentication-provider ref="customAuthenticationProvider"/>
     </authentication-manager>
 
 </beans:beans>

@@ -11,6 +11,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
@@ -47,7 +48,7 @@ public class AdminAuthController {
 
     @RequestMapping("/")
     protected ModelAndView handleRequestInternal(HttpServletRequest httpServletRequest,
-                                                 HttpServletResponse httpServletResponse) throws Exception {
+                                                 HttpServletResponse httpServletResponse, Authentication authentication) throws Exception {
 
         ModelAndView modelAndView = new ModelAndView("index");
         String newLocale = httpServletRequest.getParameter("language");
@@ -58,32 +59,31 @@ public class AdminAuthController {
             }
             localeResolver.setLocale(httpServletRequest, httpServletResponse, StringUtils.parseLocaleString(newLocale));
         }
-
-        modelAndView.addObject("token", token);
-        modelAndView.addObject("authenticated", isSessionAlive);
+        boolean isAuthenticated = authentication != null && authentication.isAuthenticated();
+        modelAndView.addObject("authenticated", isAuthenticated);
         return modelAndView;
     }
 
 
-    @ResponseBody
-    @RequestMapping(value = "/login", method = RequestMethod.POST)
-    public ModelAndView jsonLogin(@ModelAttribute("userForm") JwtLoginTokenRequest credentials,  RedirectAttributes redirectAttrs) throws Exception {
-        LOGGER.info("User login method called");
-        User userDetails = userDetailService.getUserDetailsByUserName(credentials.getUsername());
-
-        if (credentials.getPassword().equals(userDetails.getPassword())) {
-            token = tokenService.buildToken(userDetails);
-        } else {
-            LOGGER.error("Bad credentials");
-            ModelAndView model = new ModelAndView("login");
-            model.addObject("loginUser", credentials);
-            return model;
-        }
-
-        LOGGER.info("User has been logged successfully!");
-        isSessionAlive = true;
-        return new ModelAndView("redirect:/");
-    }
+//    @ResponseBody
+//    @RequestMapping(value = "/login", method = RequestMethod.POST)
+//    public ModelAndView jsonLogin(@ModelAttribute("userForm") JwtLoginTokenRequest credentials,  RedirectAttributes redirectAttrs) throws Exception {
+//        LOGGER.info("User login method called");
+//        User userDetails = userDetailService.getUserDetailsByUserName(credentials.getUsername());
+//
+//        if (credentials.getPassword().equals(userDetails.getPassword())) {
+//            token = tokenService.buildToken(userDetails);
+//        } else {
+//            LOGGER.error("Bad credentials");
+//            ModelAndView model = new ModelAndView("login");
+//            model.addObject("loginUser", credentials);
+//            return model;
+//        }
+//
+//        LOGGER.info("User has been logged successfully!");
+//        isSessionAlive = true;
+//        return new ModelAndView("redirect:/");
+//    }
 
 
     @ResponseBody
@@ -95,31 +95,31 @@ public class AdminAuthController {
         model.addObject("loginUser", user);
         return model;
     }
-
-    @ResponseBody
-    @RequestMapping(value = "/logout", method = RequestMethod.DELETE)
-    public ResponseEntity<String> jsonLogout(HttpServletRequest request) throws Exception {
-        String header = request.getHeader(JwtTokenParams.HEADER_STRING);
-        LOGGER.info("User logout method called");
-        try {
-            if (!userDetailService.isValidToken( header.substring(JwtTokenParams.TOKEN_PREFIX.length()))) {
-                LOGGER.info("token has already been invalidated!");
-                return ResponseMaker.makeResponse("token has already been invalidated!", ConstantParams.JSON_HEADER_TYPE, HttpStatus.OK);
-            }
-            String token = header.substring(JwtTokenParams.TOKEN_PREFIX.length());
-            User user = tokenService.parseToken(token);
-            if(user != null){
-                userDetailService.invalidateToken(token);
-            }
-        } catch (Exception e) {
-            LOGGER.error(e.getMessage());
-            throw new Exception(e.getMessage());
-        }
-
-        LOGGER.info("User has been logged out successfully!");
-        isSessionAlive = false;
-        token = "";
-        return ResponseMaker.makeResponse("token has been invalidated successfully", ConstantParams.JSON_HEADER_TYPE, HttpStatus.OK);
-    }
+//
+//    @ResponseBody
+//    @RequestMapping(value = "/logout", method = RequestMethod.DELETE)
+//    public ResponseEntity<String> jsonLogout(HttpServletRequest request) throws Exception {
+//        String header = request.getHeader(JwtTokenParams.HEADER_STRING);
+//        LOGGER.info("User logout method called");
+//        try {
+//            if (!userDetailService.isValidToken( header.substring(JwtTokenParams.TOKEN_PREFIX.length()))) {
+//                LOGGER.info("token has already been invalidated!");
+//                return ResponseMaker.makeResponse("token has already been invalidated!", ConstantParams.JSON_HEADER_TYPE, HttpStatus.OK);
+//            }
+//            String token = header.substring(JwtTokenParams.TOKEN_PREFIX.length());
+//            User user = tokenService.parseToken(token);
+//            if(user != null){
+//                userDetailService.invalidateToken(token);
+//            }
+//        } catch (Exception e) {
+//            LOGGER.error(e.getMessage());
+//            throw new Exception(e.getMessage());
+//        }
+//
+//        LOGGER.info("User has been logged out successfully!");
+//        isSessionAlive = false;
+//        token = "";
+//        return ResponseMaker.makeResponse("token has been invalidated successfully", ConstantParams.JSON_HEADER_TYPE, HttpStatus.OK);
+//    }
 
 }

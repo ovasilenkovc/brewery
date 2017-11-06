@@ -1,24 +1,24 @@
-var objectOuter = function () {
-    var INNER_SESSION_TOKEN = "ASSS";
-
-    return {
-        INNER_SESSION_TOKEN: INNER_SESSION_TOKEN
-    }
-};
-
-var SESSION_TOKEN = "Bearer ",
-    CURRENT_LANGUAGE = "UA",
-    SERVER_CONTEXT = "/brewery",
-    LANG_MAPPING = {
+var CURRENT_LANGUAGE = "UA";
+var privateConstants = function () {
+    var server_context = "/brewery";
+    var lang_mapping = {
         "en": "ENG",
         "ua": "UA",
         "ru": "RUS"
-    },
-    UNKNOWN_TITLES = {
+    };
+
+    var unknown_titles = {
         "ENG": "Unnamed Beer variety",
         "RUS": "Неназванный сорт пива",
         "UA": "Неназваний сорт пива"
     };
+
+    return {
+        SERVER_CONTEXT: server_context,
+        LANG_MAPPING: lang_mapping,
+        UNKNOWN_TITLES: unknown_titles
+    }
+};
 
 var functionality = {
 
@@ -26,9 +26,6 @@ var functionality = {
         var self = this;
         this.utils = new Utils();
         this.authenticated = ($("#authenticated").attr("value") === "true");
-        SESSION_TOKEN += localStorage.getItem("token");
-        //using elements initialization
-        this.carousel = $('#brewery .carousel');
 
         //edit product form elements init
         this.nameEl = $("#name");
@@ -56,7 +53,7 @@ var functionality = {
         this.historyEditForm = $('#history-edit-form');
         this.historyEditFormBtn = $('#sendHistoryData');
         this.historyInfo = self.historyEl.find('.history-info');
-        CURRENT_LANGUAGE = LANG_MAPPING[$('#localization').attr('value')];
+        CURRENT_LANGUAGE = privateConstants().LANG_MAPPING[$('#localization').attr('value')];
 
         //content initiation
         this.getAllProductTypes();
@@ -86,8 +83,6 @@ var functionality = {
         $('#addNewType').click(function () {
             self.utils.initPopup($('#save-type-popup'));
         });
-
-        $('.logout').click($.proxy(this.logout, self));
 
         $(".error").click(function () {
             $(this).attr("hidden", true);
@@ -178,18 +173,9 @@ var functionality = {
 
     },
 
-    logout: function () {
-        var url = SERVER_CONTEXT + "/logout";
-        this.utils.ajaxDataSender(url, "DELETE", {}, function () {
-            localStorage.clear();
-            window.location.href = window.location.origin + SERVER_CONTEXT;
-        }, function () {
-        }, SESSION_TOKEN);
-    },
-
     getProducts: function () {
         var self = this;
-        var url = SERVER_CONTEXT + "/content/product";
+        var url = privateConstants().SERVER_CONTEXT + "/content/product";
         this.utils.ajaxDataSender(url, 'GET', {}, function (response) {
             var productsBlock = $('.selection-of-beer');
             productsBlock.html("");
@@ -205,7 +191,7 @@ var functionality = {
     getAllProductTypes: function () {
         var self = this;
         this.productTypes = [];
-        var url = SERVER_CONTEXT + "/content/product/type";
+        var url = privateConstants().SERVER_CONTEXT + "/content/product/type";
         var typesSelect = $('#types-selector');
         this.utils.ajaxDataSender(url, "GET", {}, function (response) {
             self.productTypes = response;
@@ -230,7 +216,7 @@ var functionality = {
         var productId = product.productId;
         var productType = product.productType;
         var productDescription = this.utils.getListItemByParameter(product.descriptions, "type", local);
-        var title = productDescription ? productDescription.title : UNKNOWN_TITLES[CURRENT_LANGUAGE];
+        var title = productDescription ? productDescription.title : privateConstants().UNKNOWN_TITLES[CURRENT_LANGUAGE];
         var productDivWrapEl = $('<div class="product-wrapper">');
 
         if (this.authenticated) {
@@ -289,7 +275,7 @@ var functionality = {
         $("#send-form-popup .product-logo-img").attr('src', product.productType.iconPath);
         this.descriptionEl.val(description && description.description ? description.description : "");
         this.compositionEl.val(description && description.composition ? description.composition : "");
-        this.titleEl.val(description && description.title ? description.title : UNKNOWN_TITLES[CURRENT_LANGUAGE]);
+        this.titleEl.val(description && description.title ? description.title : privateConstants().UNKNOWN_TITLES[CURRENT_LANGUAGE]);
 
         this.sendProductDataEl.data(product);
     },
@@ -311,7 +297,8 @@ var functionality = {
 
     sendProductData: function (product) {
         var productId = product.productId, self = this;
-        var url = productId ? SERVER_CONTEXT + "/admin/content/product/" + productId : SERVER_CONTEXT + "/admin/content/product/";
+        var serverContext = privateConstants().SERVER_CONTEXT;
+        var url = productId ? serverContext + "/admin/content/product/" + productId : serverContext + "/admin/content/product/";
         var type = productId ? "PUT" : "POST";
         type === "POST" ? product['name'] = this.utils.nameGenerator() : this.nameEl.val();
         product['productType'] = this.utils.getListItemByParameter(this.productTypes, "typeName", this.typesSelectorEl.val());
@@ -323,24 +310,24 @@ var functionality = {
         }, function (error) {
             var message = error.status == 401 ? "Unauthorized!" : error.responseJSON.error;
             $('#product-send-error').text(message);
-        }, SESSION_TOKEN);
+        });
     },
 
     removeProduct: function (product) {
         var self = this;
-        var url = SERVER_CONTEXT + "/admin/content/product/" + product.productId;
+        var url = privateConstants().SERVER_CONTEXT + "/admin/content/product/" + product.productId;
         this.utils.ajaxDataSender(url, "DELETE", {}, function () {
             self.getProducts();
         }, function (error) {
             $('#product-send-error').text(error.responseJSON.error);
-        }, SESSION_TOKEN)
+        })
     },
 
     saveProductType: function () {
         var self = this;
         var typeName = $("#type-name").val();
         var files = $('#type-icon')[0].files;
-        var url = SERVER_CONTEXT + "/admin/content/product/type";
+        var url = privateConstants().SERVER_CONTEXT + "/admin/content/product/type";
 
         if (typeName !== "" && (files.length !== 0)) {
             var file = files[0];
@@ -351,7 +338,7 @@ var functionality = {
                     self.utils.resetFormData($("#beer-type-form"));
                 }, function (error) {
                     alert("Error!")
-                }, SESSION_TOKEN, {"typeName": typeName});
+                }, {"typeName": typeName});
             } else {
                 alert("a file should be an image!")
             }
@@ -362,31 +349,32 @@ var functionality = {
 
     removeProductType: function (element) {
         var type = $(element).val();
-        var url = SERVER_CONTEXT + "/admin/content/product/type/" + type.typeName;
+        var url = privateConstants().SERVER_CONTEXT + "/admin/content/product/type/" + type.typeName;
         this.utils.ajaxDataSender(url, "DELETE", {}, function () {
             $(element).parent().remove();
         }, function (error) {
             $(".error").attr("hidden", false).text(error.responseJSON.error);
-        }, SESSION_TOKEN);
+        });
     },
 
     uploadImages: function () {
         var self = this;
         var files = $('#file')[0].files;
-        var url = SERVER_CONTEXT + "/admin/content/files/pictures";
+        var url = privateConstants().SERVER_CONTEXT + "/admin/content/files/pictures";
         this.utils.ajaxFilesSender(url, "IMAGES", files, function () {
             self.utils.popupDisable($('#save-img-popup'));
-            self.carousel.html("");
+            $('#brewery').find('.carousel').html("");
             self.utils.turnSlickOff();
             self.getImages();
         }, function (error) {
-        }, SESSION_TOKEN);
+        });
     },
 
     getImages: function () {
         var self = this;
-        var url = SERVER_CONTEXT + "/content/files/pictures";
+        var url = privateConstants().SERVER_CONTEXT + "/content/files/pictures";
         this.utils.ajaxDataSender(url, "GET", {}, function (response) {
+            var carousel = $('#brewery').find('.carousel');
             $.each(response, function (key, value) {
                 var img = $("<div><div class='carousel-img'>" +
                     "<span class='fa fa-minus-square-o fa-3x remove-image' title='remove image' value='" + this.id + "' hidden/>" +
@@ -398,7 +386,7 @@ var functionality = {
                     var id = $(this).attr('value');
                     functionality.removeImg(id);
                 });
-                img.appendTo(functionality.carousel);
+                img.appendTo(carousel);
             });
             self.utils.initSlick();
         });
@@ -406,18 +394,18 @@ var functionality = {
 
     removeImg: function (id) {
         var self = this;
-        var url = SERVER_CONTEXT + "/admin/content/files/" + id;
+        var url = privateConstants().SERVER_CONTEXT + "/admin/content/files/" + id;
         this.utils.ajaxDataSender(url, "DELETE", {}, function (response) {
             self.utils.turnSlickOff();
-            $('#brewery .carousel').html("");
+            $('#brewery').find('.carousel').html("");
             self.getImages();
         }, function (error) {
-        }, SESSION_TOKEN);
+        });
     },
 
     renderArticles: function () {
         var self = this;
-        var url = SERVER_CONTEXT + "/content/article";
+        var url = privateConstants().SERVER_CONTEXT + "/content/article";
         this.utils.ajaxDataSender(url, "GET", {}, function (response) {
             var historyArticle = self.utils.getListItemByParameter(response, "title", "history");
             if (historyArticle) {
@@ -445,18 +433,19 @@ var functionality = {
 
     saveUpdateHistory: function (article) {
         var article_id = article.article_id, self = this;
-        var url = article_id ? SERVER_CONTEXT + "/admin/content/article/" + article_id : SERVER_CONTEXT + "/admin/content/article/";
+        var serverContext = privateConstants().SERVER_CONTEXT;
+        var url = article_id ? serverContext + "/admin/content/article/" + article_id : serverContext + "/admin/content/article/";
         var type = article_id ? "PUT" : "POST";
         this.utils.ajaxDataSender(url, type, article, function () {
             self.renderArticles();
             self.historyInfo.attr('hidden', !self.historyInfo.attr('hidden'));
             self.historyEditForm.attr("hidden", !self.historyEditForm.attr("hidden"));
         }, function () {
-        }, SESSION_TOKEN);
+        });
     },
 
     getContacts: function () {
-        var url = SERVER_CONTEXT + "/content/contacts";
+        var url = privateConstants().SERVER_CONTEXT + "/content/contacts";
         this.utils.ajaxDataSender(url, "GET", {}, function (response) {
             var contactsText = $("#contacts-text");
             contactsText.find(".adress-text").text(response["address"]);
@@ -472,7 +461,7 @@ var functionality = {
                 var channelLink = $("<a class='youtube-element' href='" + channels[i] + "' target='_blank'><span class='fa fa-youtube-square fa-5x' aria-hidden='true'></span></a>");
                 channelLink.appendTo(contactsWrpEl);
             }
-        }, SESSION_TOKEN)
+        })
     },
 
     renderContactEditForm: function () {
@@ -498,11 +487,11 @@ var functionality = {
     },
 
     saveContacts: function () {
-        var self = this, url = SERVER_CONTEXT + "/admin/content/contacts";
+        var self = this, url = privateConstants().SERVER_CONTEXT + "/admin/content/contacts";
         var contactJson = {
-            "email"   : $("#contact-email").val(),
-            "phones"  : $("#contact-phone").val(),
-            "address" : $("#contact-address").val(),
+            "email": $("#contact-email").val(),
+            "phones": $("#contact-phone").val(),
+            "address": $("#contact-address").val(),
             "channels": (function () {
                 var channelsString = "",
                     channelsArray = $('.channels').find("input:text");
@@ -517,7 +506,8 @@ var functionality = {
             self.getContacts();
             $("#contacts-edit-form").attr('hidden', true);
             $("#contacts-text").attr('hidden', false);
-        }, function () {}, SESSION_TOKEN);
+        }, function () {
+        });
 
     },
 
@@ -543,12 +533,11 @@ $(document).ready(function () {
     localStorage.setItem('token', $("#token").val());
     functionality.init();
 });
-/*
- $(document).bind("contextmenu", function (event) {
- event.preventDefault();
- });
- $(window).bind('mousewheel DOMMouseScroll', function (event) {
- if (event.ctrlKey == true) {
- event.preventDefault();
- }
- });*/
+$(document).bind("contextmenu", function (event) {
+    event.preventDefault();
+});
+$(window).bind('mousewheel DOMMouseScroll', function (event) {
+    if (event.ctrlKey == true) {
+        event.preventDefault();
+    }
+});

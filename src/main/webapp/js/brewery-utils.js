@@ -1,20 +1,5 @@
 function Utils() {
     return {
-        updateProductTextMetaData: function (list, paramName, element) {
-            var item = this.getListItemByParameter(list, "type", CURRENT_LANGUAGE);
-            if (item) {
-                item[paramName] = element.val();
-            } else {
-                var descriptionObj = {
-                    "description": "",
-                    "composition": "",
-                    "type": CURRENT_LANGUAGE
-                };
-                descriptionObj[paramName] = element.val();
-                list.push(descriptionObj);
-            }
-        },
-
         getListItemByParameter: function (list, pramName, paramValue) {
             var searchedItem = null;
             $.each(list, function (i, item) {
@@ -116,13 +101,12 @@ function Utils() {
             currentDescription[keyName] = $(el).val();
         },
 
-        ajaxDataSender: function (url, type, content, success, reject, token) {
+        ajaxDataSender: function (url, type, content, success, reject) {
             var ajaxConfig = {
                 url: url,
                 type: type,
                 cache: false,
                 dataType: 'json',
-                headers: {Authorization: token},
                 contentType: "application/json",
                 success: success,
                 error: reject
@@ -131,7 +115,7 @@ function Utils() {
             $.ajax(ajaxConfig)
         },
 
-        ajaxFilesSender: function (url, type, files, success, reject, token, additionParams) {
+        ajaxFilesSender: function (url, type, files, success, reject, additionParams) {
             var formData = new FormData();
             var dataTypeMatcher = type === "IMAGES" ? /image.*/ : /file.*/;
 
@@ -153,7 +137,6 @@ function Utils() {
                     data: formData,
                     processData: false,
                     contentType: false,
-                    headers: {Authorization: token},
                     success: success,
                     error: reject
                 })
@@ -167,24 +150,6 @@ function Utils() {
                 text += possible.charAt(Math.floor(Math.random() * possible.length));
 
             return text;
-        },
-
-        validateImageFile: function (file, maxWidth, maxHeight, maxSize) {
-            var width = maxWidth ? maxWidth : 2560;
-            var height = maxHeight ? maxHeight : 1440;
-            var maxSize = maxSize ? maxSize * 1024 : 50 * 1024;
-
-            if (!!file.type.match(/image.*/)) {
-                var image = new Image();
-                image.src = window.URL.createObjectURL(file);
-                image.onload = function () {
-                    debugger;
-                    var width = image.naturalWidth,
-                        height = image.naturalHeight;
-                }
-            }
-
-            return false;
         }
 
     }
