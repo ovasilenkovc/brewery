@@ -19,11 +19,11 @@ import java.util.List;
 @Repository(value = "productTypeDao")
 public class ProductTypeDaoImpl extends AbstractContentDaoImpl {
 
-//    @Override
-//    public Long save(Content content) {
-//        sessionFactory.getCurrentSession().save(content);
-//        return 0L;
-//    }
+    @Override
+    public Long save(Content content) {
+        sessionFactory.getCurrentSession().save(content);
+        return 0L;
+    }
 
     @Override
     public Content getOne(Long id) {

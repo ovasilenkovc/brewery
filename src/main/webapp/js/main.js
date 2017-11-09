@@ -7,6 +7,14 @@ var privateConstants = function () {
         "ru": "RUS"
     };
 
+    var iconMapping = {
+        "facebook": "fa fa-facebook-square",
+        "instagram": "fa fa-instagram",
+        "youtube": "fa fa-youtube-square",
+        "twitter": "fa fa-twitter-square",
+        "VK": "fa fa-vk"
+    };
+
     var unknown_titles = {
         "ENG": "Unnamed Beer variety",
         "RUS": "Неназванный сорт пива",
@@ -16,7 +24,8 @@ var privateConstants = function () {
     return {
         SERVER_CONTEXT: server_context,
         LANG_MAPPING: lang_mapping,
-        UNKNOWN_TITLES: unknown_titles
+        UNKNOWN_TITLES: unknown_titles,
+        ICONS_MAPPING: iconMapping
     }
 };
 
@@ -103,7 +112,6 @@ var functionality = {
         });
 
         $("#addChannel").click(function () {
-            debugger;
             var channels = $(this).attr("data").split(",");
             self.addNewChannelEditRow(channels, channels.length, $('.channels').find(".clist"));
         });
@@ -173,7 +181,7 @@ var functionality = {
                 self.renderProducts(productsBlock, item, CURRENT_LANGUAGE);
             });
         }, function (response) {
-            alert(response.responseJSON.error);
+            self.utils.showErrorMessage(response);
         })
     },
 
@@ -196,7 +204,8 @@ var functionality = {
                 $('.window-img .product-logo-img').attr('src', type.iconPath);
             })
         }, function (error) {
-            alert(error.responseJSON.error);
+            $('#errorText').text(error.responseJSON.error);
+            self.utils.initPopup($("#error-dialog"));
         })
     },
 
@@ -247,7 +256,7 @@ var functionality = {
                 popupDescComp = $('#popup').find('.composition'),
                 popupDesc = $('#popup').find('.first-paragraph'),
                 popupProdName = $('#popup').find('.product-name'),
-                popupProdImage =$('#popup').find('.product-logo-img');
+                popupProdImage = $('#popup').find('.product-logo-img');
 
             popupProdImage.attr("src", productType.iconPath);
             var productDescription = this.utils.getListItemByParameter(descriptions, "type", CURRENT_LANGUAGE);
@@ -313,52 +322,60 @@ var functionality = {
             self.utils.resetFormData($("#edit-form"));
             self.utils.popupDisable($('#send-form-popup'));
         }, function (error) {
-            var message = error.status == 401 ? "Unauthorized!" : error.responseJSON.error;
-            $('#product-send-error').text(message);
+            self.utils.showErrorMessage(error);
         });
     },
 
     removeProduct: function (product) {
         var self = this;
-        var url = privateConstants().SERVER_CONTEXT + "/admin/content/product/" + product.productId;
+        // var url = privateConstants().SERVER_CONTEXT + "/admin/content/product/" + product.productId;
+        var url = privateConstants().SERVER_CONTEXT + "/admin/content/product/" + 0;
         this.utils.ajaxDataSender(url, "DELETE", {}, function () {
             self.getProducts();
         }, function (error) {
-            $('#product-send-error').text(error.responseJSON.error);
+            self.utils.showErrorMessage(error);
         })
     },
 
     saveProductType: function () {
-        var self = this;
-        var typeName = $("#type-name").val();
-        var files = $('#type-icon')[0].files;
-        var url = privateConstants().SERVER_CONTEXT + "/admin/content/product/type";
+        var self = this,
+            errorJson = {},
+            typeName = $("#type-name").val(),
+            files = $('#type-icon')[0].files,
+            url = privateConstants().SERVER_CONTEXT + "/admin/content/product/type";
 
+        errorJson["status"] = "";
+        errorJson["responseJSON"] = {};
         if (typeName !== "" && (files.length !== 0)) {
             var file = files[0];
+
             if (!!file.type.match(/image.*/)) {
+
                 this.utils.ajaxFilesSender(url, "IMAGES", files, function () {
                     self.getAllProductTypes();
                     self.utils.popupDisable($('#save-type-popup'));
                     self.utils.resetFormData($("#beer-type-form"));
                 }, function (error) {
-                    alert("Error!")
+                    self.utils.showErrorMessage(error);
                 }, {"typeName": typeName});
+
             } else {
-                alert("a file should be an image!")
+                errorJson.responseJSON["error"] = "The icon file should be an image!";
+                self.utils.showErrorMessage(errorJson);
             }
         } else {
-            alert("type name and type icon are required!")
+            errorJson.responseJSON["error"] = "Type name and type icon are required parameters!";
+            self.utils.showErrorMessage(errorJson);
         }
     },
 
     removeProductType: function (element) {
-        var type = $(element).val();
+        var type = $(element).val(), self = this;
         var url = privateConstants().SERVER_CONTEXT + "/admin/content/product/type/" + type.typeName;
         this.utils.ajaxDataSender(url, "DELETE", {}, function () {
             $(element).parent().remove();
         }, function (error) {
-            $(".error").attr("hidden", false).text(error.responseJSON.error);
+            self.utils.showErrorMessage(error);
         });
     },
 
@@ -372,6 +389,7 @@ var functionality = {
             self.utils.turnSlickOff();
             self.getImages();
         }, function (error) {
+            self.utils.showErrorMessage(error);
         });
     },
 
@@ -394,17 +412,20 @@ var functionality = {
                 img.appendTo(carousel);
             });
             self.utils.initSlick();
+        }, function (error) {
+            self.utils.showErrorMessage(error);
         });
     },
 
     removeImg: function (id) {
         var self = this;
         var url = privateConstants().SERVER_CONTEXT + "/admin/content/files/" + id;
-        this.utils.ajaxDataSender(url, "DELETE", {}, function (response) {
+        this.utils.ajaxDataSender(url, "DELETE", {}, function () {
             self.utils.turnSlickOff();
             $('#brewery').find('.carousel').html("");
             self.getImages();
         }, function (error) {
+            self.utils.showErrorMessage(error);
         });
     },
 
@@ -420,6 +441,7 @@ var functionality = {
                 $('#addHistory-info').attr("hidden", false);
             }
         }, function (error) {
+            self.utils.showErrorMessage(error);
         })
     },
 
@@ -455,12 +477,13 @@ var functionality = {
             self.renderArticles();
             historyInfo.attr('hidden', !historyInfo.attr('hidden'));
             historyEditForm.attr("hidden", !historyEditForm.attr("hidden"));
-        }, function () {
+        }, function (error) {
+            self.utils.showErrorMessage(error);
         });
     },
 
     getContacts: function () {
-        var url = privateConstants().SERVER_CONTEXT + "/content/contacts";
+        var self = this, url = privateConstants().SERVER_CONTEXT + "/content/contacts";
         this.utils.ajaxDataSender(url, "GET", {}, function (response) {
             var contactsText = $("#contacts-text");
             contactsText.find(".adress-text").text(response["address"]);
@@ -473,9 +496,15 @@ var functionality = {
 
             contactsWrpEl.html("");
             for (var i = 0; i < channels.length; i++) {
-                var channelLink = $("<a class='youtube-element' href='" + channels[i] + "' target='_blank'><span class='fa fa-youtube-square fa-5x' aria-hidden='true'></span></a>");
+                var channel = channels[i];
+                var socialVar = channel.substring(channel.indexOf("[") + 1, channel.indexOf("]")),
+                    chanelVal = channel.replace("[" + socialVar + "]", "").trim(),
+                    iconClass = privateConstants().ICONS_MAPPING[socialVar];
+                var channelLink = $("<a class='youtube-element' href='" + chanelVal + "' target='_blank'><span class='" + iconClass + " fa-5x' aria-hidden='true'></span></a>");
                 channelLink.appendTo(contactsWrpEl);
             }
+        }, function (error) {
+            self.utils.showErrorMessage(error);
         })
     },
 
@@ -512,7 +541,8 @@ var functionality = {
                     channelsArray = $('.channels').find("input:text");
 
                 for (var i = 0; i < channelsArray.length; i++) {
-                    channelsString += i < channelsArray.length - 1 ? channelsArray[i].value + "," : channelsArray[i].value;
+                    var socialVal = "[" + $("#social" + i + "").val() + "]";
+                    channelsString += i < channelsArray.length - 1 ? socialVal + " " + channelsArray[i].value + "," : socialVal + " " + channelsArray[i].value;
                 }
                 return channelsString;
             })()
@@ -521,15 +551,28 @@ var functionality = {
             self.getContacts();
             $("#contacts-edit-form").attr('hidden', true);
             $("#contacts-text").attr('hidden', false);
-        }, function () {
+        }, function (error) {
+            self.utils.showErrorMessage(error);
         });
 
     },
 
     addNewChannelEditRow: function (array, index, parentEl) {
-        var channel = array[index] ? array[index].trim() : "";
-        var blockWrap = $("<div class='row channels-wrapper'>");
-        var input = $("<input class='form-control col-md-11'>").val(channel);
+        var channel = array[index] ? array[index].trim() : "",
+            socialVar = channel.substring(channel.indexOf("[") + 1, channel.indexOf("]")),
+            chanelVal = channel.replace("[" + socialVar + "]", "").trim(),
+            blockWrap = $("<div class='row channels-wrapper'>"),
+            selectedVal = socialVar != "" ? socialVar : "youtube",
+            input = $("<input class='form-control col-md-9'>").val(chanelVal);
+
+        var select = $("<select class='form-control col-md-2' id='social" + index + "'>" +
+            "<option value='facebook'>facebook</option>" +
+            "<option value='youtube'>youtube</option>" +
+            "<option value='twitter'>twitter</option>" +
+            "<option value='instagram'>instagram</option>" +
+            "<option value='VK'>VK</option></select>");
+
+        select.val(selectedVal);
         var removeBtn = $('<span class="fa fa-minus-square-o fa-3x  col-md-1 remove-channel" title="remove this channel" data="' + index + '">');
 
         removeBtn.click(function () {
@@ -538,6 +581,7 @@ var functionality = {
             $(this).parent().remove();
         });
 
+        select.appendTo(blockWrap);
         input.appendTo(blockWrap);
         removeBtn.appendTo(blockWrap);
         blockWrap.appendTo(parentEl)
@@ -548,11 +592,11 @@ $(document).ready(function () {
     localStorage.setItem('token', $("#token").val());
     functionality.init();
 });
-$(document).bind("contextmenu", function (event) {
-    event.preventDefault();
-});
-$(window).bind('mousewheel DOMMouseScroll', function (event) {
-    if (event.ctrlKey == true) {
-        event.preventDefault();
-    }
-});
+// $(document).bind("contextmenu", function (event) {
+//     event.preventDefault();
+// });
+// $(window).bind('mousewheel DOMMouseScroll', function (event) {
+//     if (event.ctrlKey == true) {
+//         event.preventDefault();
+//     }
+// });

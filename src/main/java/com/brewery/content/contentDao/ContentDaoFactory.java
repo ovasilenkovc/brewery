@@ -2,7 +2,7 @@ package com.brewery.content.contentDao;
 
 import com.brewery.content.contentDao.impl.*;
 import com.brewery.utils.ConstantParams;
-import org.apache.log4j.Logger;
+import com.brewery.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -36,8 +36,6 @@ public class ContentDaoFactory {
     private DescriptionContentDaoImpl descriptionContentDao;
 
 
-    private static final Logger LOGGER = Logger.getLogger(ContentDaoFactory.class);
-
     private Map<String, AbstractContentDaoImpl> CONTENT_DAO_IMPLEMENTATIONS = new HashMap<>();
 
     @PostConstruct
@@ -54,11 +52,7 @@ public class ContentDaoFactory {
 
         AbstractContentDaoImpl contentDao = CONTENT_DAO_IMPLEMENTATIONS.get(context);
 
-        if(contentDao == null){
-            LOGGER.error("Content DAO implementation doesn't exist for specified context!");
-            throw new NullPointerException("Content DAO implementation doesn't exist for specified context!");
-        }
-
+        Utils.notNullHandler(contentDao, "Content DAO implementation doesn't exist for specified context!");
         return contentDao;
     }
 

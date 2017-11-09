@@ -12,18 +12,20 @@
     <script type="text/javascript" src="${contextPath}/js/brewery-utils.js"></script>
     <link rel="stylesheet" type="text/css" href="${contextPath}/css/bootstrap.css">
     <link rel="stylesheet" type="text/css" href="${contextPath}/css/login-style.css">
-
 </head>
 <body>
     <div class="login-page">
         <div class="login-title">
             <h1>Brewery Login</h1>
         </div>
-        <form:form method="post" modelAttribute="loginUser" action="login">
-            <form:input path="username" type="text" />
-            <form:input path="password" type="password" />
-            <input type="submit" name="login" value="login">
-        </form:form>
+        <div class="form-group">
+            <form:form method="post" modelAttribute="loginUser" action="login">
+                <form:input path="username" cssClass="form-control" type="text" />
+                <form:input path="password" cssClass="form-control" type="password" />
+                <input type="button" onclick="window.history.back();" name="cancel" class="btn btn-info send-button" value="cancel">
+                <input type="submit" name="login" class="btn btn-info cancel-button" value="login">
+            </form:form>
+        </div>
     </div>
 </body>
 </html>

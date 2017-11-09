@@ -10,6 +10,15 @@ body::-webkit-scrollbar {
     width: 0 !important
 }
 
+.send-button, .cancel-button{
+    width: 49.5% !important;
+    background: #4a4a4a;
+}
+
+.send-button:hover, .cancel-button:hover{
+    background: #656565;
+}
+
 .login-page {
     padding: 2% 4% 3% 4%;
     width: 37%;

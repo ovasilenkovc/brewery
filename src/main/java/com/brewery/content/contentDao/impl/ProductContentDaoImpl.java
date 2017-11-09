@@ -5,6 +5,7 @@ import com.brewery.content.contentDao.AbstractContentDaoImpl;
 import com.brewery.content.contentDao.ContentDao;
 import com.brewery.content.product.Product;
 import com.brewery.content.product.ProductType;
+import com.brewery.utils.Utils;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -27,9 +28,7 @@ public class ProductContentDaoImpl extends AbstractContentDaoImpl {
         Session session = sessionFactory.openSession();
         Product product = (Product) session.get(Product.class, id);
 
-        if (product == null) {
-            throw new NullPointerException("Product with specified id " + id + "doesn't exist!");
-        }
+        Utils.notNullHandler(product, "Product with specified id: " + id + " doesn't exist!");
 
         product.setProductType(initProductType(product));
         product.getDescriptions().size();

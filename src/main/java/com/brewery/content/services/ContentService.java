@@ -12,7 +12,7 @@ public interface ContentService {
 
     Long save(Content content, String context);
 
-    List<Content> getAll(String context);
+    List getAll(String context);
 
     Content getOne(Long id, String context);
 

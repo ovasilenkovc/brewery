@@ -864,7 +864,7 @@ input, button {
     text-align: left;
 }
 .contact-info-address, .contact-info-numbers{
-    width: 45%;
+    width: 49.5%;
     display: inline-block;
     margin-bottom: 25px;
 }
@@ -875,9 +875,6 @@ input, button {
     font-size: 18px;
 
 }
-/*.contact-info-numbers{*/
-    /*float: right;*/
-/*}*/
 .contact-email, .contact-info-tel, .bolder-font, .adress-text, .address{
     font-size: 18px;
    font-family: 'Tahoma';
@@ -1041,7 +1038,7 @@ input, button {
     font-family: "Arial";
     font-size: 11px;
 }
-#popup, #send-form-popup, #save-img-popup, #save-type-popup, #manage-type-popup{
+#popup, #send-form-popup, #save-img-popup, #save-type-popup, #manage-type-popup, #error-dialog{
     display: none;
 }
 .b-close{
@@ -1101,9 +1098,6 @@ input, button {
     width: 95%;
     display: inline-block;
 }
-.contact-info-channels{
-    text-align: center;
-}
 .youtube-element{
     margin-right: 10px;
 }
@@ -1115,5 +1109,11 @@ input, button {
 }
 .logout-btn{
     background: none;
-
+}
+#errorText{
+    text-align: center;
+    font-size: 18pt;
+    color: red;
+    padding: 15px 0;
+    background: #fff;
 }

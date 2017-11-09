@@ -13,7 +13,7 @@ import com.brewery.content.product.ProductType;
 import com.brewery.exceptions.CustomRestException;
 import com.brewery.services.fileFolder.FileFolderService;
 import com.brewery.utils.ConstantParams;
-import com.brewery.utils.ParamUtils;
+import com.brewery.utils.Utils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -74,17 +74,15 @@ public class ContentServiceImpl implements ContentService {
         return daoFactory.getContentDao(context).getAll();
     }
 
-    public List<Content> getAllProducts(String context) {
+    public List<Content> getAllProducts(String context) throws IOException {
         List<Content> products = new ArrayList<>();
 
-        for(Object productObj: getAll(context)){
+        for (Object productObj : getAll(context)) {
             Product product = (Product) productObj;
             ProductType type = product.getProductType();
             String base64iconRepresentation = getBase64ProductTypeIcon(type.getIconPath());
 
-            if(base64iconRepresentation != null){
-                type.setIconPath(base64iconRepresentation);
-            }
+            type.setIconPath(base64iconRepresentation);
 
             product.setProductType(type);
             products.add(product);
@@ -117,6 +115,9 @@ public class ContentServiceImpl implements ContentService {
     @Transactional
     public void remove(Long id, String context) {
         Content content = daoFactory.getContentDao(context).getOne(id);
+
+        Utils.notNullHandler(content, "Content with specified id: " + id + "was not found!");
+
         daoFactory.getContentDao(context).remove(content);
         if (ConstantParams.IMAGE_CONTEXT.equals(context) || ConstantParams.FILE_CONTEXT.equals(context)) {
             File file = (File) content;
@@ -156,6 +157,11 @@ public class ContentServiceImpl implements ContentService {
      */
     public Set<Translations> getTranslations(Long articleId) {
         Article article = (Article) daoFactory.getContentDao(ConstantParams.ARTICLE_CONTEXT).getOne(articleId);
+
+        if (article == null) {
+            throw new NullPointerException("Article with specified id: " + articleId + " was not found!");
+        }
+
         return article.getTranslations();
     }
 
@@ -207,44 +213,40 @@ public class ContentServiceImpl implements ContentService {
     }
 
     @Transactional
-    public void saveProductType(MultipartFile icon, String typeName, String context) throws Exception {
+    public void saveProductType(MultipartFile icon, String typeName, String context) throws IOException {
+
         String path = "/icons";
         String fileName = icon.getOriginalFilename();
         String iconPath = "/icons/" + fileName;
-        try {
-            String savingResult = fileFolderService.saveFile(icon, path);
-            if (!"".equals(savingResult) && savingResult != null) {
-                Content productType = new ProductType(typeName, iconPath);
-                daoFactory.getContentDao(context).save(productType);
-            }
-        } catch (Exception e) {
-            throw new Exception(e.getCause().getMessage(), e);
-        }
+
+        Content productType = new ProductType(typeName, iconPath);
+        fileFolderService.saveFile(icon, path);
+        daoFactory.getContentDao(context).save(productType);
     }
 
     @Transactional
-    public void removeProductType(String typeName, String context){
+    public void removeProductType(String typeName, String context) {
 
         ProductTypeDaoImpl productTypeDao = (ProductTypeDaoImpl) daoFactory.getContentDao(context);
         ProductType productType = productTypeDao.getOneType(typeName);
         Set<Product> products = productType.getProducts();
 
-        if(!products.isEmpty()){
+        if (!products.isEmpty()) {
             StringBuilder message = new StringBuilder("You can't remove this product type because you have products: ");
-            for (Product product: products){
+            for (Product product : products) {
                 String prodName = product.getName();
                 message.append(prodName).append(", ");
             }
-            message.append("that related to type ").append(productType.getTypeName());
+            message.append("which are related to type ").append(productType.getTypeName());
             throw new CustomRestException(message.toString());
         }
 
         productTypeDao.remove(productType);
     }
 
-    public List<Content> getAllProductTypes(String context) {
+    public List<Content> getAllProductTypes(String context) throws IOException {
         List<Content> storedTypes = new ArrayList<>();
-        for(Object content: daoFactory.getContentDao(context).getAll()){
+        for (Object content : daoFactory.getContentDao(context).getAll()) {
             ProductType type = (ProductType) content;
             type.setIconPath(getBase64ProductTypeIcon(type.getIconPath()));
             storedTypes.add(type);
@@ -296,12 +298,10 @@ public class ContentServiceImpl implements ContentService {
      * @param result      result map that will be filled.
      */
     @Transactional
-    private void saveFile(Content content, String context, MultipartFile file, String storagePath, Map<Long, String> result){
+    private void saveFile(Content content, String context, MultipartFile file, String storagePath, Map<Long, String> result) throws IOException {
         String savingResult = fileFolderService.saveFile(file, storagePath);
         Long fileId = daoFactory.getContentDao(context).save(content);
-        if (savingResult != null) {
-            result.put(fileId, savingResult);
-        }
+        result.put(fileId, savingResult);
     }
 
     /**
@@ -312,7 +312,7 @@ public class ContentServiceImpl implements ContentService {
      * @param context current context.
      * @return Map with files.
      */
-    public Map<String, File> getBase64EncodedFiles(String context) {
+    public Map<String, File> getBase64EncodedFiles(String context) throws IOException {
         Map<String, File> result = new HashMap<>();
         List<Content> files = daoFactory.getContentDao(context).getAll();
 
@@ -341,6 +341,8 @@ public class ContentServiceImpl implements ContentService {
     @Transactional
     public void removeContentMetadata(Long id, String localizeType, String context) {
         Content content = daoFactory.getContentDao(context).getOne(id);
+
+        Utils.notNullHandler(content, "Content with id: " + id + " not found!");
         removeMetadata(content, localizeType, context);
     }
 
@@ -384,7 +386,7 @@ public class ContentServiceImpl implements ContentService {
         Set<Description> descriptions = product.getDescriptions();
         for (Description description : descriptions) {
             String localizeType = description.getType();
-            if (!ParamUtils.isLocalizationValid(localizeType)) {
+            if (!Utils.isLocalizationValid(localizeType)) {
                 String error = "TITLE: " + description.getTitle() + "; TYPE: " + description.getType();
                 errors.add(error);
             }
@@ -397,7 +399,7 @@ public class ContentServiceImpl implements ContentService {
         Set<Translations> translations = article.getTranslations();
         for (Translations translation : translations) {
             String localizeType = translation.getType();
-            if (!ParamUtils.isLocalizationValid(localizeType)) {
+            if (!Utils.isLocalizationValid(localizeType)) {
                 String error = "TITLE: " + translation.getTitle() + "; TYPE: " + translation.getType();
                 errors.add(error);
             }
@@ -463,7 +465,7 @@ public class ContentServiceImpl implements ContentService {
         return content;
     }
 
-    private String getBase64ProductTypeIcon(String iconPath) {
+    private String getBase64ProductTypeIcon(String iconPath) throws IOException {
         String absolutePath = ConstantParams.TEMP_FOLDER_PATH + ConstantParams.ROOT_PROJECT_DIR + iconPath;
         return fileFolderService.getBase64StringEncoded(absolutePath);
     }

@@ -143,6 +143,12 @@ function Utils() {
             }
         },
 
+        showErrorMessage: function (errorObj) {
+            var message = errorObj.status == 401 ? errorObj.statusText : errorObj.responseJSON.error;
+            $('#errorText').text(message);
+            this.initPopup($("#error-dialog"));
+        },
+
         nameGenerator: function () {
             var text = "";
             var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";

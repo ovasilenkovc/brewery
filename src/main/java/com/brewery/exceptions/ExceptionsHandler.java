@@ -1,7 +1,7 @@
 package com.brewery.exceptions;
 
 import com.brewery.utils.ConstantParams;
-import com.brewery.utils.ParamUtils;
+import com.brewery.utils.Utils;
 import com.brewery.utils.ResponseMaker;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -33,7 +33,7 @@ public class ExceptionsHandler extends ResponseEntityExceptionHandler {
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(final MethodArgumentNotValidException ex,
                                                                   final HttpHeaders headers, final HttpStatus status, final WebRequest request) {
-        Map<String, String> errors = ParamUtils.makeErrorMap(ex.getBindingResult().getFieldErrors(), ex.getBindingResult().getGlobalErrors());
+        Map<String, String> errors = Utils.makeErrorMap(ex.getBindingResult().getFieldErrors(), ex.getBindingResult().getGlobalErrors());
         final ApiError apiError = new ApiError(status, ConstantParams.ERROR_MESSAGE, errors);
         return handleExceptionInternal(ex, apiError, headers, apiError.getStatus(), request);
     }

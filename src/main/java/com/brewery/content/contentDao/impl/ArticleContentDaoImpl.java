@@ -3,6 +3,7 @@ package com.brewery.content.contentDao.impl;
 import com.brewery.content.Content;
 import com.brewery.content.article.Article;
 import com.brewery.content.contentDao.AbstractContentDaoImpl;
+import com.brewery.utils.Utils;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -23,9 +24,7 @@ public class ArticleContentDaoImpl extends AbstractContentDaoImpl {
         Session session = sessionFactory.openSession();
         Article article = (Article) session.get(Article.class, id);
 
-        if (article == null) {
-            throw new NullPointerException("Article with specified id: " + id + " was not found!");
-        }
+        Utils.notNullHandler(article, "Article with specified id: " + id + " was not found!");
 
         article.getTranslations().size();
         session.flush();

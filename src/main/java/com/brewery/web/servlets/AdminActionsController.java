@@ -8,7 +8,7 @@ import com.brewery.admin.model.reqwrappers.RolesWrapper;
 import com.brewery.exceptions.UserNotFoundException;
 import com.brewery.services.usersService.UsersManagingService;
 import com.brewery.utils.ConstantParams;
-import com.brewery.utils.ParamUtils;
+import com.brewery.utils.Utils;
 import com.brewery.utils.ResponseMaker;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,8 +55,8 @@ public class AdminActionsController {
     @RequestMapping(value = "/admin/users", method = RequestMethod.POST)
     public ResponseEntity<String> createUser(@RequestBody @Valid AdminUserWrapper adminUser) throws InvalidRoleValueException {
 
-        AdminUser user = ParamUtils.toAdminUser(adminUser);
-        Map<String, Serializable> errorMap = ParamUtils.isRolesValid(user.getRoles());
+        AdminUser user = Utils.toAdminUser(adminUser);
+        Map<String, Serializable> errorMap = Utils.isRolesValid(user.getRoles());
 
         if (!errorMap.isEmpty()) {
             return ResponseMaker.makeResponse(errorMap, ConstantParams.JSON_HEADER_TYPE, HttpStatus.BAD_REQUEST);
@@ -77,7 +77,7 @@ public class AdminActionsController {
                 adminUserWrapper.getPassword(),
                 adminUserWrapper.isEnabled());
 
-        Map<String, Serializable> errorMap = ParamUtils.isRolesValid(user.getRoles());
+        Map<String, Serializable> errorMap = Utils.isRolesValid(user.getRoles());
         if (!errorMap.isEmpty()) {
             return ResponseMaker.makeResponse(errorMap, ConstantParams.JSON_HEADER_TYPE, HttpStatus.BAD_REQUEST);
         }

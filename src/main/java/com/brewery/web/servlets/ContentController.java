@@ -6,7 +6,7 @@ import com.brewery.content.article.Article;
 import com.brewery.content.article.Translations;
 import com.brewery.content.services.ContentServiceImpl;
 import com.brewery.utils.ConstantParams;
-import com.brewery.utils.ParamUtils;
+import com.brewery.utils.Utils;
 import com.brewery.utils.ResponseMaker;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -99,7 +99,7 @@ public class ContentController {
     public ResponseEntity<String> addTranslation(@PathVariable Long id, @RequestBody @Valid Translations translation) {
         LOGGER.info("Article translation adding process execution");
 
-        if(!ParamUtils.isLocalizationValid(translation.getType())){
+        if(!Utils.isLocalizationValid(translation.getType())){
             LOGGER.error("Content saving failed!");
             return ResponseMaker.makeResponse("Translation is invalid", ConstantParams.JSON_HEADER_TYPE, HttpStatus.OK);
         }

@@ -269,7 +269,7 @@
                         </div>
                     </div>
                     <div class="contact-info-channels">
-                        <div>Our channels: </div>
+                        <div class="address">Our channels: </div>
                         <input type="text" id="channelsStr" value="" hidden/>
                         <div id="channels"></div>
                     </div>
@@ -515,6 +515,21 @@
             <div class="types-wrapper">
                 <div class="error" hidden></div>
                 <ul class="list-group" id="types"></ul>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="error-dialog">
+    <div class="wrap-popup">
+        <div class="window-container">
+            <div class="b-close-wrapper">
+                <span class="button b-close">X</span>
+            </div>
+            <div>
+                <h4 class="title-name">Error!</h4>
+            </div>
+            <div class="types-wrapper">
+                <p id="errorText"></p>
             </div>
         </div>
     </div>

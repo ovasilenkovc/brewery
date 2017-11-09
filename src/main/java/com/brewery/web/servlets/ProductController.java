@@ -3,10 +3,9 @@ package com.brewery.web.servlets;
 import com.brewery.content.Content;
 import com.brewery.content.product.Description;
 import com.brewery.content.product.Product;
-import com.brewery.content.product.ProductType;
 import com.brewery.content.services.ContentServiceImpl;
 import com.brewery.utils.ConstantParams;
-import com.brewery.utils.ParamUtils;
+import com.brewery.utils.Utils;
 import com.brewery.utils.ResponseMaker;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,7 +51,7 @@ public class ProductController {
 
     @ResponseBody
     @RequestMapping(value = "/content/product", method = RequestMethod.GET)
-    public ResponseEntity<String> getProducts() {
+    public ResponseEntity<String> getProducts() throws IOException {
         LOGGER.info("Getting instances of Product");
         List<Content> products = contentService.getAllProducts(ConstantParams.PRODUCT_CONTEXT);
         return ResponseMaker.makeResponse(products, ConstantParams.JSON_HEADER_TYPE, HttpStatus.OK);
@@ -101,7 +101,7 @@ public class ProductController {
 
     @ResponseBody
     @RequestMapping(value = "/content/product/type", method = RequestMethod.GET)
-    public ResponseEntity<String> getAllTypes() {
+    public ResponseEntity<String> getAllTypes() throws IOException {
         LOGGER.info("Getting all instances of ProductType");
         return ResponseMaker.makeResponse(
                 contentService.getAllProductTypes(ConstantParams.PRODUCT_TYPE_CONTEXT),
@@ -124,7 +124,7 @@ public class ProductController {
     public ResponseEntity<String> addUpdateDescription(@PathVariable Long productId, @RequestBody @Valid Description description) {
         LOGGER.info("Adding product description process execution");
 
-        if (!ParamUtils.isLocalizationValid(description.getType())) {
+        if (!Utils.isLocalizationValid(description.getType())) {
             LOGGER.error("Content saving failed!");
             return ResponseMaker.makeResponse("Description is invalid", ConstantParams.JSON_HEADER_TYPE, HttpStatus.OK);
         }

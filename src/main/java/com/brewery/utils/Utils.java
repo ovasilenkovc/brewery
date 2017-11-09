@@ -5,6 +5,7 @@ import com.brewery.admin.model.RoleTypes;
 import com.brewery.admin.model.Roles;
 import com.brewery.admin.model.reqwrappers.AdminUserWrapper;
 import com.brewery.content.LocalizationTypes;
+import org.apache.log4j.Logger;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
@@ -18,7 +19,9 @@ import java.util.*;
  * Also provides other useful features such as making error response map etc..
  * This class will be updated as necessary.
  */
-public class ParamUtils {
+public class Utils {
+
+    private static final Logger LOGGER = Logger.getLogger(Utils.class);
 
     public static String getString(HttpServletRequest request, String param) {
         return request.getParameter(param);
@@ -129,5 +132,15 @@ public class ParamUtils {
         return errorMap;
     }
 
+
+    public static void notNullHandler(Object o, String message){
+
+        String errMessage = message != null && !message.isEmpty() ? message : "This item can't be null!";
+
+        if(o == null){
+            LOGGER.error(errMessage);
+            throw new NullPointerException(errMessage);
+        }
+    }
 
 }

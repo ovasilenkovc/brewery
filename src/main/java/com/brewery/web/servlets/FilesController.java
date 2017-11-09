@@ -13,6 +13,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.Map;
 
 /**
@@ -49,7 +50,7 @@ public class FilesController {
 
     @ResponseBody
     @RequestMapping(value = "/content/files/{path}", method = RequestMethod.GET)
-    public ResponseEntity<String> getImages(@PathVariable String path) {
+    public ResponseEntity<String> getImages(@PathVariable String path) throws IOException {
         LOGGER.info("Image getting process execution");
         String context = path.equals("pictures") ? ConstantParams.IMAGE_CONTEXT : ConstantParams.FILE_CONTEXT;
         Map<String, File> result = contentService.getBase64EncodedFiles(context);

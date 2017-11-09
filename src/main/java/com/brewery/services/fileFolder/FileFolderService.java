@@ -1,24 +1,18 @@
 package com.brewery.services.fileFolder;
 
-import com.brewery.content.image.Image;
 import com.brewery.utils.ConnectionUtils;
 import com.brewery.utils.ConstantParams;
+import com.brewery.utils.Utils;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import sun.misc.BASE64Encoder;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
 import java.io.*;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -43,7 +37,7 @@ public class FileFolderService {
      * @param path saving path.
      * @return String returns absolute path for saved file.
      */
-    public String saveFile(MultipartFile file, String path) {
+    public String saveFile(MultipartFile file, String path) throws IOException {
 
         String storagePath = ConstantParams.TEMP_FOLDER_PATH + ConstantParams.ROOT_PROJECT_DIR + path;
         String fileName = file.getOriginalFilename();
@@ -62,10 +56,10 @@ public class FileFolderService {
             return filePath.toString();
 
         } catch (IOException e) {
-            String message = "Files saving failed! " + fileName;
+            String message = "File saving failed! " + fileName;
             LOGGER.error(message, e);
             e.printStackTrace();
-            return null;
+            throw e;
         }
     }
 
@@ -98,82 +92,6 @@ public class FileFolderService {
         return ConstantParams.CONTENT_MIME_TYPES.get(context).contains(type);
     }
 
-    //TO DO wasn't checked
-    public List<com.brewery.content.File> getFiles(String folderPath, String context) {
-        String fullPath = ConstantParams.TEMP_FOLDER_PATH + folderPath;
-        List<com.brewery.content.File> files = new ArrayList<>();
-        File folder = new File(fullPath);
-
-        for (final File fileEntry : folder.listFiles()) {
-            if (fileEntry.isFile()) {
-                String name = fileEntry.getName();
-                String path = fileEntry.getPath();
-                com.brewery.content.File file = ConstantParams.IMAGE_CONTEXT.equals(context) ? new Image(name, path) : null;
-                files.add(file);
-            }
-        }
-        return files;
-    }
-
-    //TO DO wasn't checked
-    public static String getBase64Encoded(String filePath, String type) {
-        String imageString = null;
-        BufferedImage image = null;
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-
-        try {
-            image = ImageIO.read(new File(filePath));
-            ImageIO.write(image, type, bos);
-            byte[] imageBytes = bos.toByteArray();
-
-            BASE64Encoder encoder = new BASE64Encoder();
-            imageString = encoder.encode(imageBytes);
-
-            bos.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return imageString;
-    }
-
-    /**
-     * A Method for encoding files, obtained from the store to the base64 encoding.
-     * Uses absolute path for a file.
-     *
-     * @param filePath an absolute file path to the file.
-     * @return an array of encoded bytes.
-     */
-    public byte[] getBase64Encoded(String filePath) {
-        File file = new File(filePath);
-        if (file.isFile()) {
-            return getBase64ByteEncoded(file);
-        }
-        return null;
-    }
-
-    /**
-     * A Method for encoding files, obtained from the store to the base64 encoding.
-     * Uses a java.io.File as object for encoding.
-     *
-     * @param file file object for encoding.
-     * @return an array of encoded bytes.
-     */
-    public byte[] getBase64ByteEncoded(File file) {
-        FileInputStream fileInputStream = null;
-        try {
-            fileInputStream = new FileInputStream(file);
-            byte[] bytes = new byte[(int) file.length()];
-            fileInputStream.read(bytes);
-            byte[] encoded = Base64.decodeBase64(bytes);
-            fileInputStream.close();
-            return encoded;
-        } catch (Exception e) {
-            LOGGER.error(e.getMessage(), e);
-            ConnectionUtils.close(fileInputStream);
-            return null;
-        }
-    }
-
     /**
      * A Method for encoding files, obtained from the store to the base64 encoding.
      * Uses absolute path for obtaining a stored file.
@@ -181,9 +99,11 @@ public class FileFolderService {
      * @param fullPath an absolute path to the file.
      * @return an array of encoded bytes.
      */
-    public String getBase64StringEncoded(String fullPath) {
+    public String getBase64StringEncoded(String fullPath) throws IOException {
         File file = new File(fullPath);
         FileInputStream fileInputStream = null;
+
+        Utils.notNullHandler(file, "File not found!");
 
         try {
             String mimeType = Files.probeContentType(file.toPath());
@@ -196,7 +116,7 @@ public class FileFolderService {
         } catch (IOException e) {
             LOGGER.error(e.getMessage(), e);
             ConnectionUtils.close(fileInputStream);
-            return null;
+            throw e;
         }
     }
 
@@ -232,30 +152,6 @@ public class FileFolderService {
         FileWriter fileWriter = new FileWriter(file.toString());
         fileWriter.write(jsonObject.toString());
         fileWriter.close();
-    }
-
-    private void savePropertiesToFile(Properties props, String fileName) throws IOException {
-        ClassLoader classLoader = getClass().getClassLoader();
-        File file = new File(classLoader.getResource(fileName).getFile());
-        FileOutputStream fileOutputStream = new FileOutputStream(file);
-        props.store(fileOutputStream, null);
-
-        ConnectionUtils.close(fileOutputStream);
-    }
-
-    private Properties loadProperties(String fileName) throws IOException {
-        Properties properties = new Properties();
-        ClassLoader classLoader = getClass().getClassLoader();
-        InputStream inputStream = classLoader.getResourceAsStream(fileName);
-
-        if (inputStream != null) {
-            properties.load(inputStream);
-        } else {
-            throw new FileNotFoundException("property file with name: " + fileName + " not found!");
-        }
-
-        ConnectionUtils.close(inputStream);
-        return properties;
     }
 
     /**
