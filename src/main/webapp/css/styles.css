@@ -1098,11 +1098,14 @@ input, button {
     width: 95%;
     display: inline-block;
 }
-.youtube-element{
+.youtube-element, .social-element{
     margin-right: 10px;
 }
 .youtube-element span:hover{
-    color: #dd0008;
+    color:  hsl(0, 100%, 50%);
+}
+.social-element span:hover{
+    color: #0b56c2;
 }
 .channels-wrapper{
     margin-left: 0;

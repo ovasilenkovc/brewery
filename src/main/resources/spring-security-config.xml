@@ -35,8 +35,12 @@
         <intercept-url pattern="/admin/**" access="hasAnyRole('ROLE_ADMIN', 'ROLE_SUPER_ADMIN')"/>
 
         <logout invalidate-session="true"
-                logout-url="/logout"
+                logout-url="/logout" delete-cookies="JSESSIONID"
                 success-handler-ref="customLogoutSuccessHandler"/>
+
+        <session-management invalid-session-url="/">
+            <concurrency-control expired-url="/"/>
+        </session-management>
 
         <!--IMPORTANT INF-->
         <!--this option used for setting up custom authentication filter-->

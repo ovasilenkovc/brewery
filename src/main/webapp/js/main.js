@@ -328,8 +328,7 @@ var functionality = {
 
     removeProduct: function (product) {
         var self = this;
-        // var url = privateConstants().SERVER_CONTEXT + "/admin/content/product/" + product.productId;
-        var url = privateConstants().SERVER_CONTEXT + "/admin/content/product/" + 0;
+        var url = privateConstants().SERVER_CONTEXT + "/admin/content/product/" + product.productId;
         this.utils.ajaxDataSender(url, "DELETE", {}, function () {
             self.getProducts();
         }, function (error) {
@@ -499,8 +498,9 @@ var functionality = {
                 var channel = channels[i];
                 var socialVar = channel.substring(channel.indexOf("[") + 1, channel.indexOf("]")),
                     chanelVal = channel.replace("[" + socialVar + "]", "").trim(),
-                    iconClass = privateConstants().ICONS_MAPPING[socialVar];
-                var channelLink = $("<a class='youtube-element' href='" + chanelVal + "' target='_blank'><span class='" + iconClass + " fa-5x' aria-hidden='true'></span></a>");
+                    iconClass = privateConstants().ICONS_MAPPING[socialVar],
+                    socialElStyle = socialVar == "youtube" ? "youtube-element" : "social-element";
+                var channelLink = $("<a class='" + socialElStyle + "' href='" + chanelVal + "' target='_blank'><span class='" + iconClass + " fa-5x' aria-hidden='true'></span></a>");
                 channelLink.appendTo(contactsWrpEl);
             }
         }, function (error) {
@@ -562,7 +562,7 @@ var functionality = {
             socialVar = channel.substring(channel.indexOf("[") + 1, channel.indexOf("]")),
             chanelVal = channel.replace("[" + socialVar + "]", "").trim(),
             blockWrap = $("<div class='row channels-wrapper'>"),
-            selectedVal = socialVar != "" ? socialVar : "youtube",
+            selectedVal = socialVar != "" && socialVar !== "undefined" ? socialVar : "youtube",
             input = $("<input class='form-control col-md-9'>").val(chanelVal);
 
         var select = $("<select class='form-control col-md-2' id='social" + index + "'>" +
